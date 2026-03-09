@@ -183,7 +183,7 @@
       border-radius: 8px;
       cursor: pointer;
       text-decoration: none;
-      transition: background 0.2s var(--ease-premium), transform 0.2s var(--ease-premium);
+      transition: background 0.2s var(--ease-premium), transform 0.2s var(--ease-premium), box-shadow 0.2s var(--ease-premium);
     }
 
     .btn:active {
@@ -198,6 +198,8 @@
     .btn--primary:hover {
       background: linear-gradient(135deg, var(--accent-warm), var(--accent-warm-dark));
       filter: brightness(1.08);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(196, 135, 59, 0.3);
     }
 
     .btn--large {
@@ -287,12 +289,14 @@
       color: #FFFFFF;
       text-decoration: none;
       border-radius: 8px;
-      transition: background 0.2s var(--ease-premium);
+      transition: background 0.2s var(--ease-premium), transform 0.2s var(--ease-premium), box-shadow 0.2s var(--ease-premium);
     }
 
     .nav__btn:hover {
       background: linear-gradient(135deg, var(--accent-warm), var(--accent-warm-dark));
       filter: brightness(1.08);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 8px rgba(196, 135, 59, 0.25);
     }
 
     /* ===== HERO ===== */
@@ -305,50 +309,33 @@
       background: var(--surface-hero);
     }
 
-    /* Kaleidoscope layers */
     .hero__kaleidoscope {
       position: absolute;
       inset: 0;
       z-index: 0;
     }
 
-    .hero__kaleidoscope::before {
-      content: '';
-      position: absolute;
-      inset: -50%;
-      width: 200%;
-      height: 200%;
-      background:
-        conic-gradient(from 0deg at 30% 40%, transparent 0deg, rgba(45, 93, 161, 0.4) 30deg, transparent 60deg, rgba(20, 60, 120, 0.3) 120deg, transparent 150deg, rgba(58, 111, 181, 0.25) 210deg, transparent 240deg, rgba(30, 70, 140, 0.35) 300deg, transparent 360deg),
-        conic-gradient(from 120deg at 70% 60%, transparent 0deg, rgba(60, 40, 120, 0.25) 45deg, transparent 90deg, rgba(45, 93, 161, 0.3) 160deg, transparent 200deg, rgba(20, 80, 100, 0.2) 270deg, transparent 320deg, rgba(50, 50, 140, 0.2) 360deg),
-        conic-gradient(from 240deg at 50% 50%, transparent 0deg, rgba(30, 80, 130, 0.3) 60deg, transparent 120deg, rgba(70, 50, 130, 0.2) 180deg, transparent 240deg, rgba(20, 100, 120, 0.25) 300deg, transparent 360deg),
-        radial-gradient(ellipse at 20% 30%, rgba(45, 93, 161, 0.4) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 70%, rgba(40, 60, 120, 0.3) 0%, transparent 45%),
-        radial-gradient(ellipse at 50% 50%, rgba(60, 40, 110, 0.2) 0%, transparent 60%);
-      animation: kaleidoscope-rotate 28s linear infinite;
-    }
-
-    .hero__kaleidoscope::after {
-      content: '';
-      position: absolute;
-      inset: -30%;
-      width: 160%;
-      height: 160%;
-      background:
-        conic-gradient(from 60deg at 60% 30%, transparent 0deg, rgba(20, 100, 110, 0.3) 40deg, transparent 80deg, rgba(45, 93, 161, 0.25) 140deg, transparent 180deg, rgba(80, 50, 120, 0.2) 250deg, transparent 300deg, rgba(30, 70, 110, 0.3) 360deg),
-        radial-gradient(ellipse at 40% 60%, rgba(58, 111, 181, 0.35) 0%, transparent 40%),
-        radial-gradient(ellipse at 70% 30%, rgba(50, 30, 100, 0.2) 0%, transparent 50%);
-      mix-blend-mode: screen;
-      animation: kaleidoscope-counter 24s linear infinite;
-    }
-
-    .hero__blur-layer {
+    .hero__slide {
       position: absolute;
       inset: 0;
-      z-index: 1;
-      backdrop-filter: blur(0px);
-      -webkit-backdrop-filter: blur(0px);
-      animation: breathe-blur 8s ease-in-out infinite;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      animation: hero-crossfade 24s ease-in-out infinite;
+    }
+
+    .hero__slide:nth-child(1) { animation-delay: 0s; }
+    .hero__slide:nth-child(2) { animation-delay: 6s; }
+    .hero__slide:nth-child(3) { animation-delay: 12s; }
+    .hero__slide:nth-child(4) { animation-delay: 18s; }
+
+    @keyframes hero-crossfade {
+      0% { opacity: 0; }
+      4% { opacity: 1; }
+      25% { opacity: 1; }
+      29% { opacity: 0; }
+      100% { opacity: 0; }
     }
 
     .hero__overlay {
@@ -364,17 +351,6 @@
       0% { transform: rotate(0deg) scale(1); }
       50% { transform: rotate(180deg) scale(1.15); }
       100% { transform: rotate(360deg) scale(1); }
-    }
-
-    @keyframes kaleidoscope-counter {
-      0% { transform: rotate(0deg) scale(1.1); }
-      50% { transform: rotate(-180deg) scale(1); }
-      100% { transform: rotate(-360deg) scale(1.1); }
-    }
-
-    @keyframes breathe-blur {
-      0%, 100% { backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
-      50% { backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
     }
 
     .hero__content {
@@ -590,6 +566,10 @@
       border: none;
       box-shadow: 0 1px 3px rgba(0,0,0,0.04);
     }
+
+    .feature-grid .feature-card:nth-child(1) { transition-delay: 0s; }
+    .feature-grid .feature-card:nth-child(2) { transition-delay: 0.15s; }
+    .feature-grid .feature-card:nth-child(3) { transition-delay: 0.3s; }
 
     .feature-card__icon {
       width: 40px;
@@ -900,6 +880,10 @@
       gap: 48px;
       margin-bottom: 48px;
     }
+
+    .steps .step:nth-child(1) { transition-delay: 0s; }
+    .steps .step:nth-child(2) { transition-delay: 0.15s; }
+    .steps .step:nth-child(3) { transition-delay: 0.3s; }
 
     .step__number {
       font-family: var(--font-mono);
@@ -1365,9 +1349,13 @@
     /* Reduce motion */
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .hero__kaleidoscope::before,
-      .hero__kaleidoscope::after,
-      .hero__blur-layer,
+      .hero__slide {
+        animation: none;
+        opacity: 0;
+      }
+      .hero__slide:first-child {
+        opacity: 1;
+      }
       .waitlist__kaleidoscope::before {
         animation: none;
       }
@@ -1398,7 +1386,7 @@
         </svg>
       </a>
       <div class="nav__actions">
-        <a href="#" class="nav__link">Sign In</a>
+        <a href="/login" class="nav__link">Sign In</a>
         <a href="#waitlist" class="nav__btn">Join Waitlist</a>
       </div>
     </div>
@@ -1406,8 +1394,12 @@
 
   <!-- HERO -->
   <section class="hero">
-    <div class="hero__kaleidoscope" aria-hidden="true"></div>
-    <div class="hero__blur-layer" aria-hidden="true"></div>
+    <div class="hero__kaleidoscope" aria-hidden="true">
+      <img class="hero__slide" src="/img/hero-resort.jpg" alt="" loading="eager">
+      <img class="hero__slide" src="/img/hero-terminal.jpg" alt="" loading="lazy">
+      <img class="hero__slide" src="/img/hero-cabin.jpg" alt="" loading="lazy">
+      <img class="hero__slide" src="/img/hero-maldives.jpg" alt="" loading="lazy">
+    </div>
     <div class="hero__overlay" aria-hidden="true"></div>
     <div class="hero__content container">
       <span class="eyebrow eyebrow--inverse">Points Optimization Platform</span>
@@ -1437,7 +1429,7 @@
   </section>
 
   <!-- WHAT WE DO -->
-  <section class="what-we-do section fade-in">
+  <section class="what-we-do section fade-in" id="about">
     <div class="container">
       <div class="what-we-do__inner">
         <span class="eyebrow">The Problem</span>
@@ -1512,12 +1504,12 @@
   </section>
 
   <!-- DISCOVER -->
-  <section class="section section--secondary fade-in">
+  <section class="section section--secondary fade-in" id="features">
     <div class="container">
       <span class="eyebrow">Discover</span>
       <h2 style="margin-bottom: 48px;">Hidden transfer paths across every program</h2>
       <div class="feature-grid">
-        <div class="feature-card">
+        <div class="feature-card fade-in">
           <div class="feature-card__icon">
             <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><title>Graph engine icon</title>
               <circle cx="10" cy="10" r="3" stroke="var(--accent)" stroke-width="1.5"/>
@@ -1533,7 +1525,7 @@
           <h3>Cross-program graph engine</h3>
           <p>A directed weighted graph maps every transfer partnership, bonus route, and conversion rate across all major loyalty programs in real time.</p>
         </div>
-        <div class="feature-card">
+        <div class="feature-card fade-in">
           <div class="feature-card__icon">
             <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><title>AI agent icon</title>
               <circle cx="20" cy="20" r="14" stroke="var(--accent)" stroke-width="1.5"/>
@@ -1548,7 +1540,7 @@
           <h3>Proactive AI agent</h3>
           <p>Wakes up at 3 AM to scan award availability, transfer bonuses, and flash deals. Surfaces opportunities before you even think to look.</p>
         </div>
-        <div class="feature-card">
+        <div class="feature-card fade-in">
           <div class="feature-card__icon">
             <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><title>Calendar sync icon</title>
               <rect x="4" y="8" width="32" height="28" rx="0" stroke="var(--accent)" stroke-width="1.5"/>
@@ -1701,28 +1693,28 @@
   <section class="big-stat fade-in" aria-label="Key statistic">
     <div class="container">
       <p class="big-stat__pre">The average American leaves</p>
-      <p class="big-stat__value">$3,400</p>
+      <p class="big-stat__value" data-target="3400">$3,400</p>
       <p class="big-stat__post">in unredeemed points on the table each year.</p>
     </div>
   </section>
 
   <!-- HOW IT WORKS -->
-  <section class="section section--secondary fade-in">
+  <section class="section section--secondary fade-in" id="how-it-works">
     <div class="container">
       <span class="eyebrow">How It Works</span>
       <h2 style="margin-bottom: 48px;">Three steps to maximum value</h2>
       <div class="steps">
-        <div class="step">
+        <div class="step fade-in">
           <div class="step__number" aria-hidden="true">01</div>
           <h3>Connect your programs</h3>
           <p>Link your loyalty accounts in under two minutes. RedeemFlow reads balances, expiration dates, and transfer partnerships for every program you hold.</p>
         </div>
-        <div class="step">
+        <div class="step fade-in">
           <div class="step__number" aria-hidden="true">02</div>
           <h3>Get optimized routes</h3>
           <p>The graph engine analyzes billions of transfer paths, award charts, and bonus promotions. Results are scored by cents-per-point value with clear recommendations.</p>
         </div>
-        <div class="step">
+        <div class="step fade-in">
           <div class="step__number" aria-hidden="true">03</div>
           <h3>Redeem with confidence</h3>
           <p>Review the recommendation, confirm the transfer, and book. You always pull the trigger. RedeemFlow provides the intelligence. No surprises, no risk.</p>
@@ -1751,7 +1743,7 @@
   </section>
 
   <!-- FAQ -->
-  <section class="section section--secondary fade-in">
+  <section class="section section--secondary fade-in" id="faq">
     <div class="container">
       <span class="eyebrow">FAQ</span>
       <h2 style="margin-bottom: 48px;">Common questions</h2>
@@ -1878,17 +1870,17 @@
         <div>
           <p class="footer__col-title">Product</p>
           <ul class="footer__links">
-            <li><a href="#">Features</a></li>
-            <li><a href="#">Pricing</a></li>
-            <li><a href="#">API</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#waitlist">Pricing</a></li>
+            <li><a href="#about">API</a></li>
           </ul>
         </div>
         <div>
           <p class="footer__col-title">Company</p>
           <ul class="footer__links">
-            <li><a href="#">About</a></li>
-            <li><a href="#">Blog</a></li>
-            <li><a href="#">Careers</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#about">Blog</a></li>
+            <li><a href="#about">Careers</a></li>
           </ul>
         </div>
         <div>
@@ -2028,8 +2020,11 @@
       });
 
       // === SCROLL ANIMATIONS (IntersectionObserver) ===
+      var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var fadeEls = document.querySelectorAll('.fade-in');
-      if ('IntersectionObserver' in window) {
+      if (prefersReducedMotion) {
+        fadeEls.forEach(function(el) { el.classList.add('visible'); });
+      } else if ('IntersectionObserver' in window) {
         var fadeObserver = new IntersectionObserver(function(entries) {
           entries.forEach(function(entry) {
             if (entry.isIntersecting) {
@@ -2041,6 +2036,38 @@
         fadeEls.forEach(function(el) { fadeObserver.observe(el); });
       } else {
         fadeEls.forEach(function(el) { el.classList.add('visible'); });
+      }
+
+      // === COUNTER ANIMATION ===
+      var statEl = document.querySelector('.big-stat__value[data-target]');
+      if (statEl && 'IntersectionObserver' in window) {
+        if (prefersReducedMotion) {
+          var target = parseInt(statEl.getAttribute('data-target'), 10);
+          statEl.textContent = '$' + target.toLocaleString();
+        } else {
+        var counted = false;
+        var counterObserver = new IntersectionObserver(function(entries) {
+          entries.forEach(function(entry) {
+            if (entry.isIntersecting && !counted) {
+              counted = true;
+              var target = parseInt(statEl.getAttribute('data-target'), 10);
+              var duration = 1500;
+              var start = performance.now();
+              function step(now) {
+                var elapsed = now - start;
+                var progress = Math.min(elapsed / duration, 1);
+                var eased = 1 - Math.pow(1 - progress, 3);
+                var current = Math.round(eased * target);
+                statEl.textContent = '$' + current.toLocaleString();
+                if (progress < 1) requestAnimationFrame(step);
+              }
+              requestAnimationFrame(step);
+              counterObserver.unobserve(statEl);
+            }
+          });
+        }, { threshold: 0.5 });
+        counterObserver.observe(statEl);
+        }
       }
 
     })();

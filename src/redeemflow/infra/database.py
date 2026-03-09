@@ -12,14 +12,22 @@ from sqlalchemy import Engine
 from sqlalchemy.orm import Session, sessionmaker
 
 
+def normalize_database_url(url: str) -> str:
+    """Normalize DB URL for SQLAlchemy 2.x + psycopg v3 driver."""
+    # Fly Postgres sets postgres:// but SQLAlchemy 2.x requires postgresql://
+    if url.startswith("postgres://"):
+        url = url.replace("postgres://", "postgresql://", 1)
+    # Force psycopg v3 driver (not psycopg2)
+    if url.startswith("postgresql://"):
+        url = url.replace("postgresql://", "postgresql+psycopg://", 1)
+    return url
+
+
 def get_database_url() -> str | None:
     url = os.environ.get("DATABASE_URL")
     if not url:
         return None
-    # Fly Postgres sets postgres:// but SQLAlchemy 2.x requires postgresql://
-    if url.startswith("postgres://"):
-        url = url.replace("postgres://", "postgresql://", 1)
-    return url
+    return normalize_database_url(url)
 
 
 def create_engine(url: str) -> Engine:

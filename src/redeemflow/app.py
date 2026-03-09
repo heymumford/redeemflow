@@ -258,8 +258,13 @@ def create_app() -> FastAPI:
     @app.exception_handler(Exception)
     async def global_error_handler(request: Request, exc: Exception):
         """Global error boundary — structured JSON, never leaks stack traces."""
+        import structlog
+
         logger = get_logger("error")
-        request_id = request.headers.get("X-Request-Id", "unknown")
+        # Prefer request_id from structlog context (set by logging middleware),
+        # fall back to header, then "unknown"
+        ctx = structlog.contextvars.get_contextvars()
+        request_id = ctx.get("request_id", request.headers.get("X-Request-Id", "unknown"))
         logger.error(
             "unhandled_exception",
             exc_type=type(exc).__name__,

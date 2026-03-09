@@ -11,7 +11,7 @@ import redeemflow
 class TestModuleStructure:
     """Verify the redeemflow namespace contains expected bounded contexts."""
 
-    REQUIRED_MODULES = {"identity", "portfolio", "recommendations"}
+    REQUIRED_MODULES = {"identity", "portfolio", "recommendations", "optimization"}
 
     def test_all_required_modules_exist(self):
         submodules = {mod.name for mod in pkgutil.iter_modules(redeemflow.__path__)}
@@ -39,12 +39,21 @@ class TestDomainBoundaries:
             content = f.read()
         assert "portfolio" not in content, "identity must not depend on portfolio"
 
-    def test_recommendations_depends_only_on_portfolio_models(self):
+    def test_recommendations_depends_on_portfolio_and_optimization(self):
         source = importlib.util.find_spec("redeemflow.recommendations.engine").origin
         with open(source) as f:
             content = f.read()
         assert "redeemflow.portfolio.models" in content, "recommendations should use portfolio models"
+        assert "redeemflow.optimization" in content, "recommendations should use optimization graph"
         assert "redeemflow.identity" not in content, "recommendations must not depend on identity"
+
+    def test_optimization_depends_only_on_portfolio_models(self):
+        source = importlib.util.find_spec("redeemflow.optimization.graph").origin
+        with open(source) as f:
+            content = f.read()
+        assert "redeemflow.portfolio.models" in content, "optimization should use portfolio models"
+        assert "redeemflow.identity" not in content, "optimization must not depend on identity"
+        assert "redeemflow.recommendations" not in content, "optimization must not depend on recommendations"
 
 
 class TestFrozenValueObjects:
@@ -69,3 +78,18 @@ class TestFrozenValueObjects:
         from redeemflow.recommendations.models import Recommendation
 
         assert Recommendation.__dataclass_params__.frozen
+
+    def test_transfer_partner_is_frozen(self):
+        from redeemflow.optimization.models import TransferPartner
+
+        assert TransferPartner.__dataclass_params__.frozen
+
+    def test_redemption_option_is_frozen(self):
+        from redeemflow.optimization.models import RedemptionOption
+
+        assert RedemptionOption.__dataclass_params__.frozen
+
+    def test_transfer_path_is_frozen(self):
+        from redeemflow.optimization.models import TransferPath
+
+        assert TransferPath.__dataclass_params__.frozen

@@ -1,0 +1,36 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy-landing:
+    if: contains(join(github.event.commits.*.modified, ','), 'landing/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --config landing/fly.toml --app redeemflow-landing
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+  test-before-deploy:
+    if: contains(join(github.event.commits.*.modified, ','), 'src/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v4
+      - run: uv sync --dev
+      - run: uv run pytest -v --cache-clear
+
+  deploy-api:
+    if: contains(join(github.event.commits.*.modified, ','), 'src/')
+    runs-on: ubuntu-latest
+    needs: [test-before-deploy]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --app redeemflow-api
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}

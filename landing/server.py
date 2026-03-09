@@ -1,4 +1,5 @@
 """Landing page server with email signup and Auth0 social login."""
+
 from __future__ import annotations
 
 import hashlib
@@ -14,6 +15,8 @@ from datetime import UTC, datetime
 
 import httpx
 from fastapi import FastAPI, Request
+from pathlib import Path
+
 from fastapi.responses import (
     FileResponse,
     HTMLResponse,
@@ -21,6 +24,7 @@ from fastapi.responses import (
     PlainTextResponse,
     RedirectResponse,
 )
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from starlette.middleware.base import BaseHTTPMiddleware
 
@@ -36,6 +40,10 @@ AUTH0_CALLBACK_URL = os.environ.get("AUTH0_CALLBACK_URL", "")
 SESSION_SECRET = os.environ.get("SESSION_SECRET", "")
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
+
+IMG_DIR = Path("/app/img")
+if IMG_DIR.is_dir():
+    app.mount("/img", StaticFiles(directory=str(IMG_DIR)), name="images")
 
 
 # --- Session helpers (signed cookie, no external deps) ---
@@ -98,7 +106,8 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' https://fonts.gstatic.com; "
             "script-src 'self' 'unsafe-inline'; "
-            "img-src 'self' data: https://lh3.googleusercontent.com https://media.licdn.com https://*.amazonaws.com https://*.auth0.com; "
+            "img-src 'self' data: https://lh3.googleusercontent.com "
+            "https://media.licdn.com https://*.amazonaws.com https://*.auth0.com; "
             "connect-src 'self'"
         )
         response.headers["Content-Security-Policy"] = csp
@@ -147,8 +156,15 @@ def _upsert_user(user: dict) -> None:
                ON CONFLICT(sub) DO UPDATE SET
                  email=excluded.email, name=excluded.name, picture=excluded.picture,
                  last_login=excluded.last_login""",
-            (user.get("sub", ""), user.get("email", ""), user.get("name", ""),
-             user.get("picture", ""), user.get("provider", ""), now, now),
+            (
+                user.get("sub", ""),
+                user.get("email", ""),
+                user.get("name", ""),
+                user.get("picture", ""),
+                user.get("provider", ""),
+                now,
+                now,
+            ),
         )
         conn.commit()
     finally:
@@ -219,8 +235,7 @@ async def list_users(request: Request):
     return {
         "count": len(rows),
         "users": [
-            {"sub": r[0], "email": r[1], "name": r[2], "provider": r[3],
-             "created_at": r[4], "last_login": r[5]}
+            {"sub": r[0], "email": r[1], "name": r[2], "provider": r[3], "created_at": r[4], "last_login": r[5]}
             for r in rows
         ],
     }
@@ -353,8 +368,7 @@ async def callback(request: Request):
 @app.get("/logout")
 async def logout():
     response = RedirectResponse(
-        f"https://{AUTH0_DOMAIN}/v2/logout?"
-        f"client_id={AUTH0_CLIENT_ID}&returnTo=https://redeemflow.io",
+        f"https://{AUTH0_DOMAIN}/v2/logout?client_id={AUTH0_CLIENT_ID}&returnTo=https://redeemflow.io",
         status_code=302,
     )
     response.delete_cookie("session", path="/")

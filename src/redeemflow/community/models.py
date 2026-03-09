@@ -69,8 +69,9 @@ class CommunityPool:
 class PoolService:
     """Orchestrates community pool lifecycle — create, pledge, complete."""
 
-    def __init__(self, donation_service: DonationService) -> None:
+    def __init__(self, donation_service: DonationService, repository: object | None = None) -> None:
         self._donation_service = donation_service
+        self._repository = repository
         self._pools: dict[str, CommunityPool] = {}
 
     def create_pool(
@@ -97,6 +98,8 @@ class PoolService:
             created_at=now,
         )
         self._pools[pool_id] = pool
+        if self._repository:
+            self._repository.save(pool)
         return pool
 
     def pledge(self, pool_id: str, user_id: str, program_code: str, points: int) -> Pledge:
@@ -121,6 +124,8 @@ class PoolService:
             pledged_at=now,
         )
         pool.add_pledge(pledge)
+        if self._repository:
+            self._repository.save_pledge(pledge)
 
         if pool.is_goal_reached():
             pool.status = PoolStatus.GOAL_REACHED

@@ -1,4 +1,8 @@
-"""FastAPI application factory — walking skeleton."""
+"""FastAPI application factory.
+
+Database persistence is opt-in: set DATABASE_URL to enable Postgres.
+Without it, all state is in-memory (dev/test mode).
+"""
 
 from __future__ import annotations
 
@@ -25,6 +29,32 @@ from redeemflow.valuations.routes import router as valuations_router
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
 
 
+def _init_db_repositories() -> dict | None:
+    """Initialize Postgres repositories if DATABASE_URL is set."""
+    from redeemflow.infra.database import get_database_url, create_engine, get_session_factory
+
+    url = get_database_url()
+    if not url:
+        return None
+
+    engine = create_engine(url)
+    sf = get_session_factory(engine)
+
+    from redeemflow.infra.pg_repositories import (
+        PgDonationRepository,
+        PgPoolRepository,
+        PgForumRepository,
+        PgFounderRepository,
+    )
+
+    return {
+        "donation": PgDonationRepository(sf),
+        "pool": PgPoolRepository(sf),
+        "forum": PgForumRepository(sf),
+        "founder": PgFounderRepository(sf),
+    }
+
+
 def create_app() -> FastAPI:
     app = FastAPI(title="RedeemFlow", version=__version__)
     app.include_router(valuations_router)
@@ -33,15 +63,22 @@ def create_app() -> FastAPI:
     app.include_router(optimization_router)
     app.include_router(search_router)
     app.include_router(community_router)
+
+    repos = _init_db_repositories()
+
     app.state.payment_provider = FakePaymentProvider()
     app.state.donation_service = DonationService(
         provider=FakeDonationProvider(),
         valuations=PROGRAM_VALUATIONS,
         charity_network=CHARITY_NETWORK,
+        repository=repos["donation"] if repos else None,
     )
-    app.state.pool_service = PoolService(donation_service=app.state.donation_service)
-    app.state.forum_service = ForumService()
-    app.state.founder_directory = FounderDirectory()
+    app.state.pool_service = PoolService(
+        donation_service=app.state.donation_service,
+        repository=repos["pool"] if repos else None,
+    )
+    app.state.forum_service = ForumService(repository=repos["forum"] if repos else None)
+    app.state.founder_directory = FounderDirectory(repository=repos["founder"] if repos else None)
     fetcher = FakeBalanceFetcher()
     engine = RecommendationEngine()
 

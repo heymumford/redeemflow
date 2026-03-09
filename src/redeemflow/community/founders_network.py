@@ -39,7 +39,8 @@ class FounderProfile:
 class FounderDirectory:
     """Orchestrates founder membership — apply, verify, search, match."""
 
-    def __init__(self) -> None:
+    def __init__(self, repository: object | None = None) -> None:
+        self._repository = repository
         self._members: dict[str, FounderProfile] = {}
 
     def apply(
@@ -65,6 +66,8 @@ class FounderDirectory:
             travel_interests=travel_interests or [],
         )
         self._members[user_id] = profile
+        if self._repository:
+            self._repository.save(profile)
         return profile
 
     def verify(self, user_id: str) -> FounderProfile:
@@ -72,6 +75,8 @@ class FounderDirectory:
         if profile is None:
             raise ValueError(f"Member not found: {user_id}")
         profile.status = FounderStatus.ACTIVE
+        if self._repository:
+            self._repository.save(profile)
         return profile
 
     def get_profile(self, user_id: str) -> FounderProfile | None:

@@ -116,6 +116,16 @@ IMG_DIR = Path(__file__).resolve().parent / "img"
 if IMG_DIR.is_dir():
     app.mount("/img", StaticFiles(directory=str(IMG_DIR)), name="images")
 
+JS_FILE = Path(__file__).resolve().parent / "app.js"
+
+
+@app.get("/app.js")
+async def app_js():
+    if JS_FILE.exists():
+        return FileResponse(str(JS_FILE), media_type="application/javascript")
+    return PlainTextResponse("", status_code=404)
+
+
 log_event("info", "Landing server starting", version=APP_VERSION)
 
 
@@ -179,7 +189,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
             "default-src 'self'; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' https://fonts.gstatic.com; "
-            "script-src 'self' 'unsafe-inline'; "
+            "script-src 'self'; "
             "img-src 'self' data: https://lh3.googleusercontent.com "
             "https://media.licdn.com https://*.amazonaws.com https://*.auth0.com; "
             "connect-src 'self'"
@@ -488,6 +498,25 @@ async def health():
 @app.get("/api/version")
 async def version():
     return {"version": APP_VERSION, "otel": _otel_enabled}
+
+
+@app.get("/robots.txt")
+async def robots_txt():
+    content = f"User-agent: *\nAllow: /\nSitemap: {SITE_URL}/sitemap.xml\n"
+    return PlainTextResponse(content)
+
+
+@app.get("/sitemap.xml")
+async def sitemap_xml():
+    content = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>{SITE_URL}/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+</urlset>"""
+    return PlainTextResponse(content, media_type="application/xml")
 
 
 @app.get("/")

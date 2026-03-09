@@ -300,16 +300,22 @@ class TestLoginFlow:
 
 class TestRobotsSitemap:
     async def test_robots_txt(self, client):
+        import landing.server as srv
+
         resp = await client.get("/robots.txt")
         assert resp.status_code == 200
         assert "User-agent" in resp.text
         assert "Sitemap" in resp.text
+        assert srv.SITE_URL in resp.text
 
     async def test_sitemap_xml(self, client):
+        import landing.server as srv
+
         resp = await client.get("/sitemap.xml")
         assert resp.status_code == 200
         assert "urlset" in resp.text
         assert "application/xml" in resp.headers.get("content-type", "")
+        assert srv.SITE_URL in resp.text
 
     async def test_app_js_served(self, client):
         resp = await client.get("/app.js")

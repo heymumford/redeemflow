@@ -190,6 +190,6 @@
 
   // === COPYRIGHT YEAR AUTO-UPDATE ===
   var copyEl = document.querySelector('.footer__copy');
-  if (copyEl) copyEl.innerHTML = '&copy; ' + new Date().getFullYear() + ' RedeemFlow';
+  if (copyEl) copyEl.textContent = '\u00A9 ' + new Date().getFullYear() + ' RedeemFlow';
 
 })();

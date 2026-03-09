@@ -117,12 +117,17 @@ if IMG_DIR.is_dir():
     app.mount("/img", StaticFiles(directory=str(IMG_DIR)), name="images")
 
 JS_FILE = Path(__file__).resolve().parent / "app.js"
+_JS_EXISTS = JS_FILE.exists()
 
 
 @app.get("/app.js")
 async def app_js():
-    if JS_FILE.exists():
-        return FileResponse(str(JS_FILE), media_type="application/javascript")
+    if _JS_EXISTS:
+        return FileResponse(
+            str(JS_FILE),
+            media_type="application/javascript",
+            headers={"Cache-Control": "public, max-age=3600"},
+        )
     return PlainTextResponse("", status_code=404)
 
 

@@ -81,6 +81,8 @@ class PoolService:
         target_charity_state: str,
         goal_amount: Decimal,
     ) -> CommunityPool:
+        if goal_amount <= Decimal("0"):
+            raise ValueError("goal_amount must be greater than zero")
         pool_id = f"pool-{uuid.uuid4().hex[:12]}"
         now = datetime.now(timezone.utc).isoformat()
         pool = CommunityPool(
@@ -133,10 +135,12 @@ class PoolService:
         if not pool.is_goal_reached():
             raise ValueError(f"Pool goal not reached: {pool.total_pledged()} of {pool.goal_amount}")
 
+        if not pool.pledges:
+            raise ValueError("Cannot complete pool with no pledges")
+
         # Execute aggregate donation via DonationService
         total_points = sum(p.points_pledged for p in pool.pledges)
-        # Use first pledge's program code for the aggregate donation
-        program_code = pool.pledges[0].program_code if pool.pledges else "chase-ur"
+        program_code = pool.pledges[0].program_code
 
         self._donation_service.donate(
             user_id=pool.creator_id,

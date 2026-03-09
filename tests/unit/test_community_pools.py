@@ -294,3 +294,25 @@ class TestPoolService:
                 program_code="chase-ur",
                 points=10000,
             )
+
+    def test_create_pool_zero_goal_raises(self):
+        service = PoolService(donation_service=_make_donation_service())
+        with pytest.raises(ValueError, match="goal_amount"):
+            service.create_pool(
+                creator_id="auth0|eric",
+                name="Bad Pool",
+                target_charity_name="Girl Scouts of the USA",
+                target_charity_state="TX",
+                goal_amount=Decimal("0"),
+            )
+
+    def test_create_pool_negative_goal_raises(self):
+        service = PoolService(donation_service=_make_donation_service())
+        with pytest.raises(ValueError, match="goal_amount"):
+            service.create_pool(
+                creator_id="auth0|eric",
+                name="Bad Pool",
+                target_charity_name="Girl Scouts of the USA",
+                target_charity_state="TX",
+                goal_amount=Decimal("-10.00"),
+            )

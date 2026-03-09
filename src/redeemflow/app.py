@@ -21,6 +21,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from redeemflow import __version__
+from redeemflow.billing.models import SubscriptionTier
 from redeemflow.billing.routes import router as billing_router
 from redeemflow.billing.stripe_adapter import FakePaymentProvider
 from redeemflow.charity.donation_flow import DonationService, FakeDonationProvider
@@ -122,7 +123,15 @@ def _select_adapters() -> dict:
     stripe_key = os.environ.get("STRIPE_SECRET_KEY")
     if stripe_key:
         webhook_secret = os.environ.get("STRIPE_WEBHOOK_SECRET", "")
-        from redeemflow.billing.stripe_adapter import StripeAdapter
+        from redeemflow.billing.stripe_adapter import TIER_PRICE_MAP, StripeAdapter
+
+        # Override price IDs from environment if provided
+        premium_price = os.environ.get("STRIPE_PREMIUM_PRICE_ID")
+        pro_price = os.environ.get("STRIPE_PRO_PRICE_ID")
+        if premium_price:
+            TIER_PRICE_MAP[SubscriptionTier.PREMIUM] = premium_price
+        if pro_price:
+            TIER_PRICE_MAP[SubscriptionTier.PRO] = pro_price
 
         adapters["payment"] = StripeAdapter(api_key=stripe_key, webhook_secret=webhook_secret)
     else:

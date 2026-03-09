@@ -279,3 +279,46 @@ class TestBillingRoutes:
     def test_subscription_status_requires_auth(self, client):
         response = client.get("/api/billing/subscription")
         assert response.status_code == 401
+
+    def test_checkout_with_fake_provider(self, client, auth_headers):
+        """Checkout endpoint falls back to direct subscription with fake provider."""
+        response = client.post(
+            "/api/billing/checkout",
+            json={"tier": "premium"},
+            headers=auth_headers,
+        )
+        assert response.status_code == 200
+        data = response.json()
+        assert "session_id" in data
+        assert data["checkout_url"] is None  # Fake has no Stripe URL
+        assert "subscription_id" in data
+
+    def test_checkout_requires_auth(self, client):
+        response = client.post("/api/billing/checkout", json={"tier": "premium"})
+        assert response.status_code == 401
+
+    def test_checkout_invalid_tier(self, client, auth_headers):
+        response = client.post(
+            "/api/billing/checkout",
+            json={"tier": "diamond"},
+            headers=auth_headers,
+        )
+        assert response.status_code == 422
+
+    def test_stripe_webhook_requires_stripe_config(self, client):
+        """Signed webhook returns 501 when using fake provider."""
+        response = client.post(
+            "/api/billing/webhook/stripe",
+            content=b'{"type":"test"}',
+            headers={"stripe-signature": "t=1,v1=abc"},
+        )
+        assert response.status_code == 501
+
+    def test_stripe_webhook_missing_signature(self, client):
+        """Signed webhook requires Stripe-Signature header."""
+        # Even without Stripe config, 501 comes first
+        response = client.post(
+            "/api/billing/webhook/stripe",
+            content=b'{"type":"test"}',
+        )
+        assert response.status_code == 501

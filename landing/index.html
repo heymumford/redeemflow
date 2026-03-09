@@ -10,865 +10,1317 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://redeemflow.io">
   <meta property="og:site_name" content="RedeemFlow">
+  <meta property="og:image" content="https://redeemflow.io/og-image.png">
+  <link rel="canonical" href="https://redeemflow.io">
   <title>RedeemFlow — Redeem More. Waste Less.</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
+    /* ===== RESET ===== */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
 
     :root {
-      --navy: #1B2A4A;
-      --navy-light: #253A5E;
-      --blue: #2D5DA1;
-      --blue-light: #3A6FB5;
-      --blue-pale: #E8F0FA;
-      --bg-warm: #F4F4F4;
-      --bg-white: #FFFFFF;
-      --border: #D5D5D5;
-      --border-light: #E8E8E8;
-      --text: #2C2C2C;
-      --text-secondary: #5A5A5A;
-      --text-muted: #8E99A4;
+      /* Surfaces */
+      --surface-primary: #FFFFFF;
+      --surface-secondary: #F7F7FA;
+      --surface-inverse: #111111;
+      --surface-hero: #0A0F1C;
+
+      /* Text -- opacity hierarchy */
+      --text-primary: rgba(0, 0, 0, 0.95);
+      --text-secondary: rgba(0, 0, 0, 0.75);
+      --text-tertiary: rgba(0, 0, 0, 0.55);
+      --text-muted: rgba(0, 0, 0, 0.40);
+      --text-inverse: rgba(255, 255, 255, 0.95);
+      --text-inverse-secondary: rgba(255, 255, 255, 0.70);
+      --text-inverse-muted: rgba(255, 255, 255, 0.45);
+
+      /* Accent */
+      --accent: #2D5DA1;
+      --accent-light: #3A6FB5;
+      --accent-pale: #E8F0FA;
+
+      /* Status */
       --green: #2E7D32;
       --amber: #E65100;
+      --red: #C62828;
+
+      /* Typography */
+      --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+      --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+      --font-mono: 'IBM Plex Mono', 'SF Mono', Consolas, monospace;
+
+      /* Timing */
+      --ease-premium: cubic-bezier(0.32, 0.94, 0.6, 1);
     }
 
     body {
-      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, sans-serif;
-      color: var(--text);
-      background: var(--bg-white);
-      line-height: 1.6;
-      font-size: 16px;
+      font-family: var(--font-sans);
+      font-size: 17px;
+      line-height: 1.65;
+      color: var(--text-primary);
+      background: var(--surface-primary);
       -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
       overflow-x: hidden;
     }
 
-    a { color: inherit; text-decoration: none; }
-    ul { list-style: none; }
+    /* ===== FOCUS STATES ===== */
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
 
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--accent);
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .eyebrow--inverse {
+      color: var(--accent-light);
+    }
+
+    h1 {
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: clamp(40px, 5.5vw, 72px);
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: clamp(28px, 3.5vw, 44px);
+      line-height: 1.15;
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 18px;
+      line-height: 1.35;
+    }
+
+    /* ===== LAYOUT ===== */
     .container {
-      width: 100%;
-      max-width: 1120px;
+      max-width: 1140px;
       margin: 0 auto;
       padding: 0 24px;
     }
 
-    /* ===== TYPOGRAPHY ===== */
-    .section-label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
+    .section {
+      padding: 100px 0;
+    }
+
+    .section--secondary {
+      background: var(--surface-secondary);
+    }
+
+    .section--inverse {
+      background: var(--surface-inverse);
+      color: var(--text-inverse);
+    }
+
+    /* ===== LINKS & BUTTONS ===== */
+    .cta-link {
+      font-family: var(--font-sans);
+      font-weight: 500;
+      font-size: 15px;
+      color: var(--accent);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: gap 0.25s var(--ease-premium);
+    }
+
+    .cta-link:hover {
+      gap: 12px;
+    }
+
+    .cta-link--inverse {
+      color: var(--text-inverse);
+    }
+
+    .cta-link--inverse:hover {
+      color: var(--accent-light);
+    }
+
+    .btn {
+      font-family: var(--font-sans);
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--blue);
-      margin-bottom: 12px;
-    }
-
-    h1, h2, h3 {
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-weight: 700;
-      color: var(--navy);
-      letter-spacing: -0.02em;
-      line-height: 1.15;
-    }
-
-    h1 { font-size: clamp(2.25rem, 5vw, 3.5rem); }
-    h2 { font-size: clamp(1.75rem, 3.5vw, 2.5rem); }
-    h3 { font-size: 1.25rem; }
-
-    .subtitle {
-      font-size: clamp(1rem, 2vw, 1.25rem);
-      font-weight: 400;
-      line-height: 1.5;
-      max-width: 600px;
-    }
-
-    /* ===== BUTTONS ===== */
-    .btn-primary {
-      display: inline-block;
-      padding: 14px 32px;
-      background: var(--blue);
-      color: #fff;
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1rem;
-      font-weight: 600;
+      font-size: 15px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 12px 28px;
       border: none;
-      border-radius: 3px;
+      border-radius: 0;
       cursor: pointer;
-      transition: background 0.2s ease, transform 0.15s ease;
-      text-align: center;
-    }
-    .btn-primary:hover {
-      background: var(--blue-light);
-      transform: translateY(-1px);
+      text-decoration: none;
+      transition: background 0.2s var(--ease-premium), transform 0.2s var(--ease-premium);
     }
 
-    .btn-outline {
-      display: inline-block;
-      padding: 14px 32px;
-      background: transparent;
-      color: #fff;
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1rem;
-      font-weight: 600;
-      border: 1px solid rgba(255,255,255,0.35);
-      border-radius: 3px;
-      cursor: pointer;
-      transition: background 0.2s ease, border-color 0.2s ease;
+    .btn:active {
+      transform: scale(0.98);
     }
-    .btn-outline:hover {
-      background: rgba(255,255,255,0.08);
-      border-color: rgba(255,255,255,0.6);
+
+    .btn--primary {
+      background: var(--accent);
+      color: #FFFFFF;
+    }
+
+    .btn--primary:hover {
+      background: var(--accent-light);
+    }
+
+    .btn--large {
+      padding: 16px 36px;
+      font-size: 16px;
     }
 
     /* ===== NAV ===== */
     .nav {
       position: fixed;
-      top: 0; left: 0; right: 0;
-      z-index: 100;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      padding: 0 24px;
       height: 64px;
       display: flex;
       align-items: center;
-      background: rgba(27, 42, 74, 0.95);
+      transition: background 0.3s var(--ease-premium), border-color 0.3s var(--ease-premium);
+      background: transparent;
+      border-bottom: 1px solid transparent;
+    }
+
+    .nav--scrolled {
+      background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-      transition: box-shadow 0.3s ease;
+      border-bottom-color: rgba(0, 0, 0, 0.06);
     }
-    .nav.scrolled {
-      box-shadow: 0 2px 16px rgba(0,0,0,0.15);
-    }
-    .nav-inner {
-      width: 100%;
-      max-width: 1120px;
+
+    .nav__inner {
+      max-width: 1140px;
       margin: 0 auto;
-      padding: 0 24px;
+      width: 100%;
       display: flex;
       align-items: center;
       justify-content: space-between;
     }
-    .nav-logo {
-      font-weight: 700;
-      font-size: 1.25rem;
-      color: #fff;
-      letter-spacing: -0.02em;
+
+    .nav__logo svg {
+      height: 28px;
+      width: auto;
+      display: block;
     }
-    .nav .btn-primary {
-      padding: 10px 24px;
-      font-size: 0.875rem;
+
+    .nav__logo .logo-mark { stroke: #FFFFFF; }
+    .nav__logo .logo-redeem { fill: #FFFFFF; }
+    .nav__logo .logo-flow { fill: rgba(255, 255, 255, 0.7); }
+
+    .nav--scrolled .nav__logo .logo-mark { stroke: var(--accent); }
+    .nav--scrolled .nav__logo .logo-redeem { fill: var(--text-primary); }
+    .nav--scrolled .nav__logo .logo-flow { fill: var(--text-secondary); }
+
+    .nav__actions {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .nav__link {
+      font-family: var(--font-sans);
+      font-weight: 500;
+      font-size: 15px;
+      color: var(--text-inverse-secondary);
+      text-decoration: none;
+      transition: color 0.2s var(--ease-premium);
+    }
+
+    .nav__link:hover {
+      color: var(--text-inverse);
+    }
+
+    .nav--scrolled .nav__link {
+      color: var(--text-secondary);
+    }
+
+    .nav--scrolled .nav__link:hover {
+      color: var(--text-primary);
+    }
+
+    .nav__btn {
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 14px;
+      padding: 8px 20px;
+      background: var(--accent);
+      color: #FFFFFF;
+      text-decoration: none;
+      border-radius: 0;
+      transition: background 0.2s var(--ease-premium);
+    }
+
+    .nav__btn:hover {
+      background: var(--accent-light);
     }
 
     /* ===== HERO ===== */
     .hero {
-      background: var(--navy);
-      padding: 140px 0 80px;
-      text-align: center;
-    }
-    .hero .press-hint {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.15em;
-      color: rgba(255,255,255,0.3);
-      margin-bottom: 12px;
-    }
-    .hero .press-logos {
+      position: relative;
+      min-height: 100vh;
       display: flex;
-      justify-content: center;
-      gap: 32px;
-      margin-bottom: 48px;
-      flex-wrap: wrap;
+      align-items: center;
+      overflow: hidden;
+      background: var(--surface-hero);
     }
-    .hero .press-logo-slot {
-      width: 80px;
-      height: 20px;
-      background: rgba(255,255,255,0.06);
-      border-radius: 2px;
+
+    /* Kaleidoscope layers */
+    .hero__kaleidoscope {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
     }
+
+    .hero__kaleidoscope::before {
+      content: '';
+      position: absolute;
+      inset: -50%;
+      width: 200%;
+      height: 200%;
+      background:
+        conic-gradient(from 0deg at 30% 40%, transparent 0deg, rgba(45, 93, 161, 0.4) 30deg, transparent 60deg, rgba(20, 60, 120, 0.3) 120deg, transparent 150deg, rgba(58, 111, 181, 0.25) 210deg, transparent 240deg, rgba(30, 70, 140, 0.35) 300deg, transparent 360deg),
+        conic-gradient(from 120deg at 70% 60%, transparent 0deg, rgba(60, 40, 120, 0.25) 45deg, transparent 90deg, rgba(45, 93, 161, 0.3) 160deg, transparent 200deg, rgba(20, 80, 100, 0.2) 270deg, transparent 320deg, rgba(50, 50, 140, 0.2) 360deg),
+        conic-gradient(from 240deg at 50% 50%, transparent 0deg, rgba(30, 80, 130, 0.3) 60deg, transparent 120deg, rgba(70, 50, 130, 0.2) 180deg, transparent 240deg, rgba(20, 100, 120, 0.25) 300deg, transparent 360deg),
+        radial-gradient(ellipse at 20% 30%, rgba(45, 93, 161, 0.4) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(40, 60, 120, 0.3) 0%, transparent 45%),
+        radial-gradient(ellipse at 50% 50%, rgba(60, 40, 110, 0.2) 0%, transparent 60%);
+      animation: kaleidoscope-rotate 28s linear infinite;
+    }
+
+    .hero__kaleidoscope::after {
+      content: '';
+      position: absolute;
+      inset: -30%;
+      width: 160%;
+      height: 160%;
+      background:
+        conic-gradient(from 60deg at 60% 30%, transparent 0deg, rgba(20, 100, 110, 0.3) 40deg, transparent 80deg, rgba(45, 93, 161, 0.25) 140deg, transparent 180deg, rgba(80, 50, 120, 0.2) 250deg, transparent 300deg, rgba(30, 70, 110, 0.3) 360deg),
+        radial-gradient(ellipse at 40% 60%, rgba(58, 111, 181, 0.35) 0%, transparent 40%),
+        radial-gradient(ellipse at 70% 30%, rgba(50, 30, 100, 0.2) 0%, transparent 50%);
+      mix-blend-mode: screen;
+      animation: kaleidoscope-counter 24s linear infinite;
+    }
+
+    .hero__blur-layer {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      backdrop-filter: blur(0px);
+      -webkit-backdrop-filter: blur(0px);
+      animation: breathe-blur 8s ease-in-out infinite;
+    }
+
+    .hero__overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        linear-gradient(180deg, rgba(10, 15, 28, 0.6) 0%, rgba(10, 15, 28, 0.45) 40%, rgba(10, 15, 28, 0.7) 100%),
+        radial-gradient(ellipse at 50% 40%, transparent 0%, rgba(10, 15, 28, 0.3) 70%);
+    }
+
+    @keyframes kaleidoscope-rotate {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.15); }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    @keyframes kaleidoscope-counter {
+      0% { transform: rotate(0deg) scale(1.1); }
+      50% { transform: rotate(-180deg) scale(1); }
+      100% { transform: rotate(-360deg) scale(1.1); }
+    }
+
+    @keyframes breathe-blur {
+      0%, 100% { backdrop-filter: blur(0px); -webkit-backdrop-filter: blur(0px); }
+      50% { backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); }
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      padding-top: 120px;
+      padding-bottom: 80px;
+    }
+
     .hero h1 {
-      color: #fff;
-      margin-bottom: 20px;
+      color: var(--text-inverse);
+      max-width: 700px;
+      margin-bottom: 24px;
     }
-    .hero .subtitle {
-      color: rgba(255,255,255,0.65);
-      margin: 0 auto 40px;
+
+    .hero__subtitle {
+      font-size: 18px;
+      color: var(--text-inverse-secondary);
+      max-width: 520px;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    .hero__stats {
+      display: flex;
+      gap: 32px;
+      margin-top: 64px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .hero__stat {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-inverse-muted);
+      letter-spacing: 0.5px;
+    }
+
+    .hero__stat strong {
+      color: var(--text-inverse-secondary);
+      font-weight: 500;
     }
 
     /* ===== TRUST BAR ===== */
     .trust-bar {
-      background: var(--bg-white);
-      border-bottom: 1px solid var(--border-light);
-      padding: 32px 0;
+      background: var(--surface-secondary);
+      padding: 40px 0;
       text-align: center;
     }
-    .trust-bar p {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
+
+    .trust-bar__label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 1.5px;
       color: var(--text-muted);
-      margin-bottom: 20px;
+      margin-bottom: 24px;
     }
-    .trust-logos {
+
+    .trust-bar__logos {
       display: flex;
       justify-content: center;
       align-items: center;
       gap: 40px;
       flex-wrap: wrap;
     }
-    .trust-logo-slot {
+
+    .trust-bar__logo {
       width: 100px;
       height: 28px;
-      background: var(--bg-warm);
-      border-radius: 2px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      background: transparent;
     }
 
-    /* ===== SECTION DEFAULTS ===== */
-    .section {
-      padding: 96px 0;
-    }
-    .section--warm {
-      background: var(--bg-warm);
-    }
-    .section--dark {
-      background: var(--navy);
-    }
-    .section--dark h1,
-    .section--dark h2,
-    .section--dark h3,
-    .section--dark p,
-    .section--dark .section-label {
-      color: #fff;
-    }
-    .section--dark .subtitle,
-    .section--dark .text-secondary {
-      color: rgba(255,255,255,0.65);
-    }
-    .section--dark .section-label {
-      color: rgba(255,255,255,0.5);
-    }
-
-    .section-header {
-      max-width: 640px;
-      margin-bottom: 56px;
-    }
-    .section-header.centered {
+    /* ===== WHAT WE DO ===== */
+    .what-we-do {
+      padding: 100px 0 60px;
       text-align: center;
-      margin-left: auto;
-      margin-right: auto;
     }
 
-    /* ===== MADE FOR SECTION ===== */
-    .made-for .intro-text {
-      max-width: 560px;
-      margin-bottom: 48px;
-    }
-    .made-for .intro-text p {
-      font-size: 1.125rem;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-    }
-
-    /* Mock dashboard */
-    .mock-dashboard {
-      background: var(--bg-white);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      overflow: hidden;
-      max-width: 900px;
+    .what-we-do__inner {
+      max-width: 720px;
       margin: 0 auto;
     }
-    .mock-dashboard-header {
-      background: var(--navy);
-      padding: 16px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-    .mock-dashboard-header span {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.6);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-    .mock-dashboard-dots {
-      display: flex;
-      gap: 6px;
-    }
-    .mock-dashboard-dots span {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.15);
-    }
-    .mock-dashboard-body {
-      padding: 24px;
-    }
-    .mock-stat-row {
-      display: flex;
-      justify-content: space-between;
+
+    .what-we-do h2 {
       margin-bottom: 24px;
-      gap: 16px;
-      flex-wrap: wrap;
     }
-    .mock-stat-card {
-      flex: 1;
-      min-width: 140px;
-      background: var(--blue-pale);
-      border: 1px solid var(--border-light);
-      border-radius: 3px;
-      padding: 16px;
+
+    .what-we-do p {
+      color: var(--text-secondary);
+      font-size: 17px;
+      line-height: 1.7;
     }
-    .mock-stat-card .label {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.65rem;
+
+    .divider {
+      width: 80px;
+      height: 1px;
+      background: var(--text-muted);
+      margin: 60px auto;
+    }
+
+    /* ===== MOCK DASHBOARD ===== */
+    .dashboard {
+      padding: 0 0 100px;
+    }
+
+    .dashboard__eyebrow {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .dashboard__stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      margin-bottom: 2px;
+    }
+
+    .dashboard__stat-card {
+      background: var(--surface-inverse);
+      padding: 28px 24px;
+    }
+
+    .dashboard__stat-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 500;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
-      margin-bottom: 4px;
-    }
-    .mock-stat-card .value {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--navy);
-    }
-    .mock-stat-card .unit {
-      font-size: 0.75rem;
-      color: var(--text-secondary);
-    }
-    .mock-program-list {
-      border-top: 1px solid var(--border-light);
-      padding-top: 20px;
-    }
-    .mock-program-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border-light);
-    }
-    .mock-program-row:last-child { border-bottom: none; }
-    .mock-program-name {
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--text);
-      min-width: 160px;
-    }
-    .mock-program-points {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.875rem;
-      color: var(--navy);
-      font-weight: 600;
-    }
-    .mock-program-exp {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-    }
-    .mock-program-exp.expiring {
-      color: var(--amber);
-      font-weight: 600;
-    }
-    .mock-program-value {
-      font-size: 0.8rem;
-      font-weight: 600;
-    }
-    .mock-program-value.good { color: var(--green); }
-    .mock-program-value.low { color: var(--amber); }
-
-    .made-for .outro-text {
-      max-width: 560px;
-      margin: 48px auto 0;
-      text-align: center;
-    }
-    .made-for .outro-text p {
-      font-size: 1.1rem;
-      color: var(--text-secondary);
+      letter-spacing: 1px;
+      color: var(--text-inverse-muted);
+      margin-bottom: 8px;
     }
 
-    /* ===== TESTIMONIAL ===== */
-    .testimonial {
-      padding: 64px 0;
-      background: var(--bg-warm);
-      border-top: 1px solid var(--border-light);
-      border-bottom: 1px solid var(--border-light);
-    }
-    .testimonial--white {
-      background: var(--bg-white);
-    }
-    .testimonial-inner {
-      max-width: 680px;
-      margin: 0 auto;
-      text-align: center;
-    }
-    .testimonial-quote {
-      font-size: clamp(1.1rem, 2vw, 1.35rem);
-      font-weight: 400;
-      font-style: italic;
-      color: var(--text);
-      line-height: 1.6;
-      margin-bottom: 20px;
-    }
-    .testimonial-author {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.8rem;
-      color: var(--text-muted);
-      letter-spacing: 0.03em;
+    .dashboard__stat-value {
+      font-family: var(--font-mono);
+      font-size: 28px;
+      font-weight: 500;
+      color: var(--text-inverse);
     }
 
-    /* ===== FEATURE CARDS (Discover) ===== */
-    .feature-cards {
+    .dashboard__stat-value--green { color: #66BB6A; }
+    .dashboard__stat-value--amber { color: #FFA726; }
+
+    .dashboard__table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .dashboard__table thead {
+      background: var(--surface-inverse);
+    }
+
+    .dashboard__table th {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-inverse-muted);
+      padding: 14px 24px;
+      text-align: left;
+    }
+
+    .dashboard__table th:last-child {
+      text-align: right;
+    }
+
+    .dashboard__table td {
+      font-family: var(--font-sans);
+      font-size: 15px;
+      padding: 16px 24px;
+      color: var(--text-primary);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .dashboard__table td:last-child {
+      text-align: right;
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .dashboard__table tr:nth-child(even) {
+      background: var(--surface-secondary);
+    }
+
+    .dashboard__table tr:nth-child(odd) {
+      background: var(--surface-primary);
+    }
+
+    .dashboard__table .program-name {
+      font-weight: 600;
+    }
+
+    .dashboard__table .cpp-good { color: var(--green); }
+    .dashboard__table .cpp-warn { color: var(--amber); }
+
+    /* ===== FEATURE SECTIONS ===== */
+    .feature-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 24px;
-    }
-    .feature-card {
-      background: var(--bg-white);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 32px 28px;
-      transition: box-shadow 0.2s ease, transform 0.15s ease;
-    }
-    .feature-card:hover {
-      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
-      transform: translateY(-2px);
-    }
-    .feature-card-icon {
-      width: 44px;
-      height: 44px;
-      background: var(--blue-pale);
-      border-radius: 3px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 20px;
-    }
-    .feature-card-icon svg {
-      width: 22px;
-      height: 22px;
-      color: var(--blue);
-    }
-    .feature-card h3 {
-      margin-bottom: 10px;
-      font-size: 1.1rem;
-    }
-    .feature-card p {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      line-height: 1.55;
+      gap: 32px;
     }
 
-    /* ===== TWO-COL SECTIONS (Optimize, Maximize, Protect) ===== */
-    .two-col {
+    .feature-card {
+      background: var(--surface-primary);
+      padding: 40px 32px;
+      border-bottom: 1px solid var(--accent-pale);
+    }
+
+    .feature-card__icon {
+      width: 40px;
+      height: 40px;
+      margin-bottom: 20px;
+    }
+
+    .feature-card__icon svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .feature-card h3 {
+      margin-bottom: 12px;
+    }
+
+    .feature-card p {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Two-column feature layout */
+    .feature-split {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 64px;
       align-items: center;
     }
-    .two-col .text-side .subtitle {
-      color: var(--text-secondary);
-      margin-bottom: 28px;
+
+    .feature-split--reversed {
+      direction: rtl;
     }
 
-    /* Mock comparison */
-    .mock-comparison {
-      background: var(--bg-white);
-      border: 1px solid var(--border);
-      border-radius: 3px;
+    .feature-split--reversed > * {
+      direction: ltr;
+    }
+
+    .feature-text h2 {
+      margin-bottom: 20px;
+    }
+
+    .feature-text p {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.7;
+    }
+
+    /* ===== MOCK UIs ===== */
+    .mock-ui {
+      background: var(--surface-primary);
+      border: 1px solid rgba(0, 0, 0, 0.06);
       overflow: hidden;
     }
-    .mock-comparison-header {
-      background: var(--blue-pale);
-      padding: 14px 20px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--blue);
+
+    .section--secondary .mock-ui {
+      border-color: rgba(0, 0, 0, 0.04);
+    }
+
+    .mock-ui__header {
+      background: var(--surface-inverse);
+      padding: 12px 20px;
+      font-family: var(--font-mono);
+      font-size: 10px;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-inverse-muted);
     }
-    .mock-comparison-body {
-      padding: 20px;
-    }
-    .mock-route {
+
+    .mock-ui__row {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border-light);
+      align-items: center;
+      padding: 14px 20px;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
     }
-    .mock-route:last-child { border-bottom: none; }
-    .mock-route-path {
-      font-size: 0.85rem;
-      color: var(--text);
+
+    .mock-ui__row:nth-child(even) {
+      background: var(--surface-secondary);
+    }
+
+    .mock-ui__row-label {
+      font-weight: 500;
       display: flex;
       align-items: center;
       gap: 8px;
-    }
-    .mock-route-arrow {
-      color: var(--text-muted);
-      font-size: 0.75rem;
-    }
-    .mock-route-value {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.85rem;
-      font-weight: 600;
-    }
-    .mock-route-value.optimal {
-      color: var(--green);
-    }
-    .mock-route-value.suboptimal {
-      color: var(--text-muted);
-    }
-    .mock-route-badge {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      padding: 3px 8px;
-      border-radius: 2px;
-      background: rgba(46, 125, 50, 0.1);
-      color: var(--green);
+      flex: 1;
     }
 
-    /* Mock value calc */
-    .mock-value-calc {
-      background: var(--bg-white);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      overflow: hidden;
+    .mock-ui__row-path {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-tertiary);
+      flex: 2;
+      text-align: center;
     }
-    .mock-value-calc-header {
-      background: var(--blue-pale);
-      padding: 14px 20px;
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--blue);
-      font-weight: 600;
-    }
-    .mock-value-calc-body {
-      padding: 20px;
-    }
-    .mock-value-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--border-light);
-    }
-    .mock-value-row:last-child { border-bottom: none; }
-    .mock-value-label {
-      font-size: 0.85rem;
-      color: var(--text);
-    }
-    .mock-value-numbers {
-      display: flex;
-      gap: 24px;
-      align-items: center;
-    }
-    .mock-value-cash, .mock-value-transfer {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.85rem;
-      font-weight: 600;
+
+    .mock-ui__row-value {
+      font-family: var(--font-mono);
+      font-size: 14px;
+      font-weight: 500;
       text-align: right;
+      min-width: 60px;
     }
-    .mock-value-cash { color: var(--text-muted); }
-    .mock-value-transfer { color: var(--green); }
-    .mock-value-col-header {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.6rem;
+
+    .badge {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--text-muted);
+      letter-spacing: 1px;
+      padding: 3px 8px;
+      display: inline-block;
+    }
+
+    .badge--best {
+      background: var(--green);
+      color: #FFFFFF;
+    }
+
+    .badge--safe { background: rgba(46, 125, 50, 0.1); color: var(--green); }
+    .badge--warn { background: rgba(230, 81, 0, 0.1); color: var(--amber); }
+    .badge--danger { background: rgba(198, 40, 40, 0.1); color: var(--red); }
+
+    /* Value comparison mock */
+    .mock-value-table {
+      width: 100%;
+    }
+
+    .mock-value-table__header {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      background: var(--surface-inverse);
+      padding: 12px 20px;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-inverse-muted);
+    }
+
+    .mock-value-table__row {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      padding: 14px 20px;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .mock-value-table__row:nth-child(even) {
+      background: var(--surface-secondary);
+    }
+
+    .mock-value-table__row span:first-child {
       font-weight: 500;
     }
 
-    /* ===== STAT CALLOUT ===== */
-    .stat-callout {
-      background: var(--navy);
-      padding: 96px 0;
+    .mock-value-table__row span:nth-child(2) {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    .mock-value-table__row span:nth-child(3) {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--green);
+    }
+
+    .mock-value-table__total {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      padding: 14px 20px;
+      font-weight: 600;
+      font-size: 14px;
+      border-top: 2px solid var(--surface-inverse);
+    }
+
+    .mock-value-table__total span:nth-child(2) {
+      font-family: var(--font-mono);
+      font-size: 13px;
+    }
+
+    .mock-value-table__total span:nth-child(3) {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--green);
+      font-weight: 600;
+    }
+
+    /* Expiration monitor */
+    .mock-expiry__row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 20px;
+      font-size: 14px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .mock-expiry__row:nth-child(even) {
+      background: var(--surface-secondary);
+    }
+
+    .mock-expiry__program {
+      font-weight: 500;
+      flex: 1;
+    }
+
+    .mock-expiry__points {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--text-tertiary);
+      flex: 1;
       text-align: center;
     }
-    .stat-callout .stat-intro {
-      font-size: 1.15rem;
-      color: rgba(255,255,255,0.6);
-      margin-bottom: 12px;
+
+    .mock-expiry__days {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      min-width: 80px;
+      text-align: right;
+      margin-right: 12px;
     }
-    .stat-callout .stat-number {
-      font-size: clamp(3rem, 8vw, 5.5rem);
-      font-weight: 700;
-      color: #fff;
-      letter-spacing: -0.03em;
+
+    .mock-expiry__badge {
+      min-width: 70px;
+      text-align: right;
+    }
+
+    /* ===== TESTIMONIAL ===== */
+    .testimonial {
+      text-align: center;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .testimonial__quote {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-size: clamp(20px, 2.5vw, 26px);
+      line-height: 1.55;
+      color: var(--text-primary);
+      margin-bottom: 24px;
+    }
+
+    .testimonial__quote::before { content: '\201C'; }
+    .testimonial__quote::after { content: '\201D'; }
+
+    .testimonial__attr {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* Two-up testimonial */
+    .testimonial-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 64px;
+    }
+
+    .testimonial-grid .testimonial {
+      text-align: left;
+    }
+
+    .testimonial-grid .testimonial__quote {
+      font-size: clamp(18px, 2vw, 22px);
+    }
+
+    /* ===== BIG STAT ===== */
+    .big-stat {
+      padding: 100px 0;
+      text-align: center;
+      background: var(--surface-inverse);
+    }
+
+    .big-stat__pre {
+      font-size: 18px;
+      color: var(--text-inverse-secondary);
+      margin-bottom: 8px;
+    }
+
+    .big-stat__value {
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: clamp(56px, 8vw, 88px);
+      color: var(--text-inverse);
       line-height: 1.1;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
-    .stat-callout .stat-outro {
-      font-size: 1.15rem;
-      color: rgba(255,255,255,0.6);
+
+    .big-stat__post {
+      font-size: 18px;
+      color: var(--text-inverse-secondary);
     }
 
     /* ===== HOW IT WORKS ===== */
     .steps {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 32px;
+      gap: 48px;
       margin-bottom: 48px;
     }
-    .step {
-      text-align: center;
-      padding: 24px 16px;
-    }
-    .step-number {
-      font-family: 'IBM Plex Mono', monospace;
-      font-size: 0.7rem;
+
+    .step__number {
+      font-family: var(--font-mono);
+      font-size: 14px;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: var(--blue);
-      margin-bottom: 16px;
-    }
-    .step-icon {
-      width: 56px;
-      height: 56px;
-      background: var(--blue-pale);
-      border-radius: 50%;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin: 0 auto 20px;
-    }
-    .step-icon svg {
-      width: 24px;
-      height: 24px;
-      color: var(--blue);
-    }
-    .step h3 {
-      margin-bottom: 10px;
-    }
-    .step p {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      line-height: 1.55;
+      background: var(--accent);
+      color: #FFFFFF;
+      margin-bottom: 20px;
     }
 
-    /* ===== TESTIMONIAL GRID ===== */
-    .testimonial-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-      padding: 64px 0;
+    .step h3 {
+      margin-bottom: 12px;
     }
-    .testimonial-card {
-      background: var(--bg-white);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 32px;
-    }
-    .testimonial-card .testimonial-quote {
-      text-align: left;
-      font-size: 1.05rem;
-      margin-bottom: 16px;
-    }
-    .testimonial-card .testimonial-author {
-      text-align: left;
+
+    .step p {
+      color: var(--text-secondary);
+      font-size: 15px;
+      line-height: 1.6;
     }
 
     /* ===== FAQ ===== */
     .faq-list {
-      max-width: 720px;
+      max-width: 780px;
       margin: 0 auto;
     }
+
     .faq-item {
-      border-bottom: 1px solid var(--border-light);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     }
-    .faq-question {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 0;
-      cursor: pointer;
-      font-size: 1.05rem;
-      font-weight: 600;
-      color: var(--text);
+
+    .faq-item__trigger {
+      width: 100%;
+      padding: 24px 0;
       background: none;
       border: none;
-      width: 100%;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       text-align: left;
-      font-family: inherit;
-      line-height: 1.4;
-    }
-    .faq-question:hover {
-      color: var(--blue);
-    }
-    .faq-chevron {
-      flex-shrink: 0;
-      width: 20px;
-      height: 20px;
-      margin-left: 16px;
-      transition: transform 0.25s ease;
-      color: var(--text-muted);
-    }
-    .faq-item.open .faq-chevron {
-      transform: rotate(180deg);
-    }
-    .faq-answer {
-      max-height: 0;
-      overflow: hidden;
-      transition: max-height 0.3s ease, padding 0.3s ease;
-    }
-    .faq-item.open .faq-answer {
-      max-height: 300px;
-      padding-bottom: 20px;
-    }
-    .faq-answer p {
-      font-size: 0.95rem;
-      color: var(--text-secondary);
-      line-height: 1.6;
+      font-family: var(--font-sans);
+      font-size: 17px;
+      font-weight: 500;
+      color: var(--text-primary);
+      transition: color 0.2s var(--ease-premium);
     }
 
-    /* ===== FINAL CTA ===== */
-    .final-cta {
-      background: linear-gradient(165deg, var(--navy) 0%, var(--navy-light) 100%);
-      padding: 96px 0;
+    .faq-item__trigger:hover {
+      color: var(--accent);
+    }
+
+    .faq-item__icon {
+      font-family: var(--font-mono);
+      font-size: 20px;
+      font-weight: 400;
+      color: var(--text-muted);
+      flex-shrink: 0;
+      margin-left: 16px;
+      transition: transform 0.25s var(--ease-premium);
+    }
+
+    .faq-item[data-open="true"] .faq-item__icon {
+      transform: rotate(45deg);
+    }
+
+    .faq-item__answer {
+      overflow: hidden;
+      transition: max-height 0.35s var(--ease-premium), opacity 0.25s var(--ease-premium);
+      max-height: 0;
+      opacity: 0;
+    }
+
+    .faq-item[data-open="true"] .faq-item__answer {
+      opacity: 1;
+    }
+
+    .faq-item__answer-inner {
+      padding: 0 0 24px;
+      color: var(--text-secondary);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    /* ===== WAITLIST CTA ===== */
+    .waitlist {
+      position: relative;
+      overflow: hidden;
+      padding: 100px 0;
+      background: var(--surface-inverse);
       text-align: center;
     }
-    .final-cta h2 {
-      color: #fff;
-      font-size: clamp(2rem, 4vw, 3rem);
-      margin-bottom: 8px;
-    }
-    .final-cta .cta-with {
-      font-size: 1.15rem;
-      color: rgba(255,255,255,0.5);
-      margin-bottom: 40px;
+
+    .waitlist__kaleidoscope {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      opacity: 0.3;
     }
 
-    /* ===== WAITLIST FORM ===== */
-    .waitlist-form {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-      max-width: 480px;
+    .waitlist__kaleidoscope::before {
+      content: '';
+      position: absolute;
+      inset: -30%;
+      width: 160%;
+      height: 160%;
+      background:
+        conic-gradient(from 45deg at 40% 50%, transparent 0deg, rgba(45, 93, 161, 0.5) 40deg, transparent 80deg, rgba(30, 50, 100, 0.3) 160deg, transparent 200deg, rgba(60, 40, 110, 0.2) 280deg, transparent 360deg),
+        radial-gradient(ellipse at 60% 40%, rgba(45, 93, 161, 0.3) 0%, transparent 50%);
+      animation: kaleidoscope-rotate 32s linear infinite;
+    }
+
+    .waitlist__content {
+      position: relative;
+      z-index: 2;
+      max-width: 560px;
       margin: 0 auto;
-      flex-wrap: wrap;
     }
-    .waitlist-form input[type="email"] {
+
+    .waitlist h2 {
+      color: var(--text-inverse);
+      font-family: var(--font-serif);
+      font-weight: 300;
+      font-size: clamp(32px, 4vw, 48px);
+      margin-bottom: 8px;
+    }
+
+    .waitlist h2 span {
+      color: var(--accent-light);
+    }
+
+    .waitlist__form {
+      display: flex;
+      gap: 0;
+      margin: 40px 0 20px;
+    }
+
+    .waitlist__input {
       flex: 1;
-      min-width: 240px;
-      padding: 14px 18px;
-      font-family: 'IBM Plex Sans', sans-serif;
-      font-size: 1rem;
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 3px;
-      background: rgba(255,255,255,0.08);
-      color: #fff;
+      height: 48px;
+      padding: 0 20px;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      background: #FFFFFF;
+      border: none;
+      border-radius: 0;
+      color: var(--text-primary);
       outline: none;
-      transition: border-color 0.2s ease;
     }
-    .waitlist-form input[type="email"]::placeholder {
-      color: rgba(255,255,255,0.35);
+
+    .waitlist__input::placeholder {
+      color: var(--text-muted);
     }
-    .waitlist-form input[type="email"]:focus {
-      border-color: rgba(255,255,255,0.5);
-      background: rgba(255,255,255,0.12);
+
+    .waitlist__input:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
     }
-    .waitlist-form button {
+
+    .waitlist__input--error {
+      outline: 2px solid var(--red);
+      outline-offset: -2px;
+    }
+
+    .waitlist__submit {
+      height: 48px;
+      padding: 0 28px;
+      font-family: var(--font-sans);
+      font-weight: 600;
+      font-size: 15px;
+      background: var(--accent);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 0;
+      cursor: pointer;
       white-space: nowrap;
+      transition: background 0.2s var(--ease-premium);
     }
-    .waitlist-confirm {
+
+    .waitlist__submit:hover {
+      background: var(--accent-light);
+    }
+
+    .waitlist__submit:active {
+      transform: scale(0.98);
+    }
+
+    .waitlist__error {
+      font-size: 13px;
+      color: #EF5350;
+      margin-top: 8px;
+      min-height: 20px;
+    }
+
+    .waitlist__success {
       display: none;
-      color: rgba(255,255,255,0.7);
-      font-size: 0.9rem;
-      margin-top: 12px;
+      padding: 20px;
+      background: rgba(45, 93, 161, 0.15);
+      margin-top: 20px;
+    }
+
+    .waitlist__success p {
+      color: var(--text-inverse);
+      font-size: 16px;
+    }
+
+    .waitlist__success.visible {
+      display: block;
+    }
+
+    .waitlist__note {
+      font-size: 14px;
+      color: var(--text-inverse-muted);
+      margin-top: 16px;
     }
 
     /* ===== FOOTER ===== */
     .footer {
-      background: var(--navy);
-      border-top: 1px solid rgba(255,255,255,0.06);
-      padding: 40px 0;
-    }
-    .footer-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-    .footer-logo {
-      font-weight: 700;
-      font-size: 1.1rem;
-      color: #fff;
-      letter-spacing: -0.02em;
-    }
-    .footer-links {
-      display: flex;
-      gap: 28px;
-      flex-wrap: wrap;
-    }
-    .footer-links a {
-      font-size: 0.85rem;
-      color: rgba(255,255,255,0.5);
-      transition: color 0.2s ease;
-    }
-    .footer-links a:hover {
-      color: rgba(255,255,255,0.85);
-    }
-    .footer-copy {
-      font-size: 0.8rem;
-      color: rgba(255,255,255,0.3);
-      width: 100%;
-      text-align: center;
-      margin-top: 24px;
-      padding-top: 24px;
-      border-top: 1px solid rgba(255,255,255,0.06);
+      background: var(--surface-inverse);
+      padding: 64px 0 40px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 768px) {
-      .feature-cards {
-        grid-template-columns: 1fr;
-        gap: 16px;
+    .footer__top {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer__logo svg {
+      height: 24px;
+      width: auto;
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    .footer__tagline {
+      font-size: 14px;
+      color: var(--text-inverse-muted);
+      line-height: 1.6;
+    }
+
+    .footer__col-title {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-inverse-muted);
+      margin-bottom: 16px;
+    }
+
+    .footer__links {
+      list-style: none;
+    }
+
+    .footer__links li {
+      margin-bottom: 10px;
+    }
+
+    .footer__links a {
+      font-size: 14px;
+      color: var(--text-inverse-muted);
+      text-decoration: none;
+      cursor: default;
+      transition: color 0.2s var(--ease-premium);
+    }
+
+    .footer__bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .footer__copy {
+      font-size: 13px;
+      color: var(--text-inverse-muted);
+    }
+
+    .footer__social {
+      display: flex;
+      gap: 16px;
+    }
+
+    .footer__social-icon {
+      width: 20px;
+      height: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      cursor: default;
+    }
+
+    /* ===== RESPONSIVE: TABLET ===== */
+    @media (max-width: 1024px) {
+      .section { padding: 80px 0; }
+
+      .dashboard__stats {
+        grid-template-columns: repeat(2, 1fr);
       }
-      .two-col {
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .feature-split {
         grid-template-columns: 1fr;
         gap: 40px;
       }
-      .two-col.reverse-mobile .visual-side {
-        order: -1;
+
+      .feature-split--reversed {
+        direction: ltr;
       }
+
       .steps {
         grid-template-columns: 1fr;
-        gap: 16px;
+        gap: 32px;
       }
+
       .testimonial-grid {
         grid-template-columns: 1fr;
+        gap: 40px;
       }
-      .section {
-        padding: 64px 0;
+
+      .footer__top {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
       }
-      .stat-callout {
-        padding: 64px 0;
+
+      .big-stat { padding: 80px 0; }
+    }
+
+    /* ===== RESPONSIVE: MOBILE ===== */
+    @media (max-width: 768px) {
+      .section { padding: 64px 0; }
+      .container { padding: 0 20px; }
+
+      body { font-size: 16px; }
+
+      .dashboard__stats {
+        grid-template-columns: 1fr 1fr;
       }
-      .hero {
-        padding: 110px 0 60px;
+
+      .dashboard__stat-value {
+        font-size: 22px;
       }
-      .mock-stat-row {
+
+      .dashboard__table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .hero__stats {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .hero__subtitle {
+        font-size: 16px;
+      }
+
+      .waitlist__form {
         flex-direction: column;
       }
-      .footer-inner {
+
+      .waitlist__input, .waitlist__submit {
+        width: 100%;
+      }
+
+      .mock-ui__row {
+        font-size: 13px;
+        padding: 12px 16px;
+      }
+
+      .mock-ui__row-path {
+        display: none;
+      }
+
+      .mock-value-table__header,
+      .mock-value-table__row,
+      .mock-value-table__total {
+        grid-template-columns: 1.2fr 1fr 1fr;
+        font-size: 13px;
+        padding: 12px 16px;
+      }
+
+      .mock-expiry__row {
+        flex-wrap: wrap;
+        gap: 4px;
+        padding: 12px 16px;
+      }
+
+      .mock-expiry__points {
+        display: none;
+      }
+
+      .footer__top {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+
+      .footer__bottom {
         flex-direction: column;
+        gap: 16px;
         text-align: center;
       }
-      .footer-links {
-        justify-content: center;
+
+      .big-stat { padding: 64px 0; }
+      .big-stat__value { font-size: clamp(48px, 10vw, 72px); }
+
+      .trust-bar__logos { gap: 20px; }
+      .trust-bar__logo { width: 72px; height: 20px; }
+
+      .nav__link { display: none; }
+    }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      .hero__kaleidoscope::before,
+      .hero__kaleidoscope::after,
+      .hero__blur-layer,
+      .waitlist__kaleidoscope::before {
+        animation: none;
       }
     }
   </style>
@@ -876,346 +1328,272 @@
 <body>
 
   <!-- NAV -->
-  <nav class="nav" id="nav">
-    <div class="nav-inner">
-      <span class="nav-logo">RedeemFlow</span>
-      <a href="#waitlist" class="btn-primary">Join Waitlist</a>
+  <nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav__inner">
+      <a href="#" class="nav__logo" aria-label="RedeemFlow home">
+        <svg viewBox="0 0 180 28" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+          <title>RedeemFlow</title>
+          <!-- Abstract mark: two arrow paths forming diamond -->
+          <path class="logo-mark" d="M4 14L14 4L24 14" fill="none" stroke-width="2" stroke-linejoin="miter"/>
+          <path class="logo-mark" d="M4 14L14 24L24 14" fill="none" stroke-width="2" stroke-linejoin="miter"/>
+          <path class="logo-mark" d="M9 14L14 9L19 14L14 19Z" fill="none" stroke-width="1.5"/>
+          <!-- Text -->
+          <text x="32" y="20" class="logo-redeem" font-family="'Source Serif 4', Georgia, serif" font-weight="600" font-size="18">Redeem</text>
+          <text x="108" y="20" class="logo-flow" font-family="'Source Serif 4', Georgia, serif" font-weight="300" font-size="18">Flow</text>
+        </svg>
+      </a>
+      <div class="nav__actions">
+        <a href="#" class="nav__link">Sign In</a>
+        <a href="#waitlist" class="nav__btn">Join Waitlist</a>
+      </div>
     </div>
   </nav>
 
   <!-- HERO -->
   <section class="hero">
-    <div class="container">
-      <p class="press-hint">As seen in</p>
-      <div class="press-logos">
-        <div class="press-logo-slot"></div>
-        <div class="press-logo-slot"></div>
-        <div class="press-logo-slot"></div>
-        <div class="press-logo-slot"></div>
+    <div class="hero__kaleidoscope" aria-hidden="true"></div>
+    <div class="hero__blur-layer" aria-hidden="true"></div>
+    <div class="hero__overlay" aria-hidden="true"></div>
+    <div class="hero__content container">
+      <span class="eyebrow eyebrow--inverse">Points Optimization Platform</span>
+      <h1>Redeem More.<br>Waste Less.</h1>
+      <p class="hero__subtitle">16 programs. 487,000 points. One engine to maximize them all.</p>
+      <a href="#waitlist" class="btn btn--primary btn--large">Join the Waitlist <span aria-hidden="true">&rarr;</span></a>
+      <div class="hero__stats">
+        <span class="hero__stat"><strong>10B+</strong> points wasted annually</span>
+        <span class="hero__stat"><strong>16+</strong> programs per person</span>
+        <span class="hero__stat"><strong>3x</strong> value unlocked</span>
       </div>
-      <h1>Redeem More. Waste Less.</h1>
-      <p class="subtitle">You've got points expiring. Let RedeemFlow find the value.</p>
-      <a href="#waitlist" class="btn-primary" style="margin-top: 8px;">Join the Waitlist</a>
     </div>
   </section>
 
   <!-- TRUST BAR -->
-  <div class="trust-bar">
+  <section class="trust-bar" aria-label="Trust signals">
     <div class="container">
-      <p>Trusted by frequent flyers, road warriors, and points enthusiasts</p>
-      <div class="trust-logos">
-        <div class="trust-logo-slot"></div>
-        <div class="trust-logo-slot"></div>
-        <div class="trust-logo-slot"></div>
-        <div class="trust-logo-slot"></div>
-        <div class="trust-logo-slot"></div>
+      <p class="trust-bar__label">Backed by verified market data</p>
+      <div class="trust-bar__logos" aria-hidden="true">
+        <div class="trust-bar__logo"></div>
+        <div class="trust-bar__logo"></div>
+        <div class="trust-bar__logo"></div>
+        <div class="trust-bar__logo"></div>
+        <div class="trust-bar__logo"></div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- MADE FOR POINTS COLLECTORS -->
-  <section class="section made-for">
+  <!-- WHAT WE DO -->
+  <section class="what-we-do section">
     <div class="container">
-      <div class="intro-text" style="text-align:center;margin:0 auto 48px;">
-        <p class="section-label">Made for points collectors</p>
-        <p>RedeemFlow brings all of your loyalty programs, transfer paths, and redemption opportunities into one place.</p>
+      <div class="what-we-do__inner">
+        <span class="eyebrow">The Problem</span>
+        <h2>Your points are a depreciating asset</h2>
+        <p>$10 billion in loyalty points expire unused every year. The average American holds 16 programs with no strategy connecting them. Card issuers profit from breakage. RedeemFlow exists to end that.</p>
       </div>
+      <div class="divider"></div>
+    </div>
+  </section>
 
-      <div class="mock-dashboard">
-        <div class="mock-dashboard-header">
-          <span>RedeemFlow Dashboard</span>
-          <div class="mock-dashboard-dots">
-            <span></span><span></span><span></span>
-          </div>
+  <!-- MOCK DASHBOARD -->
+  <section class="dashboard">
+    <div class="container">
+      <div class="dashboard__eyebrow">
+        <span class="eyebrow">Your Dashboard &mdash; Live Demo</span>
+      </div>
+      <div class="dashboard__stats">
+        <div class="dashboard__stat-card">
+          <div class="dashboard__stat-label">Total Points</div>
+          <div class="dashboard__stat-value">487,200</div>
         </div>
-        <div class="mock-dashboard-body">
-          <div class="mock-stat-row">
-            <div class="mock-stat-card">
-              <div class="label">Total Points</div>
-              <div class="value">487,200</div>
-              <div class="unit">across 6 programs</div>
-            </div>
-            <div class="mock-stat-card">
-              <div class="label">Cash Value</div>
-              <div class="value">$3,898</div>
-              <div class="unit">at current rates</div>
-            </div>
-            <div class="mock-stat-card">
-              <div class="label">Optimized Value</div>
-              <div class="value" style="color:var(--green);">$7,640</div>
-              <div class="unit">with transfer paths</div>
-            </div>
-            <div class="mock-stat-card">
-              <div class="label">Expiring Soon</div>
-              <div class="value" style="color:var(--amber);">24,000</div>
-              <div class="unit">within 90 days</div>
-            </div>
-          </div>
-          <div class="mock-program-list">
-            <div class="mock-program-row">
-              <span class="mock-program-name">Chase Ultimate Rewards</span>
-              <span class="mock-program-points">186,400 pts</span>
-              <span class="mock-program-exp">No expiration</span>
-              <span class="mock-program-value good">2.1 cpp</span>
-            </div>
-            <div class="mock-program-row">
-              <span class="mock-program-name">American Airlines AAdvantage</span>
-              <span class="mock-program-points">94,200 mi</span>
-              <span class="mock-program-exp expiring">Expires Jun 2026</span>
-              <span class="mock-program-value low">0.8 cpp</span>
-            </div>
-            <div class="mock-program-row">
-              <span class="mock-program-name">Marriott Bonvoy</span>
-              <span class="mock-program-points">128,600 pts</span>
-              <span class="mock-program-exp">Expires Dec 2026</span>
-              <span class="mock-program-value good">1.4 cpp</span>
-            </div>
-            <div class="mock-program-row">
-              <span class="mock-program-name">Amex Membership Rewards</span>
-              <span class="mock-program-points">78,000 pts</span>
-              <span class="mock-program-exp">No expiration</span>
-              <span class="mock-program-value good">2.4 cpp</span>
-            </div>
-          </div>
+        <div class="dashboard__stat-card">
+          <div class="dashboard__stat-label">Cash Value</div>
+          <div class="dashboard__stat-value">$3,898</div>
+        </div>
+        <div class="dashboard__stat-card">
+          <div class="dashboard__stat-label">Optimized Value</div>
+          <div class="dashboard__stat-value dashboard__stat-value--green">$7,640</div>
+        </div>
+        <div class="dashboard__stat-card">
+          <div class="dashboard__stat-label">Expiring Soon</div>
+          <div class="dashboard__stat-value dashboard__stat-value--amber">24,000</div>
         </div>
       </div>
+      <table class="dashboard__table" role="table">
+        <thead>
+          <tr>
+            <th scope="col">Program</th>
+            <th scope="col">Balance</th>
+            <th scope="col">Expiration</th>
+            <th scope="col">cpp</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="program-name">Chase Ultimate Rewards</td>
+            <td>186,400</td>
+            <td>None</td>
+            <td class="cpp-good">2.1</td>
+          </tr>
+          <tr>
+            <td class="program-name">AA AAdvantage</td>
+            <td>124,800</td>
+            <td>Dec 2026</td>
+            <td class="cpp-good">1.8</td>
+          </tr>
+          <tr>
+            <td class="program-name">Marriott Bonvoy</td>
+            <td>92,000</td>
+            <td>Mar 2027</td>
+            <td class="cpp-warn">0.9</td>
+          </tr>
+          <tr>
+            <td class="program-name">Amex Membership Rewards</td>
+            <td>84,000</td>
+            <td>None</td>
+            <td class="cpp-good">2.0</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
 
-      <div class="outro-text">
-        <p>So you can find the best redemption paths faster, maximize value, and never let points expire.</p>
+  <!-- DISCOVER -->
+  <section class="section section--secondary">
+    <div class="container">
+      <span class="eyebrow">Discover</span>
+      <h2 style="margin-bottom: 48px;">Hidden transfer paths across every program</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><title>Graph engine icon</title>
+              <circle cx="10" cy="10" r="3" stroke="var(--accent)" stroke-width="1.5"/>
+              <circle cx="30" cy="10" r="3" stroke="var(--accent)" stroke-width="1.5"/>
+              <circle cx="10" cy="30" r="3" stroke="var(--accent)" stroke-width="1.5"/>
+              <circle cx="30" cy="30" r="3" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="13" y1="10" x2="27" y2="10" stroke="var(--accent)" stroke-width="1.2"/>
+              <line x1="10" y1="13" x2="10" y2="27" stroke="var(--accent)" stroke-width="1.2"/>
+              <line x1="13" y1="12" x2="27" y2="28" stroke="var(--accent)" stroke-width="1.2"/>
+              <line x1="30" y1="13" x2="30" y2="27" stroke="var(--accent)" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <h3>Cross-program graph engine</h3>
+          <p>A directed weighted graph maps every transfer partnership, bonus route, and conversion rate across all major loyalty programs in real time.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><title>AI agent icon</title>
+              <circle cx="20" cy="20" r="14" stroke="var(--accent)" stroke-width="1.5"/>
+              <circle cx="20" cy="20" r="8" stroke="var(--accent)" stroke-width="1.2" stroke-dasharray="3 2"/>
+              <circle cx="20" cy="20" r="2" fill="var(--accent)"/>
+              <line x1="20" y1="6" x2="20" y2="2" stroke="var(--accent)" stroke-width="1.2"/>
+              <line x1="20" y1="38" x2="20" y2="34" stroke="var(--accent)" stroke-width="1.2"/>
+              <line x1="6" y1="20" x2="2" y2="20" stroke="var(--accent)" stroke-width="1.2"/>
+              <line x1="38" y1="20" x2="34" y2="20" stroke="var(--accent)" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <h3>Proactive AI agent</h3>
+          <p>Wakes up at 3 AM to scan award availability, transfer bonuses, and flash deals. Surfaces opportunities before you even think to look.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card__icon">
+            <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" role="img"><title>Calendar sync icon</title>
+              <rect x="4" y="8" width="32" height="28" rx="0" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="4" y1="16" x2="36" y2="16" stroke="var(--accent)" stroke-width="1.2"/>
+              <line x1="12" y1="4" x2="12" y2="12" stroke="var(--accent)" stroke-width="1.5"/>
+              <line x1="28" y1="4" x2="28" y2="12" stroke="var(--accent)" stroke-width="1.5"/>
+              <circle cx="20" cy="26" r="4" stroke="var(--accent)" stroke-width="1.2"/>
+              <path d="M20 23v3.5l2.5 1.5" stroke="var(--accent)" stroke-width="1.2"/>
+            </svg>
+          </div>
+          <h3>Calendar-synced alerts</h3>
+          <p>Connects to your travel calendar and runs optimization before every trip. Transfer bonuses, award availability, and routing suggestions arrive automatically.</p>
+        </div>
       </div>
     </div>
   </section>
 
   <!-- TESTIMONIAL 1 -->
-  <div class="testimonial">
-    <div class="container">
-      <div class="testimonial-inner">
-        <p class="testimonial-quote">"I had 200,000 Marriott points sitting there doing nothing. RedeemFlow found a transfer route to Alaska Airlines that got me a first-class ticket to Tokyo. I never would have seen that path on my own."</p>
-        <p class="testimonial-author">-- Sarah K., Frequent Traveler</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- DISCOVER SECTION -->
-  <section class="section section--warm">
-    <div class="container">
-      <div class="section-header centered">
-        <p class="section-label">Discover</p>
-        <h2>Find hidden transfer paths across every program</h2>
-        <p class="subtitle" style="color:var(--text-secondary);margin:16px auto 0;">The average RedeemFlow user unlocks 3x more value from their existing points.</p>
-      </div>
-
-      <div class="feature-cards">
-        <div class="feature-card">
-          <div class="feature-card-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
-            </svg>
-          </div>
-          <h3>Cross-program graph engine</h3>
-          <p>RedeemFlow maps every transfer partnership, finding routes you'd never discover manually.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-card-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456zM16.894 20.567L16.5 21.75l-.394-1.183a2.25 2.25 0 00-1.423-1.423L13.5 18.75l1.183-.394a2.25 2.25 0 001.423-1.423l.394-1.183.394 1.183a2.25 2.25 0 001.423 1.423l1.183.394-1.183.394a2.25 2.25 0 00-1.423 1.423z" />
-            </svg>
-          </div>
-          <h3>Proactive AI agent</h3>
-          <p>Your agent monitors availability 24/7. It wakes up at 3 AM so you don't have to.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-card-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5m-9-6h.008v.008H12v-.008zM12 15h.008v.008H12V15zm0 2.25h.008v.008H12v-.008zM9.75 15h.008v.008H9.75V15zm0 2.25h.008v.008H9.75v-.008zM7.5 15h.008v.008H7.5V15zm0 2.25h.008v.008H7.5v-.008zm6.75-4.5h.008v.008h-.008v-.008zm0 2.25h.008v.008h-.008V15zm0 2.25h.008v.008h-.008v-.008zm2.25-4.5h.008v.008H16.5v-.008zm0 2.25h.008v.008H16.5V15z" />
-            </svg>
-          </div>
-          <h3>Calendar-synced alerts</h3>
-          <p>Connected to your travel calendar, RedeemFlow finds optimal redemptions before every trip.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- TESTIMONIAL 2 -->
-  <div class="testimonial testimonial--white">
-    <div class="container">
-      <div class="testimonial-inner">
-        <p class="testimonial-quote">"I was about to book a $1,200 hotel. RedeemFlow showed me a transfer path from Chase to Hyatt that covered the entire stay. Saved me real money with points I didn't even know I could use there."</p>
-        <p class="testimonial-author">-- Mike R., Road Warrior</p>
-      </div>
-    </div>
-  </div>
-
-  <!-- OPTIMIZE SECTION -->
-  <section class="section section--warm">
-    <div class="container">
-      <div class="two-col">
-        <div class="text-side">
-          <p class="section-label">Optimize</p>
-          <h2>One engine for every loyalty program</h2>
-          <p class="subtitle">RedeemFlow searches transfer paths across airlines, hotels, and credit card programs simultaneously.</p>
-          <a href="#waitlist" class="btn-primary">See your transfer paths</a>
-        </div>
-        <div class="visual-side">
-          <div class="mock-comparison">
-            <div class="mock-comparison-header">Transfer Path Analysis</div>
-            <div class="mock-comparison-body">
-              <div class="mock-route">
-                <div class="mock-route-path">
-                  <span>Chase UR</span>
-                  <span class="mock-route-arrow">&#8594;</span>
-                  <span>United</span>
-                  <span class="mock-route-arrow">&#8594;</span>
-                  <span>SFO-NRT</span>
-                </div>
-                <span class="mock-route-value suboptimal">1.2 cpp</span>
-              </div>
-              <div class="mock-route">
-                <div class="mock-route-path">
-                  <span>Chase UR</span>
-                  <span class="mock-route-arrow">&#8594;</span>
-                  <span>Hyatt</span>
-                  <span class="mock-route-arrow">&#8594;</span>
-                  <span>Park Hyatt Tokyo</span>
-                </div>
-                <span class="mock-route-value suboptimal">1.8 cpp</span>
-              </div>
-              <div class="mock-route">
-                <div class="mock-route-path">
-                  <span>Amex MR</span>
-                  <span class="mock-route-arrow">&#8594;</span>
-                  <span>ANA</span>
-                  <span class="mock-route-arrow">&#8594;</span>
-                  <span>SFO-NRT First</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:8px;">
-                  <span class="mock-route-value optimal">4.8 cpp</span>
-                  <span class="mock-route-badge">Best</span>
-                </div>
-              </div>
-              <div class="mock-route">
-                <div class="mock-route-path">
-                  <span>Marriott</span>
-                  <span class="mock-route-arrow">&#8594;</span>
-                  <span>Alaska</span>
-                  <span class="mock-route-arrow">&#8594;</span>
-                  <span>JAL First</span>
-                </div>
-                <span class="mock-route-value optimal">3.2 cpp</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- MAXIMIZE SECTION -->
   <section class="section">
     <div class="container">
-      <div class="two-col reverse-mobile">
-        <div class="visual-side">
-          <div class="mock-value-calc">
-            <div class="mock-value-calc-header">Points Value Comparison</div>
-            <div class="mock-value-calc-body">
-              <div class="mock-value-row" style="border-bottom:1px solid var(--border-light);padding-bottom:10px;">
-                <span class="mock-value-label" style="font-weight:600;">Program</span>
-                <div class="mock-value-numbers">
-                  <span class="mock-value-col-header" style="width:70px;text-align:right;">Cash Out</span>
-                  <span class="mock-value-col-header" style="width:70px;text-align:right;">Transfer</span>
-                </div>
-              </div>
-              <div class="mock-value-row">
-                <span class="mock-value-label">Chase UR (80,000)</span>
-                <div class="mock-value-numbers">
-                  <span class="mock-value-cash" style="width:70px;">$800</span>
-                  <span class="mock-value-transfer" style="width:70px;">$2,400</span>
-                </div>
-              </div>
-              <div class="mock-value-row">
-                <span class="mock-value-label">Amex MR (60,000)</span>
-                <div class="mock-value-numbers">
-                  <span class="mock-value-cash" style="width:70px;">$360</span>
-                  <span class="mock-value-transfer" style="width:70px;">$1,800</span>
-                </div>
-              </div>
-              <div class="mock-value-row">
-                <span class="mock-value-label">Marriott (120,000)</span>
-                <div class="mock-value-numbers">
-                  <span class="mock-value-cash" style="width:70px;">$840</span>
-                  <span class="mock-value-transfer" style="width:70px;">$1,680</span>
-                </div>
-              </div>
-              <div class="mock-value-row" style="background:rgba(46,125,50,0.04);margin:8px -20px 0;padding:14px 20px;border-radius:0 0 3px 3px;">
-                <span class="mock-value-label" style="font-weight:700;">Total</span>
-                <div class="mock-value-numbers">
-                  <span class="mock-value-cash" style="width:70px;font-size:1rem;">$2,000</span>
-                  <span class="mock-value-transfer" style="width:70px;font-size:1rem;">$5,880</span>
-                </div>
-              </div>
-            </div>
+      <div class="testimonial">
+        <p class="testimonial__quote">I had 200,000 Marriott points sitting there. RedeemFlow found a transfer route to Alaska Airlines that got me first class to Tokyo.</p>
+        <p class="testimonial__attr">&mdash; S.K., Frequent Traveler</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- OPTIMIZE -->
+  <section class="section">
+    <div class="container">
+      <div class="feature-split">
+        <div class="feature-text">
+          <span class="eyebrow">Optimize</span>
+          <h2>One engine for every loyalty program</h2>
+          <p>Most points sit in isolation. RedeemFlow maps the transfer graph between programs and finds routes you would never discover manually. Every path is scored by cents-per-point value so you always know the best move.</p>
+          <a href="#waitlist" class="cta-link">See your transfer paths <span aria-hidden="true">&rarr;</span></a>
+        </div>
+        <div class="mock-ui">
+          <div class="mock-ui__header">Transfer Path Analysis</div>
+          <div class="mock-ui__row">
+            <span class="mock-ui__row-label">Chase UR</span>
+            <span class="mock-ui__row-path">Chase &rarr; Hyatt &rarr; Book</span>
+            <span class="mock-ui__row-value cpp-good">2.3 cpp <span class="badge badge--best">Best</span></span>
+          </div>
+          <div class="mock-ui__row">
+            <span class="mock-ui__row-label">Chase UR</span>
+            <span class="mock-ui__row-path">Chase &rarr; United &rarr; Book</span>
+            <span class="mock-ui__row-value">1.8 cpp</span>
+          </div>
+          <div class="mock-ui__row">
+            <span class="mock-ui__row-label">Amex MR</span>
+            <span class="mock-ui__row-path">Amex &rarr; ANA &rarr; Book</span>
+            <span class="mock-ui__row-value">2.1 cpp</span>
+          </div>
+          <div class="mock-ui__row">
+            <span class="mock-ui__row-label">Marriott</span>
+            <span class="mock-ui__row-path">Marriott &rarr; Alaska &rarr; Book</span>
+            <span class="mock-ui__row-value">1.5 cpp</span>
           </div>
         </div>
-        <div class="text-side">
-          <p class="section-label">Maximize</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAXIMIZE -->
+  <section class="section section--secondary">
+    <div class="container">
+      <div class="feature-split feature-split--reversed">
+        <div class="feature-text">
+          <span class="eyebrow">Maximize</span>
           <h2>Make the most of every point</h2>
-          <p class="subtitle">RedeemFlow compares cash value vs transfer value so you get the highest return on every redemption.</p>
-          <a href="#waitlist" class="btn-primary">Calculate your points value</a>
+          <p>Cash redemption is the worst use of points. RedeemFlow compares every redemption option side by side and shows you exactly how much value you leave on the table with each choice. You pull the trigger. We find the path.</p>
+          <a href="#waitlist" class="cta-link">Start optimizing <span aria-hidden="true">&rarr;</span></a>
         </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROTECT SECTION -->
-  <section class="section section--warm">
-    <div class="container">
-      <div class="two-col">
-        <div class="text-side">
-          <p class="section-label">Protect</p>
-          <h2>Never lose points to expiration</h2>
-          <p class="subtitle">RedeemFlow tracks every balance and expiration date. We'll alert you before a single point expires.</p>
-        </div>
-        <div class="visual-side">
-          <div class="mock-comparison">
-            <div class="mock-comparison-header">Expiration Monitor</div>
-            <div class="mock-comparison-body">
-              <div class="mock-route">
-                <div class="mock-route-path">
-                  <span style="font-weight:600;">AA AAdvantage</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--amber);font-weight:600;">24,000 mi</span>
-                  <span style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;padding:3px 8px;border-radius:2px;background:rgba(230,81,0,0.1);color:var(--amber);font-weight:600;text-transform:uppercase;">47 Days</span>
-                </div>
-              </div>
-              <div class="mock-route">
-                <div class="mock-route-path">
-                  <span style="font-weight:600;">Hilton Honors</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--amber);font-weight:600;">65,400 pts</span>
-                  <span style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;padding:3px 8px;border-radius:2px;background:rgba(230,81,0,0.1);color:var(--amber);font-weight:600;text-transform:uppercase;">82 Days</span>
-                </div>
-              </div>
-              <div class="mock-route">
-                <div class="mock-route-path">
-                  <span style="font-weight:600;">Southwest RR</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--green);font-weight:600;">38,200 pts</span>
-                  <span style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;padding:3px 8px;border-radius:2px;background:rgba(46,125,50,0.1);color:var(--green);font-weight:600;text-transform:uppercase;">Safe</span>
-                </div>
-              </div>
-              <div class="mock-route">
-                <div class="mock-route-path">
-                  <span style="font-weight:600;">Delta SkyMiles</span>
-                </div>
-                <div style="display:flex;align-items:center;gap:10px;">
-                  <span style="font-family:'IBM Plex Mono',monospace;font-size:0.8rem;color:var(--green);font-weight:600;">112,800 mi</span>
-                  <span style="font-family:'IBM Plex Mono',monospace;font-size:0.65rem;padding:3px 8px;border-radius:2px;background:rgba(46,125,50,0.1);color:var(--green);font-weight:600;text-transform:uppercase;">Safe</span>
-                </div>
-              </div>
+        <div class="mock-ui">
+          <div class="mock-value-table">
+            <div class="mock-value-table__header">
+              <span>Program</span>
+              <span>Cash Out</span>
+              <span>Transfer</span>
+            </div>
+            <div class="mock-value-table__row">
+              <span>Chase UR (186K)</span>
+              <span>$1,864</span>
+              <span>$3,910</span>
+            </div>
+            <div class="mock-value-table__row">
+              <span>AA AAdvantage (125K)</span>
+              <span>$875</span>
+              <span>$2,250</span>
+            </div>
+            <div class="mock-value-table__row">
+              <span>Amex MR (84K)</span>
+              <span>$504</span>
+              <span>$1,680</span>
+            </div>
+            <div class="mock-value-table__total">
+              <span>Total</span>
+              <span>$3,243</span>
+              <span>$7,840</span>
             </div>
           </div>
         </div>
@@ -1223,223 +1601,373 @@
     </div>
   </section>
 
-  <!-- STAT CALLOUT -->
-  <section class="stat-callout">
+  <!-- PROTECT -->
+  <section class="section">
     <div class="container">
-      <p class="stat-intro">The average American leaves</p>
-      <p class="stat-number">$3,400</p>
-      <p class="stat-outro">in unredeemed points on the table each year.</p>
+      <div class="feature-split">
+        <div class="feature-text">
+          <span class="eyebrow">Protect</span>
+          <h2>Never lose a point to expiration</h2>
+          <p>Expiration policies are deliberately confusing. RedeemFlow tracks every program's rules and alerts you with enough lead time to act. One low-value transaction can reset the clock on tens of thousands of points.</p>
+          <a href="#waitlist" class="cta-link">Protect your points <span aria-hidden="true">&rarr;</span></a>
+        </div>
+        <div class="mock-ui">
+          <div class="mock-ui__header">Expiration Monitor</div>
+          <div class="mock-expiry__row">
+            <span class="mock-expiry__program">AA AAdvantage</span>
+            <span class="mock-expiry__points">24,000 pts</span>
+            <span class="mock-expiry__days">18 days</span>
+            <span class="mock-expiry__badge"><span class="badge badge--danger">Urgent</span></span>
+          </div>
+          <div class="mock-expiry__row">
+            <span class="mock-expiry__program">Hilton Honors</span>
+            <span class="mock-expiry__points">48,200 pts</span>
+            <span class="mock-expiry__days">45 days</span>
+            <span class="mock-expiry__badge"><span class="badge badge--warn">Warning</span></span>
+          </div>
+          <div class="mock-expiry__row">
+            <span class="mock-expiry__program">Marriott Bonvoy</span>
+            <span class="mock-expiry__points">92,000 pts</span>
+            <span class="mock-expiry__days">186 days</span>
+            <span class="mock-expiry__badge"><span class="badge badge--safe">Safe</span></span>
+          </div>
+          <div class="mock-expiry__row">
+            <span class="mock-expiry__program">Southwest RR</span>
+            <span class="mock-expiry__points">31,400 pts</span>
+            <span class="mock-expiry__days">340 days</span>
+            <span class="mock-expiry__badge"><span class="badge badge--safe">Safe</span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BIG STAT -->
+  <section class="big-stat" aria-label="Key statistic">
+    <div class="container">
+      <p class="big-stat__pre">The average American leaves</p>
+      <p class="big-stat__value">$3,400</p>
+      <p class="big-stat__post">in unredeemed points on the table each year.</p>
     </div>
   </section>
 
   <!-- HOW IT WORKS -->
-  <section class="section">
+  <section class="section section--secondary">
     <div class="container">
-      <div class="section-header centered">
-        <p class="section-label">How it works</p>
-        <h2>Three steps to maximum value</h2>
-      </div>
-
+      <span class="eyebrow">How It Works</span>
+      <h2 style="margin-bottom: 48px;">Three steps to maximum value</h2>
       <div class="steps">
         <div class="step">
-          <p class="step-number">Step 1</p>
-          <div class="step-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m9.915-3.173a4.5 4.5 0 00-1.242-7.244l4.5-4.5a4.5 4.5 0 016.364 6.364l-1.757 1.757" />
-            </svg>
-          </div>
-          <h3>Connect your accounts</h3>
-          <p>Link your loyalty programs. We gather all your balances automatically.</p>
+          <div class="step__number" aria-hidden="true">01</div>
+          <h3>Connect your programs</h3>
+          <p>Link your loyalty accounts in under two minutes. RedeemFlow reads balances, expiration dates, and transfer partnerships for every program you hold.</p>
         </div>
         <div class="step">
-          <p class="step-number">Step 2</p>
-          <div class="step-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-            </svg>
-          </div>
-          <h3>See your full picture</h3>
-          <p>View every program, balance, and expiration in one dashboard.</p>
+          <div class="step__number" aria-hidden="true">02</div>
+          <h3>Get optimized routes</h3>
+          <p>The graph engine analyzes billions of transfer paths, award charts, and bonus promotions. Results are scored by cents-per-point value with clear recommendations.</p>
         </div>
         <div class="step">
-          <p class="step-number">Step 3</p>
-          <div class="step-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
-            </svg>
-          </div>
-          <h3>Redeem at maximum value</h3>
-          <p>Get AI-powered recommendations. You always pull the trigger.</p>
+          <div class="step__number" aria-hidden="true">03</div>
+          <h3>Redeem with confidence</h3>
+          <p>Review the recommendation, confirm the transfer, and book. You always pull the trigger. RedeemFlow provides the intelligence. No surprises, no risk.</p>
         </div>
       </div>
-
-      <div style="text-align:center;">
-        <a href="#waitlist" class="btn-primary">See what your points are worth</a>
+      <div style="text-align: center;">
+        <a href="#waitlist" class="cta-link">See what your points are worth <span aria-hidden="true">&rarr;</span></a>
       </div>
     </div>
   </section>
 
-  <!-- TESTIMONIAL GRID -->
-  <section class="section--warm">
+  <!-- TWO TESTIMONIALS -->
+  <section class="section">
     <div class="container">
       <div class="testimonial-grid">
-        <div class="testimonial-card">
-          <p class="testimonial-quote">"Sixteen loyalty programs, zero strategy. RedeemFlow connected the dots between my Amex points and airline partners I didn't even know existed. Now every trip starts with a transfer path check."</p>
-          <p class="testimonial-author">-- David L., Business Traveler</p>
+        <div class="testimonial">
+          <p class="testimonial__quote">I was about to cash out 150K Chase points for $1,500. RedeemFlow showed me a Hyatt transfer worth $3,200 in hotels. That alone paid for five years of the service.</p>
+          <p class="testimonial__attr">&mdash; M.R., Management Consultant</p>
         </div>
-        <div class="testimonial-card">
-          <p class="testimonial-quote">"The expiration alerts alone are worth it. I almost lost 80,000 Hilton points. RedeemFlow flagged them 60 days out and showed me exactly how to use them. That's $400 I would have just lost."</p>
-          <p class="testimonial-author">-- Jennifer T., Points Enthusiast</p>
+        <div class="testimonial">
+          <p class="testimonial__quote">My Hilton points were 30 days from expiring. The alert saved 48,000 points I had completely forgotten about. One dining transaction reset the clock.</p>
+          <p class="testimonial__attr">&mdash; J.L., Software Engineer</p>
         </div>
       </div>
     </div>
   </section>
 
   <!-- FAQ -->
-  <section class="section" id="faq">
+  <section class="section section--secondary">
     <div class="container">
-      <div class="section-header centered">
-        <p class="section-label">FAQ</p>
-        <h2>Common questions</h2>
-      </div>
+      <span class="eyebrow">FAQ</span>
+      <h2 style="margin-bottom: 48px;">Common questions</h2>
+      <div class="faq-list" role="list">
 
-      <div class="faq-list">
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
-            Is RedeemFlow free?
-            <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+        <div class="faq-item" data-open="false" role="listitem">
+          <button class="faq-item__trigger" aria-expanded="false">
+            How does RedeemFlow access my loyalty accounts?
+            <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-answer">
-            <p>RedeemFlow offers a free tier with balance tracking and expiration alerts. Full optimization starts at $149/year -- less than a single concierge booking.</p>
+          <div class="faq-item__answer" role="region">
+            <div class="faq-item__answer-inner">
+              RedeemFlow uses read-only connections to pull balances, expiration dates, and program rules. We never initiate transfers or redemptions on your behalf. Every action requires your explicit confirmation.
+            </div>
           </div>
         </div>
 
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
-            How does RedeemFlow find better redemptions?
-            <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+        <div class="faq-item" data-open="false" role="listitem">
+          <button class="faq-item__trigger" aria-expanded="false">
+            What loyalty programs do you support?
+            <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-answer">
-            <p>Our graph engine maps every transfer partnership across airlines, hotels, and credit cards. It finds multi-hop routes that maximize your cents-per-point value.</p>
+          <div class="faq-item__answer" role="region">
+            <div class="faq-item__answer-inner">
+              At launch, RedeemFlow supports all major credit card transfer programs (Chase UR, Amex MR, Citi ThankYou, Capital One Miles), airline programs (United, AA, Delta, Southwest, Alaska, JetBlue), and hotel programs (Marriott, Hilton, Hyatt, IHG). More programs are added every month.
+            </div>
           </div>
         </div>
 
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
-            Is my data safe?
-            <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+        <div class="faq-item" data-open="false" role="listitem">
+          <button class="faq-item__trigger" aria-expanded="false">
+            How is this different from a travel agent?
+            <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-answer">
-            <p>Your loyalty account credentials are encrypted at rest and in transit. RedeemFlow never initiates transfers -- you always confirm every action.</p>
+          <div class="faq-item__answer" role="region">
+            <div class="faq-item__answer-inner">
+              Travel agents optimize individual bookings. RedeemFlow optimizes your entire portfolio of points across every program simultaneously. The graph engine finds cross-program transfer paths that no human could track manually. At $149/year versus $200+ per booking with a concierge, the economics are not comparable.
+            </div>
           </div>
         </div>
 
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
-            How is this different from Point.me or AwardWallet?
-            <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+        <div class="faq-item" data-open="false" role="listitem">
+          <button class="faq-item__trigger" aria-expanded="false">
+            Can RedeemFlow make transfers or bookings for me?
+            <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-answer">
-            <p>Point.me searches award availability. AwardWallet tracks balances. RedeemFlow does both AND proactively optimizes across programs with AI-powered transfer path discovery.</p>
+          <div class="faq-item__answer" role="region">
+            <div class="faq-item__answer-inner">
+              No. RedeemFlow finds and recommends. You execute. This is a deliberate architectural decision. Keeping the user in control eliminates liability risk and ensures you never see a transfer you did not explicitly authorize.
+            </div>
           </div>
         </div>
 
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
-            What loyalty programs are supported?
-            <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+        <div class="faq-item" data-open="false" role="listitem">
+          <button class="faq-item__trigger" aria-expanded="false">
+            What does it cost?
+            <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-answer">
-            <p>We support all major airline, hotel, and credit card programs -- over 50 at launch, with more added weekly.</p>
+          <div class="faq-item__answer" role="region">
+            <div class="faq-item__answer-inner">
+              Balance tracking and expiration alerts are free. The full optimization engine, including cross-program transfer analysis, proactive deal scanning, and calendar sync, is $149 per year. Most users recover the cost with their first optimized redemption.
+            </div>
           </div>
         </div>
 
-        <div class="faq-item">
-          <button class="faq-question" aria-expanded="false">
-            Can my company use RedeemFlow?
-            <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+        <div class="faq-item" data-open="false" role="listitem">
+          <button class="faq-item__trigger" aria-expanded="false">
+            Is my data secure?
+            <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-answer">
-            <p>Yes. Our B2B plan helps companies recover $1,500-3,000 per employee per year in unused loyalty value.</p>
+          <div class="faq-item__answer" role="region">
+            <div class="faq-item__answer-inner">
+              All data is encrypted at rest and in transit. We use read-only access tokens with the minimum scope required. Account credentials are never stored. RedeemFlow is SOC 2 compliant and undergoes annual third-party security audits.
+            </div>
           </div>
         </div>
+
       </div>
     </div>
   </section>
 
-  <!-- FINAL CTA -->
-  <section class="final-cta" id="waitlist">
-    <div class="container">
-      <h2>Your Points, Optimized</h2>
-      <p class="cta-with">with RedeemFlow</p>
-      <form class="waitlist-form" id="waitlistForm" action="#" method="POST" onsubmit="return handleWaitlist(event)">
-        <input type="email" name="email" placeholder="you@example.com" required aria-label="Email address">
-        <button type="submit" class="btn-primary">Join the Waitlist</button>
+  <!-- WAITLIST CTA -->
+  <section class="waitlist" id="waitlist">
+    <div class="waitlist__kaleidoscope" aria-hidden="true"></div>
+    <div class="waitlist__content">
+      <h2>Your Points, Optimized<br><span>with RedeemFlow</span></h2>
+      <form class="waitlist__form" id="waitlist-form" novalidate>
+        <input
+          type="email"
+          class="waitlist__input"
+          id="waitlist-email"
+          placeholder="you@email.com"
+          aria-label="Email address"
+          required
+          autocomplete="email"
+        >
+        <button type="submit" class="waitlist__submit">Join Waitlist <span aria-hidden="true">&rarr;</span></button>
       </form>
-      <p class="waitlist-confirm" id="waitlistConfirm">You're on the list. We'll be in touch.</p>
+      <div class="waitlist__error" id="waitlist-error" role="alert" aria-live="polite"></div>
+      <div class="waitlist__success" id="waitlist-success" role="status" aria-live="polite">
+        <p>You are on the list. We will be in touch.</p>
+      </div>
+      <p class="waitlist__note">Free balance tracking. Full optimization from $149/year.</p>
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer class="footer">
     <div class="container">
-      <div class="footer-inner">
-        <span class="footer-logo">RedeemFlow</span>
-        <div class="footer-links">
-          <a href="#">Blog</a>
-          <a href="#">About</a>
-          <a href="#">Help</a>
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
+      <div class="footer__top">
+        <div>
+          <div class="footer__logo">
+            <svg viewBox="0 0 180 28" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RedeemFlow">
+              <title>RedeemFlow</title>
+              <path d="M4 14L14 4L24 14" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2" stroke-linejoin="miter"/>
+              <path d="M4 14L14 24L24 14" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2" stroke-linejoin="miter"/>
+              <path d="M9 14L14 9L19 14L14 19Z" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="1.5"/>
+              <text x="32" y="20" fill="rgba(255,255,255,0.95)" font-family="'Source Serif 4', Georgia, serif" font-weight="600" font-size="18">Redeem</text>
+              <text x="108" y="20" fill="rgba(255,255,255,0.45)" font-family="'Source Serif 4', Georgia, serif" font-weight="300" font-size="18">Flow</text>
+            </svg>
+          </div>
+          <p class="footer__tagline">AI-powered loyalty points optimization.<br>Find hidden value across every program.</p>
         </div>
-        <p class="footer-copy">&copy; 2026 RedeemFlow. All rights reserved.</p>
+        <div>
+          <p class="footer__col-title">Product</p>
+          <ul class="footer__links">
+            <li><a>Features</a></li>
+            <li><a>Pricing</a></li>
+            <li><a>API</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-title">Company</p>
+          <ul class="footer__links">
+            <li><a>About</a></li>
+            <li><a>Blog</a></li>
+            <li><a>Careers</a></li>
+          </ul>
+        </div>
+        <div>
+          <p class="footer__col-title">Legal</p>
+          <ul class="footer__links">
+            <li><a>Privacy</a></li>
+            <li><a>Terms</a></li>
+            <li><a>Security</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <p class="footer__copy">&copy; 2026 RedeemFlow</p>
+        <div class="footer__social" aria-label="Social media">
+          <div class="footer__social-icon" aria-hidden="true"></div>
+          <div class="footer__social-icon" aria-hidden="true"></div>
+          <div class="footer__social-icon" aria-hidden="true"></div>
+        </div>
       </div>
     </div>
   </footer>
 
   <script>
-    // Nav scroll shadow
     (function() {
-      var nav = document.getElementById('nav');
-      window.addEventListener('scroll', function() {
-        if (window.scrollY > 10) {
-          nav.classList.add('scrolled');
-        } else {
-          nav.classList.remove('scrolled');
-        }
-      });
-    })();
+      'use strict';
 
-    // FAQ accordion
-    (function() {
-      var items = document.querySelectorAll('.faq-item');
-      items.forEach(function(item) {
-        var btn = item.querySelector('.faq-question');
-        btn.addEventListener('click', function() {
-          var isOpen = item.classList.contains('open');
-          // Close all
-          items.forEach(function(i) {
-            i.classList.remove('open');
-            i.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+      // === NAV SCROLL HANDLER (rAF throttled) ===
+      var nav = document.getElementById('nav');
+      var ticking = false;
+
+      function onScroll() {
+        if (!ticking) {
+          requestAnimationFrame(function() {
+            if (window.scrollY > 60) {
+              nav.classList.add('nav--scrolled');
+            } else {
+              nav.classList.remove('nav--scrolled');
+            }
+            ticking = false;
           });
+          ticking = true;
+        }
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+
+      // === FAQ ACCORDION ===
+      var faqItems = document.querySelectorAll('.faq-item');
+
+      faqItems.forEach(function(item) {
+        var trigger = item.querySelector('.faq-item__trigger');
+        var answer = item.querySelector('.faq-item__answer');
+        var inner = item.querySelector('.faq-item__answer-inner');
+
+        trigger.addEventListener('click', function() {
+          var isOpen = item.getAttribute('data-open') === 'true';
+
+          // Close all
+          faqItems.forEach(function(other) {
+            other.setAttribute('data-open', 'false');
+            other.querySelector('.faq-item__trigger').setAttribute('aria-expanded', 'false');
+            other.querySelector('.faq-item__answer').style.maxHeight = '0';
+          });
+
           // Toggle current
           if (!isOpen) {
-            item.classList.add('open');
-            btn.setAttribute('aria-expanded', 'true');
+            item.setAttribute('data-open', 'true');
+            trigger.setAttribute('aria-expanded', 'true');
+            answer.style.maxHeight = inner.scrollHeight + 'px';
           }
         });
       });
-    })();
 
-    // Waitlist form
-    function handleWaitlist(e) {
-      e.preventDefault();
-      var form = document.getElementById('waitlistForm');
-      var confirm = document.getElementById('waitlistConfirm');
-      form.style.display = 'none';
-      confirm.style.display = 'block';
-      return false;
-    }
+      // === WAITLIST FORM ===
+      var form = document.getElementById('waitlist-form');
+      var emailInput = document.getElementById('waitlist-email');
+      var errorEl = document.getElementById('waitlist-error');
+      var successEl = document.getElementById('waitlist-success');
+
+      var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      function showError(msg) {
+        errorEl.textContent = msg;
+        emailInput.classList.add('waitlist__input--error');
+      }
+
+      function clearError() {
+        errorEl.textContent = '';
+        emailInput.classList.remove('waitlist__input--error');
+      }
+
+      emailInput.addEventListener('input', function() {
+        if (emailInput.classList.contains('waitlist__input--error')) {
+          clearError();
+        }
+      });
+
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        clearError();
+
+        var email = emailInput.value.trim();
+
+        if (!email) {
+          showError('Please enter your email address.');
+          emailInput.focus();
+          return;
+        }
+
+        if (!emailRegex.test(email)) {
+          showError('Please enter a valid email address.');
+          emailInput.focus();
+          return;
+        }
+
+        // Success state
+        form.style.display = 'none';
+        errorEl.style.display = 'none';
+        successEl.classList.add('visible');
+      });
+
+      // === SMOOTH SCROLL FOR ANCHOR LINKS ===
+      document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+        anchor.addEventListener('click', function(e) {
+          var target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            e.preventDefault();
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        });
+      });
+
+    })();
   </script>
 
 </body>

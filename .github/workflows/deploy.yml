@@ -5,22 +5,41 @@ on:
     branches: [main]
 
 jobs:
+  detect-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      landing: ${{ steps.filter.outputs.landing }}
+      api: ${{ steps.filter.outputs.api }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - id: filter
+        uses: dorny/paths-filter@v3
+        with:
+          filters: |
+            landing:
+              - 'landing/**'
+            api:
+              - 'src/**'
+              - 'Dockerfile'
+              - 'fly.toml'
+              - 'pyproject.toml'
+
   deploy-landing:
-    if: contains(join(github.event.commits.*.modified, ','), 'landing/')
+    needs: detect-changes
+    if: needs.detect-changes.outputs.landing == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master
-      - run: flyctl deploy --config landing/fly.toml --app redeemflow-landing
+      - run: cd landing && flyctl deploy --config fly.toml --app redeemflow-landing
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
 
   test-before-deploy:
-    if: >-
-      contains(join(github.event.commits.*.modified, ','), 'src/') ||
-      contains(join(github.event.commits.*.modified, ','), 'Dockerfile') ||
-      contains(join(github.event.commits.*.modified, ','), 'fly.toml') ||
-      contains(join(github.event.commits.*.modified, ','), 'pyproject.toml')
+    needs: detect-changes
+    if: needs.detect-changes.outputs.api == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,13 +48,9 @@ jobs:
       - run: uv run pytest -v --cache-clear
 
   deploy-api:
-    if: >-
-      contains(join(github.event.commits.*.modified, ','), 'src/') ||
-      contains(join(github.event.commits.*.modified, ','), 'Dockerfile') ||
-      contains(join(github.event.commits.*.modified, ','), 'fly.toml') ||
-      contains(join(github.event.commits.*.modified, ','), 'pyproject.toml')
+    needs: [detect-changes, test-before-deploy]
+    if: needs.detect-changes.outputs.api == 'true'
     runs-on: ubuntu-latest
-    needs: [test-before-deploy]
     steps:
       - uses: actions/checkout@v4
       - uses: superfly/flyctl-actions/setup-flyctl@master

@@ -55,16 +55,9 @@ class CharityPartnerNetwork:
 
     def search(self, query: str) -> list[CharityOrganization]:
         q = query.lower()
-        results = []
-        for c in self.charities:
-            searchable = c.name.lower()
-            if c.chapter_name:
-                searchable += " " + c.chapter_name.lower()
-            if c.description:
-                searchable += " " + c.description.lower()
-            if q in searchable:
-                results.append(c)
-        return results
+        return [
+            c for c in self.charities if q in " ".join(p.lower() for p in [c.name, c.chapter_name, c.description] if p)
+        ]
 
     def states_covered(self) -> set[str]:
         return {c.state for c in self.charities}

@@ -405,10 +405,10 @@ def _build_all_charities() -> list[CharityOrganization]:
         if state not in _YWCA_EXCLUDE:
             charities.append(_ywca(state))
 
-    for state in _DFS_STATES:
+    for state in sorted(_DFS_STATES):
         charities.append(_dress_for_success(state))
 
-    for state in _GIRLS_INC_STATES:
+    for state in sorted(_GIRLS_INC_STATES):
         charities.append(_girls_inc(state))
 
     return charities

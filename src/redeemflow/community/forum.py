@@ -61,7 +61,8 @@ class ForumPost:
 class ForumService:
     """Orchestrates forum lifecycle — create, reply, search, delete."""
 
-    def __init__(self) -> None:
+    def __init__(self, repository: object | None = None) -> None:
+        self._repository = repository
         self._posts: dict[str, ForumPost] = {}
 
     def create_post(
@@ -84,6 +85,8 @@ class ForumService:
             created_at=now,
         )
         self._posts[post_id] = post
+        if self._repository:
+            self._repository.save_post(post)
         return post
 
     def get_post(self, post_id: str) -> ForumPost | None:
@@ -111,6 +114,8 @@ class ForumService:
             created_at=now,
         )
         post.add_reply(reply)
+        if self._repository:
+            self._repository.save_reply(reply)
         return reply
 
     def list_posts(
@@ -131,6 +136,8 @@ class ForumService:
         if post is None:
             raise ValueError(f"Post not found: {post_id}")
         post.upvote()
+        if self._repository:
+            self._repository.save_post(post)
         return post
 
     def search_posts(self, query: str) -> list[ForumPost]:

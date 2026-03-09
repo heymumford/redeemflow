@@ -91,10 +91,12 @@ class DonationService:
         provider: DonationProvider,
         valuations: dict[str, ProgramValuation],
         charity_network: CharityPartnerNetwork,
+        repository: object | None = None,
     ) -> None:
         self._provider = provider
         self._valuations = valuations
         self._charity_network = charity_network
+        self._repository = repository
         self._donations: list[Donation] = []
 
     def donate(
@@ -135,11 +137,17 @@ class DonationService:
             completed_at=now,
             change_api_reference=result.get("reference_id"),
         )
+        if self._repository:
+            self._repository.save(donation)
         self._donations.append(donation)
         return donation
 
     def get_user_donations(self, user_id: str) -> list[Donation]:
+        if self._repository:
+            return self._repository.get_by_user(user_id)
         return [d for d in self._donations if d.user_id == user_id]
 
     def get_all_donations(self) -> list[Donation]:
+        if self._repository:
+            return self._repository.get_all()
         return list(self._donations)

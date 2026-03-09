@@ -45,8 +45,8 @@ def _decode_jwt_payload(token: str) -> dict:
     try:
         payload_bytes = urlsafe_b64decode(payload_b64)
         return json.loads(payload_bytes)
-    except Exception:
-        raise AuthError("Invalid token payload")
+    except Exception as exc:
+        raise AuthError("Invalid token payload") from exc
 
 
 def _verify_auth0_jwt(token: str) -> User:
@@ -88,7 +88,7 @@ def _verify_auth0_jwt(token: str) -> User:
         except AuthError:
             raise
         except Exception as e:
-            raise AuthError(f"Token verification failed: {e}")
+            raise AuthError(f"Token verification failed: {e}") from e
 
     # No Auth0 config — reject unknown JWTs in dev mode
     raise AuthError("Invalid token")

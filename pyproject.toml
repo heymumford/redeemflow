@@ -36,9 +36,14 @@ dev = [
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
-addopts = "--cache-clear -v"
+addopts = "--cache-clear -v --strict-markers"
 markers = [
-    "integration: needs external services",
+    "integration: needs external services or database",
+    "infrastructure: tests Docker builds or Alembic migrations",
+    "contract: verifies provider or API schema compliance",
+    "fitness: architectural guardrail assertions",
+    "smoke: post-deploy health checks against live URL",
+    "e2e: end-to-end user workflow tests",
     "live: needs live infrastructure",
 ]
 
@@ -47,7 +52,32 @@ line-length = 120
 target-version = "py312"
 
 [tool.ruff.lint]
-select = ["E", "F", "W"]
+select = ["E", "F", "W", "I", "B", "UP", "S"]
+ignore = [
+    "S101",   # assert in tests is fine
+    "S105",   # hardcoded test passwords are fine
+    "S106",   # hardcoded test passwords are fine
+    "S311",   # random is fine for non-security use
+    "UP007",  # X | None syntax (already used throughout)
+    "B008",   # Depends() in FastAPI defaults is standard pattern
+    "UP042",  # StrEnum migration deferred (str, Enum pattern used throughout)
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S101", "S105", "S106"]
+
+[tool.coverage.run]
+source = ["redeemflow"]
+omit = ["*/infra/pg_repositories.py"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__",
+    "raise NotImplementedError",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/redeemflow"]

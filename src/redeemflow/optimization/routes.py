@@ -18,8 +18,8 @@ from redeemflow.optimization.multi_traveler import MultiTravelerOptimizer, Trave
 from redeemflow.optimization.personal_optimizer import PersonalOptimizer
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
 from redeemflow.optimization.timing_advisor import TimingAdvisor
-from redeemflow.portfolio.expiration import EXPIRATION_POLICIES
 from redeemflow.portfolio.awardwallet import FakeAwardWalletAdapter
+from redeemflow.portfolio.expiration import EXPIRATION_POLICIES
 from redeemflow.portfolio.models import PointBalance
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
 

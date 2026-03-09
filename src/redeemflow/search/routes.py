@@ -6,7 +6,6 @@ Safety endpoints are public (no auth required).
 
 from __future__ import annotations
 
-
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
@@ -16,7 +15,7 @@ from redeemflow.optimization.graph import TransferGraph
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
 from redeemflow.portfolio.awardwallet import FakeAwardWalletAdapter
 from redeemflow.search.award_search import FakeAwardSearchProvider
-from redeemflow.search.conference_planner import ConferencePlanner, WOMEN_CONFERENCES
+from redeemflow.search.conference_planner import WOMEN_CONFERENCES, ConferencePlanner
 from redeemflow.search.safety_scores import FakeSafetyDataProvider
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
 

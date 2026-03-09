@@ -5,7 +5,6 @@ Tests the auto-donate domain: rule model, engine lifecycle, threshold evaluation
 
 from __future__ import annotations
 
-
 import pytest
 
 from redeemflow.charity.auto_donate import AutoDonateEngine, AutoDonateRule

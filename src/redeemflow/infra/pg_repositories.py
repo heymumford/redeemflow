@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from sqlalchemy import select, delete, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session, sessionmaker
 
 from redeemflow.billing.charity_alignment import CharityAlignment

@@ -12,7 +12,9 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from decimal import Decimal
 
+from redeemflow.billing.charity_alignment import CharityAlignment
 from redeemflow.billing.models import Subscription, SubscriptionTier
+from redeemflow.charity.auto_donate import AutoDonateRule
 from redeemflow.charity.donation_flow import Donation, DonationStatus
 from redeemflow.charity.models import CharityCategory, CharityOrganization
 from redeemflow.community.forum import ForumCategory, ForumPost, ForumReply
@@ -282,3 +284,34 @@ def build_award_result(**overrides) -> AwardResult:
         "available_seats": 2,
     }
     return AwardResult(**(defaults | overrides))
+
+
+# --- Auto-Donate ---
+
+
+def build_auto_donate_rule(**overrides) -> AutoDonateRule:
+    defaults = {
+        "id": _next_id("rule"),
+        "user_id": _next_id("user"),
+        "program_code": "chase-ur",
+        "charity_name": "Test Charity",
+        "charity_state": "CA",
+        "days_unused_threshold": 90,
+        "is_active": True,
+    }
+    return AutoDonateRule(**(defaults | overrides))
+
+
+# --- Charity Alignment ---
+
+
+def build_charity_alignment(**overrides) -> CharityAlignment:
+    defaults = {
+        "user_id": _next_id("user"),
+        "charity_name": "Test Charity",
+        "charity_state": "CA",
+        "subscription_tier": SubscriptionTier.PREMIUM,
+        "monthly_contribution": Decimal("0.20"),
+        "annual_contribution": Decimal("2.40"),
+    }
+    return CharityAlignment(**(defaults | overrides))

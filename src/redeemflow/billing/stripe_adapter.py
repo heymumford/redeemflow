@@ -7,7 +7,7 @@ PaymentProvider Protocol defines the port. StripeAdapter is the real implementat
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any, Protocol, runtime_checkable
 
 from redeemflow.billing.models import Subscription, SubscriptionTier
@@ -59,7 +59,7 @@ class FakePaymentProvider:
             else:
                 tier = SubscriptionTier.FREE
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         sub_id = f"sub_{uuid.uuid4().hex[:12]}"
         stripe_id = f"sub_stripe_{uuid.uuid4().hex[:8]}"
 

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from decimal import Decimal
+
 import pytest
 
 from redeemflow.portfolio.expiration import (
@@ -11,7 +13,6 @@ from redeemflow.portfolio.expiration import (
     ExpirationTracker,
 )
 from redeemflow.portfolio.models import PointBalance
-from decimal import Decimal
 
 
 class TestExpirationPolicy:

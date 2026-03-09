@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
 
@@ -85,7 +85,7 @@ class PoolService:
         if goal_amount <= Decimal("0"):
             raise ValueError("goal_amount must be greater than zero")
         pool_id = f"pool-{uuid.uuid4().hex[:12]}"
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         pool = CommunityPool(
             id=pool_id,
             name=name,
@@ -112,7 +112,7 @@ class PoolService:
             raise ValueError(f"Unknown program: {program_code}")
 
         dollar_value = valuation.dollar_value(points)
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
 
         pledge = Pledge(
             id=f"pledge-{uuid.uuid4().hex[:12]}",
@@ -156,7 +156,7 @@ class PoolService:
         )
 
         pool.status = PoolStatus.COMPLETED
-        pool.completed_at = datetime.now(timezone.utc).isoformat()
+        pool.completed_at = datetime.now(UTC).isoformat()
         return pool
 
     def get_pool(self, pool_id: str) -> CommunityPool | None:

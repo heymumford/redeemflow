@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
 from typing import Protocol
@@ -120,7 +120,7 @@ class DonationService:
             raise ValueError(f"Unknown charity: {charity_name} in {charity_state}")
 
         dollar_value = valuation.dollar_value(points)
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
 
         result = self._provider.process_donation(user_id, charity_name, dollar_value)
 

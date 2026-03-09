@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import uuid
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 
 
@@ -74,7 +74,7 @@ class ForumService:
         content: str,
     ) -> ForumPost:
         post_id = f"post-{uuid.uuid4().hex[:12]}"
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         post = ForumPost(
             id=post_id,
             author_id=author_id,
@@ -104,7 +104,7 @@ class ForumService:
             raise ValueError(f"Post not found: {post_id}")
 
         reply_id = f"reply-{uuid.uuid4().hex[:12]}"
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         reply = ForumReply(
             id=reply_id,
             post_id=post_id,

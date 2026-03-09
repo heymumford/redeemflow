@@ -105,7 +105,7 @@ def get_transfers(program: str):
 @router.get("/api/programs")
 def list_programs():
     programs = []
-    for code, val in sorted(PROGRAM_VALUATIONS.items()):
+    for _code, val in sorted(PROGRAM_VALUATIONS.items()):
         programs.append(
             {
                 "code": val.program_code,

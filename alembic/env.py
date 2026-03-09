@@ -33,6 +33,14 @@ def run_migrations_offline() -> None:
 
 
 def run_migrations_online() -> None:
+    # Support injected connection for in-memory SQLite testing
+    connectable = config.attributes.get("connection")
+    if connectable is not None:
+        context.configure(connection=connectable, target_metadata=target_metadata)
+        with context.begin_transaction():
+            context.run_migrations()
+        return
+
     url = get_url()
     connectable = create_engine(url, poolclass=pool.NullPool)
     with connectable.connect() as connection:

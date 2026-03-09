@@ -6,7 +6,7 @@ Keeps the DB layer separate from frozen dataclasses in domain models.
 
 from __future__ import annotations
 
-from sqlalchemy import JSON, Boolean, Integer, MetaData, Numeric, Table, Text, Column, ForeignKey
+from sqlalchemy import JSON, Boolean, Column, ForeignKey, Integer, MetaData, Numeric, Table, Text
 
 metadata = MetaData()
 

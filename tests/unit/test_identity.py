@@ -4,8 +4,8 @@ from __future__ import annotations
 
 import pytest
 
+from redeemflow.identity.auth import AuthError, verify_token
 from redeemflow.identity.models import User
-from redeemflow.identity.auth import verify_token, AuthError
 
 
 class TestUserModel:

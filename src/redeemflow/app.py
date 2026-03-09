@@ -31,7 +31,7 @@ from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
 
 def _init_db_repositories() -> dict | None:
     """Initialize Postgres repositories if DATABASE_URL is set."""
-    from redeemflow.infra.database import get_database_url, create_engine, get_session_factory
+    from redeemflow.infra.database import create_engine, get_database_url, get_session_factory
 
     url = get_database_url()
     if not url:
@@ -42,9 +42,9 @@ def _init_db_repositories() -> dict | None:
 
     from redeemflow.infra.pg_repositories import (
         PgDonationRepository,
-        PgPoolRepository,
         PgForumRepository,
         PgFounderRepository,
+        PgPoolRepository,
     )
 
     return {

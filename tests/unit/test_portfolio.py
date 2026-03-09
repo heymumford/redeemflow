@@ -6,9 +6,9 @@ from decimal import Decimal
 
 import pytest
 
-from redeemflow.portfolio.models import LoyaltyAccount, PointBalance, LoyaltyProgram
-from redeemflow.portfolio.ports import BalanceFetcher
 from redeemflow.portfolio.fake_adapter import FakeBalanceFetcher
+from redeemflow.portfolio.models import LoyaltyAccount, LoyaltyProgram, PointBalance
+from redeemflow.portfolio.ports import BalanceFetcher
 
 
 class TestLoyaltyProgram:

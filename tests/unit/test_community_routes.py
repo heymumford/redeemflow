@@ -5,7 +5,6 @@ Tests the community pool REST endpoints via the FastAPI test client.
 
 from __future__ import annotations
 
-
 import pytest
 from fastapi.testclient import TestClient
 

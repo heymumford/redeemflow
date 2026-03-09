@@ -7,7 +7,7 @@ Fowler: Mutable aggregate root (FounderProfile) for evolving membership state.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from enum import Enum
 
 
@@ -53,7 +53,7 @@ class FounderDirectory:
         bio: str | None = None,
         travel_interests: list[str] | None = None,
     ) -> FounderProfile:
-        now = datetime.now(timezone.utc).isoformat()
+        now = datetime.now(UTC).isoformat()
         profile = FounderProfile(
             user_id=user_id,
             name=name,

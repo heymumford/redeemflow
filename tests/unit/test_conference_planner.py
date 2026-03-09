@@ -11,10 +11,10 @@ from redeemflow.optimization.graph import TransferGraph
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
 from redeemflow.portfolio.models import PointBalance
 from redeemflow.search.conference_planner import (
+    WOMEN_CONFERENCES,
     Conference,
     ConferencePlanner,
     ConferenceTravelPlan,
-    WOMEN_CONFERENCES,
 )
 from redeemflow.search.safety_scores import FakeSafetyDataProvider
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS

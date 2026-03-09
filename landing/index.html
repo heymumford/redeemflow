@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="description" content="RedeemFlow -- AI-powered loyalty points optimization. Find hidden transfer paths and maximize the value of your miles, hotel points, and credit card rewards.">
+  <title>RedeemFlow -- Your Points Are Worth More</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    body {
+      font-family: 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: #0A1628;
+      background: #FFFFFF;
+      line-height: 1.6;
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    img, svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    .mono {
+      font-family: 'IBM Plex Mono', 'SFMono-Regular', Consolas, monospace;
+    }
+
+    h1, h2, h3 {
+      line-height: 1.2;
+      font-weight: 600;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      letter-spacing: -0.02em;
+    }
+
+    h2 {
+      font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+      letter-spacing: -0.01em;
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 500;
+    }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      width: 100%;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    section {
+      padding: 5rem 0;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ===== HEADER / NAV ===== */
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: 1.25rem 0;
+      background: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(10, 22, 40, 0.06);
+      transition: box-shadow 0.3s ease;
+    }
+
+    .site-header.scrolled {
+      box-shadow: 0 1px 12px rgba(10, 22, 40, 0.08);
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      font-size: 1.25rem;
+      color: #0A1628;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, #1E3A5F, #3B82F6);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-cta {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.5rem 1.25rem;
+      background: #0A1628;
+      color: #FFFFFF;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: background 0.2s ease;
+    }
+
+    .nav-cta:hover,
+    .nav-cta:focus-visible {
+      background: #1E3A5F;
+    }
+
+    /* ===== HERO ===== */
+    .hero {
+      padding: 10rem 0 6rem;
+      background: linear-gradient(170deg, #0A1628 0%, #1E3A5F 100%);
+      color: #FFFFFF;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -20%;
+      width: 800px;
+      height: 800px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .hero .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #3B82F6;
+      margin-bottom: 1.5rem;
+      padding: 0.375rem 0.875rem;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 4px;
+    }
+
+    .hero h1 {
+      max-width: 720px;
+      margin-bottom: 1.5rem;
+      font-weight: 700;
+    }
+
+    .hero h1 .accent {
+      color: #3B82F6;
+    }
+
+    .hero-subtitle {
+      max-width: 540px;
+      font-size: 1.125rem;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 2.5rem;
+      font-weight: 300;
+    }
+
+    /* ===== EMAIL FORM ===== */
+    .signup-form {
+      display: flex;
+      gap: 0.75rem;
+      max-width: 480px;
+    }
+
+    .signup-form .input-wrap {
+      flex: 1;
+      position: relative;
+    }
+
+    .signup-form input[type="email"] {
+      width: 100%;
+      padding: 0.875rem 1rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      color: #FFFFFF;
+      font-family: inherit;
+      font-size: 1rem;
+      outline: none;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .signup-form input[type="email"]::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .signup-form input[type="email"]:focus {
+      border-color: #3B82F6;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .signup-form input[type="email"].invalid {
+      border-color: #EF4444;
+    }
+
+    .signup-form .error-msg {
+      position: absolute;
+      bottom: -1.5rem;
+      left: 0;
+      font-size: 0.75rem;
+      color: #EF4444;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .signup-form .error-msg.show {
+      opacity: 1;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.875rem 1.75rem;
+      background: #3B82F6;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s ease, transform 0.15s ease;
+    }
+
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+      background: #2563EB;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .success-message {
+      display: none;
+      align-items: center;
+      gap: 0.625rem;
+      padding: 1rem 1.25rem;
+      background: rgba(34, 197, 94, 0.1);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+      border-radius: 8px;
+      color: #22C55E;
+      font-weight: 500;
+      max-width: 480px;
+    }
+
+    .success-message.show {
+      display: flex;
+    }
+
+    /* Dark bg variant for final CTA */
+    .cta-dark .signup-form input[type="email"] {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: #FFFFFF;
+    }
+
+    .cta-dark .signup-form input[type="email"]::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .cta-dark .signup-form input[type="email"]:focus {
+      border-color: #3B82F6;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .cta-dark .success-message {
+      color: #4ADE80;
+      background: rgba(34, 197, 94, 0.1);
+      border-color: rgba(34, 197, 94, 0.25);
+    }
+
+    /* ===== VALUE PROPS ===== */
+    .value-props {
+      background: #FFFFFF;
+    }
+
+    .section-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #3B82F6;
+      margin-bottom: 1rem;
+    }
+
+    .section-heading {
+      max-width: 600px;
+      margin-bottom: 1rem;
+      color: #0A1628;
+    }
+
+    .section-subheading {
+      max-width: 560px;
+      color: #64748B;
+      font-size: 1.0625rem;
+      line-height: 1.7;
+      margin-bottom: 3.5rem;
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .card {
+      padding: 2rem;
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      border-color: #CBD5E1;
+      box-shadow: 0 4px 24px rgba(10, 22, 40, 0.06);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(30, 58, 95, 0.08));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-icon svg {
+      width: 24px;
+      height: 24px;
+      color: #3B82F6;
+    }
+
+    .card h3 {
+      margin-bottom: 0.75rem;
+      color: #0A1628;
+    }
+
+    .card p {
+      color: #64748B;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+    }
+
+    /* ===== HOW IT WORKS ===== */
+    .how-it-works {
+      background: #F1F5F9;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      counter-reset: step;
+    }
+
+    .step {
+      position: relative;
+      padding: 2rem;
+      background: #FFFFFF;
+      border-radius: 12px;
+      border: 1px solid #E2E8F0;
+    }
+
+    .step-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: #0A1628;
+      color: #FFFFFF;
+      border-radius: 50%;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.875rem;
+      font-weight: 500;
+      margin-bottom: 1.25rem;
+    }
+
+    .step-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 1rem;
+      color: #3B82F6;
+    }
+
+    .step h3 {
+      margin-bottom: 0.5rem;
+      color: #0A1628;
+    }
+
+    .step .step-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: #3B82F6;
+      margin-bottom: 0.375rem;
+    }
+
+    .step p {
+      color: #64748B;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+    }
+
+    /* Connector line between steps (desktop) */
+    .step-connector {
+      display: none;
+    }
+
+    /* ===== SOCIAL PROOF ===== */
+    .social-proof {
+      background: #FFFFFF;
+      border-top: 1px solid #E2E8F0;
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+
+    .proof-content h2 {
+      margin-bottom: 1.5rem;
+    }
+
+    .proof-content p {
+      color: #64748B;
+      font-size: 1.0625rem;
+      line-height: 1.8;
+      margin-bottom: 1rem;
+    }
+
+    .proof-content p:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+
+    .stat {
+      padding: 1.5rem;
+      background: #F8FAFC;
+      border-radius: 10px;
+      border: 1px solid #E2E8F0;
+    }
+
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #0A1628;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value .accent {
+      color: #3B82F6;
+    }
+
+    .stat-label {
+      font-size: 0.875rem;
+      color: #64748B;
+      line-height: 1.5;
+    }
+
+    /* ===== FINAL CTA ===== */
+    .final-cta {
+      background: linear-gradient(170deg, #0A1628 0%, #1E3A5F 100%);
+      color: #FFFFFF;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .final-cta::before {
+      content: '';
+      position: absolute;
+      top: -40%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 900px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .final-cta .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .final-cta h2 {
+      margin-bottom: 1rem;
+    }
+
+    .final-cta .section-subheading {
+      margin-left: auto;
+      margin-right: auto;
+      color: rgba(255, 255, 255, 0.65);
+      margin-bottom: 2.5rem;
+    }
+
+    .final-cta .signup-form {
+      margin: 0 auto;
+    }
+
+    .final-cta .success-message {
+      margin: 0 auto;
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      background: #0A1628;
+      color: rgba(255, 255, 255, 0.5);
+      padding: 2rem 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .footer-inner {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+      text-align: center;
+      font-size: 0.875rem;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.5);
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover,
+    .footer-links a:focus-visible {
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (min-width: 640px) {
+      .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .steps {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+      }
+
+      .proof-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+      }
+
+      .footer-inner {
+        flex-direction: row;
+        justify-content: space-between;
+      }
+    }
+
+    @media (min-width: 768px) {
+      section {
+        padding: 6rem 0;
+      }
+
+      .hero {
+        padding: 12rem 0 7rem;
+      }
+
+      .step-connector {
+        display: block;
+        position: absolute;
+        top: 50%;
+        right: -1.5rem;
+        width: 1.5rem;
+        height: 2px;
+        background: #CBD5E1;
+        z-index: 1;
+      }
+
+      .step:last-child .step-connector {
+        display: none;
+      }
+    }
+
+    @media (max-width: 639px) {
+      .signup-form {
+        flex-direction: column;
+      }
+
+      .signup-form .input-wrap {
+        margin-bottom: 0.5rem;
+      }
+
+      .hero {
+        padding: 8rem 0 4rem;
+      }
+
+      .stat-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== FOCUS STYLES ===== */
+    :focus-visible {
+      outline: 2px solid #3B82F6;
+      outline-offset: 2px;
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      .site-header,
+      .signup-form,
+      .success-message,
+      .btn-primary,
+      .nav-cta {
+        display: none !important;
+      }
+
+      body {
+        color: #000;
+        background: #fff;
+        font-size: 12pt;
+      }
+
+      .hero {
+        background: none !important;
+        color: #000 !important;
+        padding: 2rem 0 !important;
+      }
+
+      .hero h1 .accent {
+        color: #000;
+      }
+
+      .hero-subtitle {
+        color: #333 !important;
+      }
+
+      .final-cta {
+        background: none !important;
+        color: #000 !important;
+      }
+
+      .final-cta .section-subheading {
+        color: #333 !important;
+      }
+
+      section {
+        padding: 2rem 0;
+        break-inside: avoid;
+      }
+
+      .card, .step, .stat {
+        border: 1px solid #ccc;
+        break-inside: avoid;
+      }
+    }
+
+    /* ===== REDUCED MOTION ===== */
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="site-header" role="banner">
+    <div class="container">
+      <nav class="nav" aria-label="Main navigation">
+        <a href="#" class="logo" aria-label="RedeemFlow home">
+          <span class="logo-mark" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 2L2 6V12L9 16L16 12V6L9 2Z" stroke="#FFFFFF" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M9 8L2 6" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M9 8L16 6" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/>
+              <path d="M9 8V16" stroke="#FFFFFF" stroke-width="1.2" stroke-linecap="round"/>
+              <circle cx="9" cy="8" r="1.5" fill="#FFFFFF"/>
+            </svg>
+          </span>
+          RedeemFlow
+        </a>
+        <a href="#signup-hero" class="nav-cta">Join the Beta</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ===== HERO ===== -->
+    <section class="hero" id="top" aria-labelledby="hero-heading">
+      <div class="container">
+        <span class="hero-eyebrow mono reveal">Beta Access</span>
+        <h1 id="hero-heading" class="reveal reveal-delay-1">
+          Your points portfolio is<br>
+          <span class="accent">worth more than you think.</span>
+        </h1>
+        <p class="hero-subtitle reveal reveal-delay-2">
+          RedeemFlow maps the hidden transfer paths across your loyalty programs and finds redemptions that maximize every point.
+        </p>
+        <div id="signup-hero" class="reveal reveal-delay-3">
+          <form class="signup-form" data-form="hero" aria-label="Beta signup" novalidate>
+            <div class="input-wrap">
+              <label for="email-hero" class="sr-only" hidden>Email address</label>
+              <input
+                type="email"
+                id="email-hero"
+                name="email"
+                placeholder="you@example.com"
+                required
+                autocomplete="email"
+                aria-describedby="error-hero"
+              >
+              <span class="error-msg" id="error-hero" role="alert" aria-live="polite"></span>
+            </div>
+            <button type="submit" class="btn-primary">Join the Beta</button>
+          </form>
+          <div class="success-message" role="status" aria-live="polite">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>You're on the list. We'll be in touch.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== VALUE PROPOSITIONS ===== -->
+    <section class="value-props" id="features" aria-labelledby="features-heading">
+      <div class="container">
+        <p class="section-label mono reveal">Why RedeemFlow</p>
+        <h2 id="features-heading" class="section-heading reveal">Stop leaving value on the table.</h2>
+        <p class="section-subheading reveal">
+          Most people redeem points at a fraction of their potential value. RedeemFlow changes that.
+        </p>
+        <div class="cards-grid">
+
+          <!-- Card 1: See Your True Balance -->
+          <article class="card reveal">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/>
+                <rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/>
+                <rect x="14" y="14" width="7" height="7" rx="1"/>
+                <circle cx="6.5" cy="6.5" r="1" fill="currentColor"/>
+                <circle cx="17.5" cy="6.5" r="1" fill="currentColor"/>
+                <circle cx="6.5" cy="17.5" r="1" fill="currentColor"/>
+                <circle cx="17.5" cy="17.5" r="1" fill="currentColor"/>
+              </svg>
+            </div>
+            <h3>See Your True Balance</h3>
+            <p>A portfolio-level view across all your programs with real-time valuations. Know exactly what your points are worth in dollars, not marketing math.</p>
+          </article>
+
+          <!-- Card 2: Find Hidden Paths -->
+          <article class="card reveal reveal-delay-1">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="6" cy="6" r="3"/>
+                <circle cx="18" cy="12" r="3"/>
+                <circle cx="6" cy="18" r="3"/>
+                <path d="M8.5 7.5L15.5 11"/>
+                <path d="M15.5 13L8.5 16.5"/>
+                <path d="M6 9V15"/>
+              </svg>
+            </div>
+            <h3>Find Hidden Paths</h3>
+            <p>Our graph engine discovers transfer routes between programs that maximize your cents-per-point. Paths you didn't know existed, surfaced in seconds.</p>
+          </article>
+
+          <!-- Card 3: Never Miss a Move -->
+          <article class="card reveal reveal-delay-2">
+            <div class="card-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2"/>
+                <path d="M3 10H21"/>
+                <path d="M16 2V6"/>
+                <path d="M8 2V6"/>
+                <path d="M8 14L10.5 16.5L16 11" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <h3>Never Miss a Move</h3>
+            <p>Calendar-aware alerts when your points could save you money on upcoming trips. We watch the landscape so you can act at the right moment.</p>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== HOW IT WORKS ===== -->
+    <section class="how-it-works" id="how-it-works" aria-labelledby="how-heading">
+      <div class="container">
+        <p class="section-label mono reveal">How It Works</p>
+        <h2 id="how-heading" class="section-heading reveal">Three steps to better redemptions.</h2>
+        <p class="section-subheading reveal">
+          No spreadsheets. No guesswork. Just data-driven point optimization.
+        </p>
+        <div class="steps">
+
+          <!-- Step 1: Connect -->
+          <div class="step reveal">
+            <div class="step-number" aria-hidden="true">1</div>
+            <div class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="6" y="10" width="36" height="28" rx="3"/>
+                <path d="M6 18H42"/>
+                <circle cx="14" cy="30" r="3"/>
+                <path d="M20 28H34"/>
+                <path d="M20 33H28"/>
+              </svg>
+            </div>
+            <span class="step-label">Connect</span>
+            <h3>Link your programs</h3>
+            <p>Securely connect your loyalty accounts. We read balances and transfer partners -- never your credentials.</p>
+            <span class="step-connector" aria-hidden="true"></span>
+          </div>
+
+          <!-- Step 2: Analyze -->
+          <div class="step reveal reveal-delay-1">
+            <div class="step-number" aria-hidden="true">2</div>
+            <div class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="24" cy="24" r="18"/>
+                <path d="M24 14V24L30 30"/>
+                <circle cx="24" cy="24" r="3" fill="currentColor" stroke="none"/>
+                <path d="M12 8L8 4" stroke-width="2"/>
+                <path d="M36 8L40 4" stroke-width="2"/>
+              </svg>
+            </div>
+            <span class="step-label">Analyze</span>
+            <h3>We map the landscape</h3>
+            <p>Our graph engine models every transfer path, bonus promotion, and redemption rate in real time.</p>
+            <span class="step-connector" aria-hidden="true"></span>
+          </div>
+
+          <!-- Step 3: Optimize -->
+          <div class="step reveal reveal-delay-2">
+            <div class="step-number" aria-hidden="true">3</div>
+            <div class="step-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 36L16 24L22 30L30 18L40 12"/>
+                <circle cx="40" cy="12" r="3"/>
+                <path d="M34 12H40V18"/>
+                <path d="M8 40H40"/>
+              </svg>
+            </div>
+            <span class="step-label">Optimize</span>
+            <h3>Execute with confidence</h3>
+            <p>Get clear, actionable recommendations ranked by value. One tap to know exactly where to transfer and when to book.</p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== SOCIAL PROOF ===== -->
+    <section class="social-proof" id="about" aria-labelledby="proof-heading">
+      <div class="container">
+        <div class="proof-grid">
+          <div class="proof-content reveal">
+            <p class="section-label mono">The problem is real</p>
+            <h2 id="proof-heading">Built by points obsessives for points obsessives.</h2>
+            <p>
+              The average loyalty program member leaves 30-40% of their points' potential value unredeemed or poorly redeemed. Transfer bonuses expire unnoticed. Sweet spots go unfound. Value quietly evaporates.
+            </p>
+            <p>
+              We built RedeemFlow because we were tired of maintaining sprawling spreadsheets and checking a dozen blogs just to book a single trip. The optimization engine does in seconds what used to take hours of manual research.
+            </p>
+          </div>
+          <div class="reveal reveal-delay-1">
+            <div class="stat-row">
+              <div class="stat">
+                <div class="stat-value">30-40<span class="accent">%</span></div>
+                <div class="stat-label">of point value left on the table by the average member</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">50<span class="accent">+</span></div>
+                <div class="stat-label">loyalty programs and transfer partners mapped in our graph</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value">2.1<span class="accent">x</span></div>
+                <div class="stat-label">average value improvement found by our optimization engine</div>
+              </div>
+              <div class="stat">
+                <div class="stat-value mono">&lt;5<span class="accent">s</span></div>
+                <div class="stat-label">to surface optimal transfer paths across your full portfolio</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FINAL CTA ===== -->
+    <section class="final-cta cta-dark" id="signup" aria-labelledby="cta-heading">
+      <div class="container">
+        <p class="section-label mono reveal" style="color: #3B82F6;">Early Access</p>
+        <h2 id="cta-heading" class="reveal">Get in before launch.</h2>
+        <p class="section-subheading reveal" style="max-width: 520px;">
+          Beta spots are limited. Join the list and be the first to unlock your portfolio's real value.
+        </p>
+        <div class="reveal reveal-delay-1">
+          <form class="signup-form" data-form="footer" aria-label="Beta signup" novalidate>
+            <div class="input-wrap">
+              <label for="email-footer" class="sr-only" hidden>Email address</label>
+              <input
+                type="email"
+                id="email-footer"
+                name="email"
+                placeholder="you@example.com"
+                required
+                autocomplete="email"
+                aria-describedby="error-footer"
+              >
+              <span class="error-msg" id="error-footer" role="alert" aria-live="polite"></span>
+            </div>
+            <button type="submit" class="btn-primary">Join the Beta</button>
+          </form>
+          <div class="success-message" role="status" aria-live="polite">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <span>You're on the list. We'll be in touch.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="footer-inner">
+        <span>&copy; 2026 RedeemFlow, Inc.</span>
+        <div class="footer-links">
+          <a href="#" aria-label="Privacy policy">Privacy</a>
+          <a href="#" aria-label="Terms of service">Terms</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      'use strict';
+
+      /* ===== SCROLL REVEAL (Intersection Observer) ===== */
+      var revealElements = document.querySelectorAll('.reveal');
+      if ('IntersectionObserver' in window) {
+        var observer = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              observer.unobserve(entry.target);
+            }
+          });
+        }, {
+          threshold: 0.1,
+          rootMargin: '0px 0px -40px 0px'
+        });
+        revealElements.forEach(function (el) { observer.observe(el); });
+      } else {
+        revealElements.forEach(function (el) { el.classList.add('visible'); });
+      }
+
+      /* ===== HEADER SCROLL SHADOW ===== */
+      var header = document.querySelector('.site-header');
+      var scrollTicking = false;
+      window.addEventListener('scroll', function () {
+        if (!scrollTicking) {
+          window.requestAnimationFrame(function () {
+            header.classList.toggle('scrolled', window.scrollY > 10);
+            scrollTicking = false;
+          });
+          scrollTicking = true;
+        }
+      }, { passive: true });
+
+      /* ===== EMAIL VALIDATION & SUBMISSION ===== */
+      var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+      document.querySelectorAll('.signup-form').forEach(function (form) {
+        var input = form.querySelector('input[type="email"]');
+        var errorEl = form.querySelector('.error-msg');
+        var successEl = form.nextElementSibling;
+        var submitBtn = form.querySelector('button[type="submit"]');
+
+        input.addEventListener('input', function () {
+          input.classList.remove('invalid');
+          errorEl.classList.remove('show');
+          errorEl.textContent = '';
+        });
+
+        form.addEventListener('submit', function (e) {
+          e.preventDefault();
+          var email = input.value.trim();
+
+          if (!email) {
+            showError('Please enter your email address.');
+            return;
+          }
+          if (!EMAIL_RE.test(email)) {
+            showError('Please enter a valid email address.');
+            return;
+          }
+
+          /* Store in localStorage as temporary measure */
+          try {
+            var stored = JSON.parse(localStorage.getItem('redeemflow_beta') || '[]');
+            if (stored.indexOf(email) === -1) {
+              stored.push(email);
+              localStorage.setItem('redeemflow_beta', JSON.stringify(stored));
+            }
+          } catch (_) { /* localStorage unavailable */ }
+
+          /* Show success, hide form */
+          form.style.display = 'none';
+          successEl.classList.add('show');
+
+          /* Sync both forms */
+          document.querySelectorAll('.signup-form').forEach(function (otherForm) {
+            if (otherForm !== form) {
+              otherForm.style.display = 'none';
+              otherForm.nextElementSibling.classList.add('show');
+            }
+          });
+
+          function showError(msg) {
+            input.classList.add('invalid');
+            errorEl.textContent = msg;
+            errorEl.classList.add('show');
+            input.focus();
+          }
+        });
+      });
+    })();
+  </script>
+
+</body>
+</html>

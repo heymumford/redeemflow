@@ -18,6 +18,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from slowapi.middleware import SlowAPIMiddleware
 
 from redeemflow import __version__
 from redeemflow.billing.routes import router as billing_router
@@ -48,7 +49,7 @@ def _get_allowed_origins() -> list[str]:
     """CORS allowed origins from env, with sensible defaults."""
     origins_str = os.environ.get("ALLOWED_ORIGINS", "")
     if origins_str:
-        return [o.strip() for o in origins_str.split(",")]
+        return [o.strip() for o in origins_str.split(",") if o.strip()]
     # Default: localhost dev + production frontend
     return [
         "http://localhost:3000",
@@ -92,6 +93,7 @@ def _probe_database() -> str:
     if not url:
         return "not_configured"
 
+    engine = None
     try:
         from sqlalchemy import text
 
@@ -100,10 +102,12 @@ def _probe_database() -> str:
         engine = create_engine(url)
         with engine.connect() as conn:
             conn.execute(text("SELECT 1"))
-        engine.dispose()
         return "ok"
-    except Exception as e:
-        return f"unreachable: {e}"
+    except Exception:
+        return "unreachable"
+    finally:
+        if engine is not None:
+            engine.dispose()
 
 
 def _select_adapters() -> dict:
@@ -164,8 +168,9 @@ def create_app() -> FastAPI:
     # Structured request logging
     app.add_middleware(RequestLoggingMiddleware)
 
-    # Rate limiting
+    # Rate limiting — SlowAPIMiddleware enforces default_limits globally
     app.state.limiter = limiter
+    app.add_middleware(SlowAPIMiddleware)
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
     # --- Routers ---

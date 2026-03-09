@@ -125,6 +125,50 @@ class TestAdapterFactory:
         assert resp.status_code == 200
 
 
+class TestCORSEnvConfig:
+    """PH-01: CORS origins configurable via ALLOWED_ORIGINS env var."""
+
+    def test_env_configured_origin_allowed(self, monkeypatch):
+        monkeypatch.setenv("ALLOWED_ORIGINS", "https://custom.example.com")
+        app = create_app()
+        client = TestClient(app)
+        resp = client.get("/health", headers={"Origin": "https://custom.example.com"})
+        assert resp.headers.get("access-control-allow-origin") == "https://custom.example.com"
+
+    def test_env_configured_comma_separated(self, monkeypatch):
+        monkeypatch.setenv("ALLOWED_ORIGINS", "https://a.com , https://b.com")
+        app = create_app()
+        client = TestClient(app)
+        resp = client.get("/health", headers={"Origin": "https://b.com"})
+        assert resp.headers.get("access-control-allow-origin") == "https://b.com"
+
+    def test_env_configured_empty_entries_filtered(self, monkeypatch):
+        monkeypatch.setenv("ALLOWED_ORIGINS", "https://a.com,,")
+        app = create_app()
+        client = TestClient(app)
+        # Empty entries should not cause errors — app still boots
+        resp = client.get("/health")
+        assert resp.status_code == 200
+
+
+class TestAdapterFactoryEnvDispatch:
+    """IP-05: Adapter factory selects real adapter when env vars set."""
+
+    def test_stripe_adapter_selected_when_key_set(self, monkeypatch):
+        monkeypatch.setenv("STRIPE_SECRET_KEY", "sk_test_fake123")
+        monkeypatch.setenv("STRIPE_WEBHOOK_SECRET", "whsec_test_fake")
+        app = create_app()
+        from redeemflow.billing.stripe_adapter import StripeAdapter
+
+        assert isinstance(app.state.payment_provider, StripeAdapter)
+
+    def test_fake_payment_when_no_key(self):
+        app = create_app()
+        from redeemflow.billing.stripe_adapter import FakePaymentProvider
+
+        assert isinstance(app.state.payment_provider, FakePaymentProvider)
+
+
 class TestStructuredLogging:
     """PH-03: Verify structured logging module is importable and functional."""
 

@@ -11,6 +11,8 @@ from redeemflow.billing.stripe_adapter import FakePaymentProvider
 from redeemflow.charity.donation_flow import DonationService, FakeDonationProvider
 from redeemflow.charity.routes import router as charity_router
 from redeemflow.charity.seed_data import CHARITY_NETWORK
+from redeemflow.community.forum import ForumService
+from redeemflow.community.founders_network import FounderDirectory
 from redeemflow.community.models import PoolService
 from redeemflow.community.routes import router as community_router
 from redeemflow.identity.auth import AuthError, get_current_user
@@ -38,6 +40,8 @@ def create_app() -> FastAPI:
         charity_network=CHARITY_NETWORK,
     )
     app.state.pool_service = PoolService(donation_service=app.state.donation_service)
+    app.state.forum_service = ForumService()
+    app.state.founder_directory = FounderDirectory()
     fetcher = FakeBalanceFetcher()
     engine = RecommendationEngine()
 

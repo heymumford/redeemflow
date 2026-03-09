@@ -49,9 +49,27 @@
       padding: 0.5rem 1.5rem; background: transparent; color: #fff;
       border: 1px solid rgba(255,255,255,0.2); border-radius: 9999px;
       font-family: inherit; font-size: 0.875rem; font-weight: 500; cursor: pointer;
-      transition: border-color 0.2s, background 0.2s;
+      transition: border-color 0.2s, background 0.2s; text-decoration: none;
     }
     .btn-login:hover { border-color: rgba(255,255,255,0.5); background: rgba(255,255,255,0.05); }
+    .nav-user {
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .nav-avatar {
+      width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(220,163,122,0.5);
+      object-fit: cover;
+    }
+    .nav-username {
+      font-size: 0.875rem; font-weight: 500; color: #fff;
+      max-width: 120px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .btn-logout {
+      padding: 0.375rem 1rem; background: transparent; color: #81a1c5;
+      border: 1px solid rgba(129,161,197,0.2); border-radius: 9999px;
+      font-family: inherit; font-size: 0.8125rem; font-weight: 500; cursor: pointer;
+      transition: border-color 0.2s, color 0.2s; text-decoration: none;
+    }
+    .btn-logout:hover { border-color: rgba(129,161,197,0.5); color: #fff; }
 
     /* ===== BUTTONS ===== */
     .btn-gold {
@@ -455,7 +473,9 @@
   <header class="nav" role="banner">
     <nav class="nav-inner" aria-label="Main navigation">
       <a href="#" class="logo">RedeemFlow</a>
-      <button class="btn-login" type="button">Log In</button>
+      <div id="nav-auth">
+        <a href="/login" class="btn-login" id="login-btn">Log In</a>
+      </div>
     </nav>
   </header>
 
@@ -954,6 +974,20 @@
           }
         });
       });
+
+      /* Auth state — show user or login button */
+      fetch('/api/me').then(function (r) { return r.json(); }).then(function (data) {
+        var nav = document.getElementById('nav-auth');
+        if (data.user && data.user.email) {
+          var u = data.user;
+          var html = '<div class="nav-user">';
+          if (u.picture) { html += '<img class="nav-avatar" src="' + u.picture + '" alt="">'; }
+          html += '<span class="nav-username">' + (u.name || u.email.split('@')[0]) + '</span>';
+          html += '<a href="/logout" class="btn-logout">Log Out</a>';
+          html += '</div>';
+          nav.innerHTML = html;
+        }
+      }).catch(function () {});
 
       /* Email form — POST to /api/signup */
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

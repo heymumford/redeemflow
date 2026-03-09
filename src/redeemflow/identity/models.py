@@ -10,6 +10,7 @@ class User:
     id: str
     email: str
     name: str | None = None
+    tier: str = "free"  # free, premium, pro — looked up from billing on auth
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, User):

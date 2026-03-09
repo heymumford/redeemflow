@@ -955,12 +955,13 @@
         });
       });
 
-      /* Email form */
+      /* Email form — POST to /api/signup */
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       document.querySelectorAll('.signup-form').forEach(function (form) {
         var input = form.querySelector('input[type="email"]');
         var errorEl = form.querySelector('.error-msg');
         var successEl = form.nextElementSibling;
+        var submitBtn = form.querySelector('button[type="submit"]');
 
         input.addEventListener('input', function () {
           input.classList.remove('invalid');
@@ -974,16 +975,32 @@
           if (!email) { showErr('Please enter your email address.'); return; }
           if (!EMAIL_RE.test(email)) { showErr('Please enter a valid email address.'); return; }
 
-          try {
-            var s = JSON.parse(localStorage.getItem('redeemflow_beta') || '[]');
-            if (s.indexOf(email) === -1) { s.push(email); localStorage.setItem('redeemflow_beta', JSON.stringify(s)); }
-          } catch (_) {}
+          submitBtn.disabled = true;
+          submitBtn.textContent = 'Submitting...';
 
-          form.style.display = 'none';
-          successEl.classList.add('show');
-
-          document.querySelectorAll('.signup-form').forEach(function (f) {
-            if (f !== form) { f.style.display = 'none'; f.nextElementSibling.classList.add('show'); }
+          fetch('/api/signup', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+          })
+          .then(function (res) { return res.json(); })
+          .then(function (data) {
+            if (data.status === 'ok') {
+              form.style.display = 'none';
+              successEl.classList.add('show');
+              document.querySelectorAll('.signup-form').forEach(function (f) {
+                if (f !== form) { f.style.display = 'none'; f.nextElementSibling.classList.add('show'); }
+              });
+            } else {
+              showErr(data.error || 'Something went wrong. Please try again.');
+              submitBtn.disabled = false;
+              submitBtn.textContent = 'Get Early Access';
+            }
+          })
+          .catch(function () {
+            showErr('Network error. Please try again.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Get Early Access';
           });
 
           function showErr(msg) {

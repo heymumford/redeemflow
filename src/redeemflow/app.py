@@ -11,8 +11,10 @@ from redeemflow.billing.stripe_adapter import FakePaymentProvider
 from redeemflow.charity.routes import router as charity_router
 from redeemflow.identity.auth import AuthError, get_current_user
 from redeemflow.identity.models import User
+from redeemflow.optimization.routes import router as optimization_router
 from redeemflow.portfolio.fake_adapter import FakeBalanceFetcher
 from redeemflow.recommendations.engine import RecommendationEngine
+from redeemflow.search.routes import router as search_router
 from redeemflow.valuations.routes import router as valuations_router
 
 
@@ -21,6 +23,8 @@ def create_app() -> FastAPI:
     app.include_router(valuations_router)
     app.include_router(billing_router)
     app.include_router(charity_router)
+    app.include_router(optimization_router)
+    app.include_router(search_router)
     app.state.payment_provider = FakePaymentProvider()
     fetcher = FakeBalanceFetcher()
     engine = RecommendationEngine()

@@ -103,7 +103,11 @@ class FakePaymentProvider:
         if event_type == "checkout.session.completed":
             user_id = payload.get("user_id", "unknown")
             tier_value = payload.get("tier", "free")
-            sub = self.create_subscription(user_id=user_id, tier=SubscriptionTier(tier_value))
+            try:
+                tier = SubscriptionTier(tier_value)
+            except ValueError:
+                return {"status": "error", "detail": f"Invalid tier: {tier_value}"}
+            sub = self.create_subscription(user_id=user_id, tier=tier)
             return {"status": "processed", "subscription": sub.id}
 
         if event_type == "customer.subscription.updated":

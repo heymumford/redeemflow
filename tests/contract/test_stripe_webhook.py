@@ -72,6 +72,17 @@ class TestStripeWebhookContract:
         )
         assert result["status"] == "ignored"
 
+    def test_checkout_invalid_tier_returns_error(self, provider):
+        result = provider.handle_webhook(
+            event_type="checkout.session.completed",
+            payload={
+                "user_id": "auth0|attacker",
+                "tier": "hacker_tier",
+            },
+        )
+        assert result["status"] == "error"
+        assert "Invalid tier" in result["detail"]
+
     def test_webhook_response_always_has_status(self, provider):
         events = [
             ("checkout.session.completed", {"user_id": "u1", "tier": "free"}),

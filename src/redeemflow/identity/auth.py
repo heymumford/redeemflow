@@ -1,5 +1,8 @@
 """Identity domain — JWT verification and auth dependency.
 
+Beck: Test tokens are the simplest thing that works for dev/test.
+Fowler: Auth0 is the production boundary — JWKS cached, env-gated.
+
 Supports both test tokens (dev/test mode) and Auth0 RS256 JWTs (production).
 Test tokens are checked first; if no match, falls through to JWT verification.
 """
@@ -9,6 +12,7 @@ from __future__ import annotations
 import json
 import os
 from base64 import urlsafe_b64decode
+from functools import lru_cache
 
 from fastapi import Request
 
@@ -28,6 +32,19 @@ _TEST_USERS = {
 # Auth0 configuration — set via environment variables in production.
 _AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN", "")
 _AUTH0_AUDIENCE = os.environ.get("AUTH0_AUDIENCE", "")
+
+
+@lru_cache(maxsize=1)
+def _get_jwks_client():
+    """Cached JWKS client — fetches signing keys once, reuses across requests.
+
+    PyJWKClient has its own internal TTL cache (lifespan=300s by default).
+    We additionally cache the client instance itself so we don't recreate it per request.
+    """
+    import jwt
+
+    jwks_url = f"https://{_AUTH0_DOMAIN}/.well-known/jwks.json"
+    return jwt.PyJWKClient(jwks_url, cache_keys=True, lifespan=300)
 
 
 def _decode_jwt_payload(token: str) -> dict:
@@ -52,8 +69,8 @@ def _decode_jwt_payload(token: str) -> dict:
 def _verify_auth0_jwt(token: str) -> User:
     """Verify an Auth0 RS256 JWT and extract user claims.
 
-    In production (AUTH0_DOMAIN set), performs full RS256 verification.
-    Without Auth0 config, rejects unrecognized JWTs.
+    In production (AUTH0_DOMAIN set), performs full RS256 verification
+    with cached JWKS keys. Without Auth0 config, rejects unrecognized JWTs.
     """
     parts = token.split(".")
     if len(parts) != 3:
@@ -62,10 +79,8 @@ def _verify_auth0_jwt(token: str) -> User:
     if _AUTH0_DOMAIN and _AUTH0_AUDIENCE:
         try:
             import jwt
-            from jwt import PyJWKClient
 
-            jwks_url = f"https://{_AUTH0_DOMAIN}/.well-known/jwks.json"
-            jwks_client = PyJWKClient(jwks_url)
+            jwks_client = _get_jwks_client()
             signing_key = jwks_client.get_signing_key_from_jwt(token)
 
             payload = jwt.decode(

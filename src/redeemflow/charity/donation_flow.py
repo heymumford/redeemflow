@@ -1,0 +1,145 @@
+"""Donation pipeline — Change API integration for point-based charitable giving.
+
+Beck: The simplest thing that could work.
+Fowler: Protocol for provider interface, frozen dataclasses for value objects.
+
+IRS Disclosure: Loyalty point donations are NOT tax-deductible. The IRS treats
+loyalty points as rebates, not income. When points are converted to a dollar
+value and donated, the donor has no cost basis — the donation is a conversion
+of a rebate, not a charitable contribution eligible for a tax deduction.
+"""
+
+from __future__ import annotations
+
+import uuid
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from decimal import Decimal
+from enum import Enum
+from typing import Protocol
+
+from redeemflow.charity.models import CharityPartnerNetwork
+from redeemflow.valuations.models import ProgramValuation
+
+
+class DonationStatus(str, Enum):
+    PENDING = "pending"
+    PROCESSING = "processing"
+    COMPLETED = "completed"
+    FAILED = "failed"
+    REFUNDED = "refunded"
+
+
+@dataclass(frozen=True)
+class Donation:
+    id: str
+    user_id: str
+    charity_name: str
+    charity_state: str
+    program_code: str
+    points_donated: int
+    dollar_value: Decimal
+    status: DonationStatus
+    created_at: str
+    completed_at: str | None = None
+    change_api_reference: str | None = None
+
+
+class DonationProvider(Protocol):
+    def process_donation(self, user_id: str, charity_name: str, dollar_amount: Decimal) -> dict: ...
+    def get_donation_status(self, reference_id: str) -> str: ...
+
+
+class FakeDonationProvider:
+    """In-memory donation provider for tests and development."""
+
+    def __init__(self) -> None:
+        self._donations: dict[str, dict] = {}
+
+    def process_donation(self, user_id: str, charity_name: str, dollar_amount: Decimal) -> dict:
+        reference_id = f"fake-ref-{uuid.uuid4().hex[:12]}"
+        self._donations[reference_id] = {
+            "user_id": user_id,
+            "charity_name": charity_name,
+            "dollar_amount": dollar_amount,
+            "status": "completed",
+        }
+        return {"reference_id": reference_id, "status": "completed"}
+
+    def get_donation_status(self, reference_id: str) -> str:
+        record = self._donations.get(reference_id)
+        if record is None:
+            return "unknown"
+        return record["status"]
+
+
+class ChangeApiAdapter:
+    """Real Change API adapter — stubbed until API credentials are available."""
+
+    def process_donation(self, user_id: str, charity_name: str, dollar_amount: Decimal) -> dict:
+        raise NotImplementedError("Change API integration not yet configured")
+
+    def get_donation_status(self, reference_id: str) -> str:
+        raise NotImplementedError("Change API integration not yet configured")
+
+
+class DonationService:
+    """Orchestrates point-to-dollar conversion and donation processing."""
+
+    def __init__(
+        self,
+        provider: DonationProvider,
+        valuations: dict[str, ProgramValuation],
+        charity_network: CharityPartnerNetwork,
+    ) -> None:
+        self._provider = provider
+        self._valuations = valuations
+        self._charity_network = charity_network
+        self._donations: list[Donation] = []
+
+    def donate(
+        self,
+        user_id: str,
+        charity_name: str,
+        charity_state: str,
+        program_code: str,
+        points: int,
+    ) -> Donation:
+        if points <= 0:
+            raise ValueError("points must be greater than zero")
+
+        valuation = self._valuations.get(program_code)
+        if valuation is None:
+            raise ValueError(f"Unknown program: {program_code}")
+
+        # Validate charity exists in network
+        matches = [c for c in self._charity_network.charities if c.name == charity_name and c.state == charity_state]
+        if not matches:
+            raise ValueError(f"Unknown charity: {charity_name} in {charity_state}")
+
+        dollar_value = valuation.dollar_value(points)
+        now = datetime.now(timezone.utc).isoformat()
+
+        result = self._provider.process_donation(user_id, charity_name, dollar_value)
+
+        donation = Donation(
+            id=f"don-{uuid.uuid4().hex[:12]}",
+            user_id=user_id,
+            charity_name=charity_name,
+            charity_state=charity_state,
+            program_code=program_code,
+            points_donated=points,
+            dollar_value=dollar_value,
+            status=DonationStatus.COMPLETED,
+            created_at=now,
+            completed_at=now,
+            change_api_reference=result.get("reference_id"),
+        )
+        self._donations.append(donation)
+        return donation
+
+    def get_user_donations(self, user_id: str) -> list[Donation]:
+        return [d for d in self._donations if d.user_id == user_id]
+
+    def get_all_donations(self) -> list[Donation]:
+        return list(self._donations)

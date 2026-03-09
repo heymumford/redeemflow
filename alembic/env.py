@@ -1,4 +1,5 @@
 """Alembic environment — reads DATABASE_URL from env, runs migrations."""
+
 from __future__ import annotations
 
 import os
@@ -18,7 +19,10 @@ target_metadata = metadata
 
 
 def get_url() -> str:
-    return os.environ.get("DATABASE_URL", config.get_main_option("sqlalchemy.url", ""))
+    from redeemflow.infra.database import normalize_database_url
+
+    url = os.environ.get("DATABASE_URL", config.get_main_option("sqlalchemy.url", ""))
+    return normalize_database_url(url) if url else ""
 
 
 def run_migrations_offline() -> None:

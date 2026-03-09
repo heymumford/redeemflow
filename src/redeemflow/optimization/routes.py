@@ -1,9 +1,11 @@
-"""Optimization API — personalized optimizer, timing advisor, alerts.
+"""Optimization API — personalized optimizer, timing advisor, alerts, multi-traveler.
 
 All endpoints require Premium+ auth.
 """
 
 from __future__ import annotations
+
+from decimal import Decimal
 
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
@@ -12,11 +14,13 @@ from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
 from redeemflow.notifications.alerts import AlertEngine
 from redeemflow.optimization.graph import TransferGraph
+from redeemflow.optimization.multi_traveler import MultiTravelerOptimizer, Traveler
 from redeemflow.optimization.personal_optimizer import PersonalOptimizer
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
 from redeemflow.optimization.timing_advisor import TimingAdvisor
 from redeemflow.portfolio.expiration import EXPIRATION_POLICIES
 from redeemflow.portfolio.awardwallet import FakeAwardWalletAdapter
+from redeemflow.portfolio.models import PointBalance
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
 
 router = APIRouter()
@@ -38,6 +42,16 @@ _FETCHER = FakeAwardWalletAdapter()
 class TimingAdviceRequest(BaseModel):
     program_code: str
     points: int
+
+
+class TravelerInput(BaseModel):
+    name: str
+    balances: list[dict]
+
+
+class MultiTravelerRequest(BaseModel):
+    destination: str
+    travelers: list[TravelerInput]
 
 
 @router.post("/api/optimize")
@@ -94,4 +108,40 @@ def alerts(user: User = Depends(get_current_user)):
             }
             for a in alert_list
         ]
+    }
+
+
+@router.post("/api/multi-traveler")
+def multi_traveler(req: MultiTravelerRequest, user: User = Depends(get_current_user)):
+    """Plan a multi-traveler trip with optimized point redemptions."""
+    travelers = []
+    for t in req.travelers:
+        balances = [
+            PointBalance(
+                program_code=b["program_code"],
+                points=b["points"],
+                cpp_baseline=Decimal(str(b.get("cpp_baseline", "1.5"))),
+            )
+            for b in t.balances
+        ]
+        travelers.append(Traveler(name=t.name, balances=balances))
+
+    optimizer = MultiTravelerOptimizer(graph=_GRAPH, valuations=PROGRAM_VALUATIONS)
+    plan = optimizer.plan(req.destination, travelers)
+    return {
+        "destination": plan.destination,
+        "travelers": [{"name": t.name, "balance_count": len(t.balances)} for t in plan.travelers],
+        "bookings": [
+            {
+                "traveler_name": b.traveler_name,
+                "program_code": b.program_code,
+                "points_used": b.points_used,
+                "booking_type": b.booking_type,
+                "estimated_value": str(b.estimated_value),
+            }
+            for b in plan.bookings
+        ],
+        "total_points_used": plan.total_points_used,
+        "total_estimated_value": str(plan.total_estimated_value),
+        "total_estimated_savings": str(plan.total_estimated_savings),
     }

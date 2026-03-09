@@ -49,7 +49,18 @@ class RequestLoggingMiddleware(BaseHTTPMiddleware):
         logger = get_logger("http")
         start = time.monotonic()
 
-        response = await call_next(request)
+        try:
+            response = await call_next(request)
+        except Exception:
+            duration_ms = round((time.monotonic() - start) * 1000, 1)
+            logger.error(
+                "request_error",
+                method=request.method,
+                path=request.url.path,
+                status=500,
+                duration_ms=duration_ms,
+            )
+            raise
 
         duration_ms = round((time.monotonic() - start) * 1000, 1)
         logger.info(

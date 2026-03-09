@@ -9,6 +9,7 @@ from __future__ import annotations
 import pytest
 from fastapi.testclient import TestClient
 
+from redeemflow import __version__
 from redeemflow.app import create_app
 
 
@@ -57,7 +58,7 @@ class TestDeepHealthCheck:
         resp = client.get("/health")
         assert resp.status_code == 200
         body = resp.json()
-        assert body["version"] == "0.2.0"
+        assert body["version"] == __version__
 
     def test_health_includes_dependencies(self, client):
         resp = client.get("/health")
@@ -84,6 +85,20 @@ class TestGlobalErrorBoundary:
     def test_auth_error_is_json(self, client):
         resp = client.get("/api/portfolio")
         assert resp.headers["content-type"] == "application/json"
+
+    def test_unhandled_exception_returns_500_json(self):
+        app = create_app()
+
+        @app.get("/api/_test_crash")
+        def crash():
+            raise RuntimeError("deliberate test crash")
+
+        client = TestClient(app, raise_server_exceptions=False)
+        resp = client.get("/api/_test_crash")
+        assert resp.status_code == 500
+        body = resp.json()
+        assert body["detail"] == "Internal server error"
+        assert "request_id" in body
 
 
 class TestRequestIdPropagation:

@@ -18,7 +18,7 @@ def normalize_database_url(url: str) -> str:
     if url.startswith("postgres://"):
         url = url.replace("postgres://", "postgresql://", 1)
     # Force psycopg v3 driver (not psycopg2)
-    if url.startswith("postgresql://"):
+    if url.startswith("postgresql://") and "+psycopg" not in url:
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
     return url
 

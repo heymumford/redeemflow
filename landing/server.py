@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
+import html
 import json
 import logging
 import os
@@ -14,6 +15,7 @@ import time
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 from datetime import UTC, datetime
 from pathlib import Path
+from urllib.parse import urlencode
 
 import httpx
 from fastapi import FastAPI, Request
@@ -100,6 +102,10 @@ AUTH0_CLIENT_ID = os.environ.get("AUTH0_CLIENT_ID", "")
 AUTH0_CLIENT_SECRET = os.environ.get("AUTH0_CLIENT_SECRET", "")
 AUTH0_CALLBACK_URL = os.environ.get("AUTH0_CALLBACK_URL", "")
 SESSION_SECRET = os.environ.get("SESSION_SECRET", "")
+SITE_URL = os.environ.get("SITE_URL", "https://redeemflow.io")
+
+if len(SESSION_SECRET) < 32:
+    log_event("warning", "SESSION_SECRET is weak or unset — sessions are insecure")
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
@@ -168,6 +174,7 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         csp = (
             "default-src 'self'; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
@@ -186,8 +193,12 @@ app.add_middleware(SecurityHeadersMiddleware)
 
 # --- Database ---
 def _get_db() -> sqlite3.Connection:
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    parent = os.path.dirname(DB_PATH)
+    if parent:
+        os.makedirs(parent, exist_ok=True)
     conn = sqlite3.connect(DB_PATH)
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute("PRAGMA busy_timeout=5000")
     conn.execute(
         """CREATE TABLE IF NOT EXISTS signups (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -246,6 +257,8 @@ class SignupRequest(BaseModel):
 @app.post("/api/signup")
 async def signup(req: SignupRequest, request: Request):
     email = req.email.strip().lower()
+    if len(email) > 254:
+        return JSONResponse(status_code=400, content={"error": "Invalid email"})
     if not email or not EMAIL_RE.match(email):
         return JSONResponse(status_code=400, content={"error": "Invalid email"})
 
@@ -275,12 +288,14 @@ async def list_signups(request: Request):
         return JSONResponse(status_code=403, content={"error": "Admin access not configured"})
 
     auth = request.headers.get("authorization", "")
-    if auth != f"Bearer {ADMIN_TOKEN}":
+    if not hmac.compare_digest(auth, f"Bearer {ADMIN_TOKEN}"):
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
 
     conn = _get_db()
-    rows = conn.execute("SELECT email, created_at, ip FROM signups ORDER BY created_at DESC").fetchall()
-    conn.close()
+    try:
+        rows = conn.execute("SELECT email, created_at, ip FROM signups ORDER BY created_at DESC").fetchall()
+    finally:
+        conn.close()
     return {
         "count": len(rows),
         "signups": [{"email": r[0], "created_at": r[1], "ip": r[2]} for r in rows],
@@ -293,14 +308,16 @@ async def list_users(request: Request):
         return JSONResponse(status_code=403, content={"error": "Admin access not configured"})
 
     auth = request.headers.get("authorization", "")
-    if auth != f"Bearer {ADMIN_TOKEN}":
+    if not hmac.compare_digest(auth, f"Bearer {ADMIN_TOKEN}"):
         return JSONResponse(status_code=401, content={"error": "Unauthorized"})
 
     conn = _get_db()
-    rows = conn.execute(
-        "SELECT sub, email, name, provider, created_at, last_login FROM users ORDER BY last_login DESC"
-    ).fetchall()
-    conn.close()
+    try:
+        rows = conn.execute(
+            "SELECT sub, email, name, provider, created_at, last_login FROM users ORDER BY last_login DESC"
+        ).fetchall()
+    finally:
+        conn.close()
     return {
         "count": len(rows),
         "users": [
@@ -325,6 +342,9 @@ async def login(request: Request):
     for k in [k for k, v in _pending_states.items() if v["ts"] < cutoff]:
         _pending_states.pop(k, None)
 
+    if len(_pending_states) > 10000:
+        return JSONResponse(status_code=429, content={"error": "Too many pending logins"})
+
     params = {
         "response_type": "code",
         "client_id": AUTH0_CLIENT_ID,
@@ -333,7 +353,7 @@ async def login(request: Request):
         "state": state,
         "nonce": nonce,
     }
-    qs = "&".join(f"{k}={v}" for k, v in params.items())
+    qs = urlencode(params)
     return RedirectResponse(f"https://{AUTH0_DOMAIN}/authorize?{qs}")
 
 
@@ -341,7 +361,7 @@ async def login(request: Request):
 async def callback(request: Request):
     error = request.query_params.get("error")
     if error:
-        desc = request.query_params.get("error_description", error)
+        desc = html.escape(request.query_params.get("error_description", error))
         return HTMLResponse(
             f"<h3>Login failed</h3><p>{desc}</p><p><a href='/'>Back to home</a></p>",
             status_code=400,
@@ -437,7 +457,7 @@ async def callback(request: Request):
 @app.get("/logout")
 async def logout():
     response = RedirectResponse(
-        f"https://{AUTH0_DOMAIN}/v2/logout?client_id={AUTH0_CLIENT_ID}&returnTo=https://redeemflow.io",
+        f"https://{AUTH0_DOMAIN}/v2/logout?client_id={AUTH0_CLIENT_ID}&returnTo={SITE_URL}",
         status_code=302,
     )
     response.delete_cookie("session", path="/")

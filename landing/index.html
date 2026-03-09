@@ -3,21 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="robots" content="noindex, nofollow">
-  <meta name="description" content="RedeemFlow — AI-powered loyalty points optimization. Find hidden transfer paths and maximize the value of your miles, hotel points, and credit card rewards.">
+  <meta name="robots" content="index, follow">
+  <meta name="description" content="RedeemFlow: AI-powered loyalty points optimization. Find hidden transfer paths and maximize your miles, hotel points, and rewards.">
+  <meta name="theme-color" content="#0A0F1C">
   <meta property="og:title" content="RedeemFlow — Redeem More. Waste Less.">
   <meta property="og:description" content="AI-powered loyalty points optimization. Discover hidden transfer paths, monitor award availability, and maximize every mile.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://redeemflow.io">
   <meta property="og:site_name" content="RedeemFlow">
-  <meta property="og:image" content="https://redeemflow.io/og-image.png">
+  <meta property="og:image" content="https://redeemflow-landing.fly.dev/img/hero-resort.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="RedeemFlow — Redeem More. Waste Less.">
+  <meta name="twitter:description" content="AI-powered loyalty points optimization. Find hidden transfer paths and maximize every mile.">
+  <meta name="twitter:image" content="https://redeemflow-landing.fly.dev/img/hero-resort.jpg">
   <link rel="canonical" href="https://redeemflow.io">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L28 16L16 30L4 16Z' fill='%232D5DA1'/%3E%3Cpath d='M16 6L24 16L16 26L8 16Z' fill='%23DCA37A'/%3E%3C/svg%3E">
   <title>RedeemFlow — Redeem More. Waste Less.</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
-  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
     /* ===== RESET ===== */
@@ -42,7 +49,7 @@
 
       /* Accent */
       --accent: #2D5DA1;
-      --accent-light: #3A6FB5;
+      --accent-light: #6B9FD6;
       --accent-pale: #E8F0FA;
       --accent-warm: #C4873B;
       --accent-warm-light: #DCA37A;
@@ -52,17 +59,30 @@
 
       /* Status */
       --green: #2E7D32;
-      --amber: #E65100;
+      --amber: #BF4400;
       --red: #C62828;
 
       /* Typography */
-      --font-serif: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+      --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
       --font-sans: 'Inter', 'Helvetica Neue', Arial, sans-serif;
       --font-mono: 'IBM Plex Mono', 'SF Mono', Consolas, monospace;
 
       /* Timing */
       --ease-premium: cubic-bezier(0.32, 0.94, 0.6, 1);
     }
+
+    /* ===== TEXTURED BACKGROUNDS ===== */
+    .section--light { position: relative; }
+    .section--light::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      background-size: 256px 256px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .section--light > * { position: relative; z-index: 1; }
 
     body {
       font-family: var(--font-sans);
@@ -84,6 +104,26 @@
     a:focus-visible, button:focus-visible, input:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
+    }
+
+    .hero :focus-visible,
+    .section--inverse :focus-visible,
+    .waitlist :focus-visible,
+    .footer :focus-visible {
+      outline-color: #FFFFFF;
+      outline-offset: 3px;
+    }
+
+    /* ===== SCREEN READER ONLY ===== */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      border: 0;
     }
 
     /* ===== TYPOGRAPHY ===== */
@@ -127,7 +167,7 @@
 
     /* ===== LAYOUT ===== */
     .container {
-      max-width: 1140px;
+      max-width: 1240px;
       margin: 0 auto;
       padding: 0 24px;
     }
@@ -191,15 +231,39 @@
     }
 
     .btn--primary {
-      background: linear-gradient(135deg, var(--accent-warm-light), var(--accent-warm-dark));
-      color: #FFFFFF;
+      background: var(--accent-warm-dark);
+      color: white;
+      border: none;
+      padding: 14px 32px;
+      font-family: var(--font-sans);
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.25s var(--ease-premium);
+      position: relative;
+      overflow: hidden;
     }
-
+    .btn--primary::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent-warm-light);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s var(--ease-premium);
+    }
     .btn--primary:hover {
-      background: linear-gradient(135deg, var(--accent-warm), var(--accent-warm-dark));
-      filter: brightness(1.08);
+      background: #7A4219;
       transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(196, 135, 59, 0.3);
+      box-shadow: 0 4px 12px rgba(140, 77, 31, 0.3);
+    }
+    .btn--primary:hover::after {
+      transform: scaleX(1);
     }
 
     .btn--large {
@@ -228,10 +292,11 @@
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom-color: rgba(0, 0, 0, 0.06);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
     }
 
     .nav__inner {
-      max-width: 1140px;
+      max-width: 1240px;
       margin: 0 auto;
       width: 100%;
       display: flex;
@@ -285,18 +350,19 @@
       font-weight: 600;
       font-size: 14px;
       padding: 8px 20px;
-      background: linear-gradient(135deg, var(--accent-warm-light), var(--accent-warm-dark));
+      background: var(--accent-warm-dark);
       color: #FFFFFF;
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 4px;
       transition: background 0.2s var(--ease-premium), transform 0.2s var(--ease-premium), box-shadow 0.2s var(--ease-premium);
+      position: relative;
+      overflow: hidden;
     }
 
     .nav__btn:hover {
-      background: linear-gradient(135deg, var(--accent-warm), var(--accent-warm-dark));
-      filter: brightness(1.08);
+      background: #7A4219;
       transform: translateY(-1px);
-      box-shadow: 0 2px 8px rgba(196, 135, 59, 0.25);
+      box-shadow: 0 2px 8px rgba(140, 77, 31, 0.25);
     }
 
     /* ===== HERO ===== */
@@ -466,6 +532,13 @@
       margin-bottom: 32px;
     }
 
+    .dashboard__card {
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+      overflow: hidden;
+      border: 1px solid rgba(0,0,0,0.06);
+    }
+
     .dashboard__stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -499,6 +572,11 @@
     .dashboard__stat-value--green { color: #66BB6A; }
     .dashboard__stat-value--amber { color: #FFA726; }
 
+    .dashboard__table-scroll {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
     .dashboard__table {
       width: 100%;
       border-collapse: collapse;
@@ -506,6 +584,10 @@
 
     .dashboard__table thead {
       background: var(--surface-inverse);
+    }
+
+    .dashboard__table thead tr {
+      background-color: var(--surface-inverse);
     }
 
     .dashboard__table th {
@@ -538,11 +620,11 @@
       font-weight: 500;
     }
 
-    .dashboard__table tr:nth-child(even) {
+    .dashboard__table tbody tr:nth-child(even) {
       background: var(--surface-secondary);
     }
 
-    .dashboard__table tr:nth-child(odd) {
+    .dashboard__table tbody tr:nth-child(odd) {
       background: var(--surface-primary);
     }
 
@@ -697,7 +779,7 @@
     }
 
     .badge--safe { background: rgba(46, 125, 50, 0.1); color: var(--green); }
-    .badge--warn { background: rgba(230, 81, 0, 0.1); color: var(--amber); }
+    .badge--warn { background: rgba(191, 68, 0, 0.1); color: var(--amber); }
     .badge--danger { background: rgba(198, 40, 40, 0.1); color: var(--red); }
 
     /* Value comparison mock */
@@ -828,7 +910,7 @@
     .testimonial__attr {
       font-family: var(--font-mono);
       font-size: 12px;
-      color: var(--accent-warm);
+      color: var(--text-secondary);
       letter-spacing: 0.5px;
     }
 
@@ -1021,6 +1103,14 @@
       color: var(--accent-warm-light);
     }
 
+    .waitlist__label {
+      font-size: 13px;
+      color: var(--text-inverse-secondary);
+      margin-bottom: 8px;
+      display: block;
+      font-weight: 500;
+    }
+
     .waitlist__form {
       display: flex;
       gap: 0;
@@ -1060,7 +1150,7 @@
       font-family: var(--font-sans);
       font-weight: 600;
       font-size: 15px;
-      background: linear-gradient(135deg, var(--accent-warm-light), var(--accent-warm-dark));
+      background: var(--accent-warm-dark);
       color: #FFFFFF;
       border: none;
       border-radius: 0 8px 8px 0;
@@ -1070,8 +1160,7 @@
     }
 
     .waitlist__submit:hover {
-      background: linear-gradient(135deg, var(--accent-warm), var(--accent-warm-dark));
-      filter: brightness(1.08);
+      background: #7A4219;
     }
 
     .waitlist__submit:active {
@@ -1212,7 +1301,12 @@
       vertical-align: super;
       line-height: 1;
       cursor: pointer;
-      padding: 0 2px;
+      display: inline-block;
+      padding: 8px;
+      margin: -8px;
+      min-width: 44px;
+      min-height: 44px;
+      text-align: center;
     }
     .cite:hover {
       text-decoration: underline;
@@ -1336,6 +1430,9 @@
 
       body { font-size: 16px; }
 
+      .eyebrow { font-size: 12px; }
+      .dashboard__stat-label { font-size: 12px; }
+
       .dashboard__stats {
         grid-template-columns: 1fr 1fr;
       }
@@ -1361,17 +1458,18 @@
 
       .waitlist__form {
         flex-direction: column;
-      }
-
-      .waitlist__input, .waitlist__submit {
-        width: 100%;
+        gap: 12px;
       }
 
       .waitlist__input {
+        flex: none;
+        height: 48px;
+        width: 100%;
         border-radius: 8px;
       }
 
       .waitlist__submit {
+        width: 100%;
         border-radius: 8px;
       }
 
@@ -1413,6 +1511,8 @@
         text-align: center;
       }
 
+      .footer__links a { padding: 10px 0; display: inline-block; }
+
       .big-stat { padding: 64px 0; }
       .big-stat__value { font-size: clamp(48px, 10vw, 72px); }
 
@@ -1443,6 +1543,28 @@
     }
   </style>
   <noscript><style>.fade-in { opacity: 1; transform: none; }</style></noscript>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "RedeemFlow",
+    "description": "AI-powered loyalty points optimization platform that finds hidden transfer paths and maximizes the value of your miles, hotel points, and credit card rewards.",
+    "url": "https://redeemflow.io",
+    "applicationCategory": "FinanceApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD",
+      "description": "Free tier available"
+    },
+    "creator": {
+      "@type": "Organization",
+      "name": "RedeemFlow",
+      "url": "https://redeemflow.io"
+    }
+  }
+  </script>
 </head>
 <body>
   <a href="#main-content" class="skip-link">Skip to content</a>
@@ -1459,8 +1581,8 @@
           <path class="logo-mark" d="M4 14L14 24L24 14" fill="none" stroke-width="2" stroke-linejoin="miter"/>
           <path class="logo-mark" d="M9 14L14 9L19 14L14 19Z" fill="none" stroke-width="1.5"/>
           <!-- Text -->
-          <text x="32" y="20" class="logo-redeem" font-family="'Source Serif 4', Georgia, serif" font-weight="600" font-size="18">Redeem</text>
-          <text x="108" y="20" class="logo-flow" font-family="'Source Serif 4', Georgia, serif" font-weight="300" font-size="18">Flow</text>
+          <text x="32" y="20" class="logo-redeem" font-family="'Fraunces', Georgia, serif" font-weight="600" font-size="18">Redeem</text>
+          <text x="108" y="20" class="logo-flow" font-family="'Fraunces', Georgia, serif" font-weight="300" font-size="18">Flow</text>
         </svg>
       </a>
       <div class="nav__actions">
@@ -1473,7 +1595,7 @@
   <main id="main-content">
 
   <!-- HERO -->
-  <section class="hero">
+  <section class="hero" aria-label="Introduction">
     <div class="hero__kaleidoscope" aria-hidden="true">
       <img class="hero__slide" src="/img/hero-resort.jpg" alt="" loading="eager">
       <img class="hero__slide" src="/img/hero-terminal.jpg" alt="" loading="lazy">
@@ -1497,7 +1619,7 @@
 
 
   <!-- WHAT WE DO -->
-  <section class="what-we-do section fade-in" id="about">
+  <section class="what-we-do section section--light fade-in" id="about">
     <div class="container">
       <div class="what-we-do__inner">
         <span class="eyebrow">The Problem</span>
@@ -1509,71 +1631,75 @@
   </section>
 
   <!-- MOCK DASHBOARD -->
-  <section class="dashboard">
+  <section class="dashboard" aria-label="Portfolio Dashboard Preview">
     <div class="container">
       <div class="dashboard__eyebrow">
         <span class="eyebrow">Your Dashboard &mdash; Preview</span>
       </div>
-      <div class="dashboard__stats">
-        <div class="dashboard__stat-card">
-          <div class="dashboard__stat-label">Total Points</div>
-          <div class="dashboard__stat-value">487,200</div>
+      <div class="dashboard__card">
+        <div class="dashboard__stats">
+          <div class="dashboard__stat-card">
+            <div class="dashboard__stat-label">Total Points</div>
+            <div class="dashboard__stat-value">487,200</div>
+          </div>
+          <div class="dashboard__stat-card">
+            <div class="dashboard__stat-label">Cash Value</div>
+            <div class="dashboard__stat-value">$3,898</div>
+          </div>
+          <div class="dashboard__stat-card">
+            <div class="dashboard__stat-label">Optimized Value</div>
+            <div class="dashboard__stat-value dashboard__stat-value--green">$7,640</div>
+          </div>
+          <div class="dashboard__stat-card">
+            <div class="dashboard__stat-label">Expiring Soon</div>
+            <div class="dashboard__stat-value dashboard__stat-value--amber">24,000</div>
+          </div>
         </div>
-        <div class="dashboard__stat-card">
-          <div class="dashboard__stat-label">Cash Value</div>
-          <div class="dashboard__stat-value">$3,898</div>
-        </div>
-        <div class="dashboard__stat-card">
-          <div class="dashboard__stat-label">Optimized Value</div>
-          <div class="dashboard__stat-value dashboard__stat-value--green">$7,640</div>
-        </div>
-        <div class="dashboard__stat-card">
-          <div class="dashboard__stat-label">Expiring Soon</div>
-          <div class="dashboard__stat-value dashboard__stat-value--amber">24,000</div>
+        <div class="dashboard__table-scroll">
+          <table class="dashboard__table" role="table">
+            <thead>
+              <tr>
+                <th scope="col">Program</th>
+                <th scope="col">Balance</th>
+                <th scope="col">Expiration</th>
+                <th scope="col">cpp</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="program-name">Chase Ultimate Rewards</td>
+                <td>186,400</td>
+                <td>None</td>
+                <td class="cpp-good">2.1 <span class="sr-only">(good)</span></td>
+              </tr>
+              <tr>
+                <td class="program-name">AA AAdvantage</td>
+                <td>124,800</td>
+                <td>None</td>
+                <td class="cpp-good">1.8 <span class="sr-only">(good)</span></td>
+              </tr>
+              <tr>
+                <td class="program-name">Marriott Bonvoy</td>
+                <td>92,000</td>
+                <td>Mar 2027</td>
+                <td class="cpp-warn">0.9 <span class="sr-only">(low)</span></td>
+              </tr>
+              <tr>
+                <td class="program-name">Amex Membership Rewards</td>
+                <td>84,000</td>
+                <td>None</td>
+                <td class="cpp-good">2.0 <span class="sr-only">(good)</span></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
-      <table class="dashboard__table" role="table">
-        <thead>
-          <tr>
-            <th scope="col">Program</th>
-            <th scope="col">Balance</th>
-            <th scope="col">Expiration</th>
-            <th scope="col">cpp</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td class="program-name">Chase Ultimate Rewards</td>
-            <td>186,400</td>
-            <td>None</td>
-            <td class="cpp-good">2.1</td>
-          </tr>
-          <tr>
-            <td class="program-name">AA AAdvantage</td>
-            <td>124,800</td>
-            <td>None</td>
-            <td class="cpp-good">1.8</td>
-          </tr>
-          <tr>
-            <td class="program-name">Marriott Bonvoy</td>
-            <td>92,000</td>
-            <td>Mar 2027</td>
-            <td class="cpp-warn">0.9</td>
-          </tr>
-          <tr>
-            <td class="program-name">Amex Membership Rewards</td>
-            <td>84,000</td>
-            <td>None</td>
-            <td class="cpp-good">2.0</td>
-          </tr>
-        </tbody>
-      </table>
       <p style="font-size: 13px; color: var(--text-tertiary); margin-top: 16px; text-align: center;"><abbr title="cents per point">cpp</abbr> values represent median redemption value across available award inventory. <a href="#citations" class="cite" aria-label="Source 5">5</a></p>
     </div>
   </section>
 
   <!-- DISCOVER -->
-  <section class="section section--secondary fade-in" id="features">
+  <section class="section section--secondary section--light fade-in" id="features">
     <div class="container">
       <span class="eyebrow">Discover</span>
       <h2 style="margin-bottom: 48px;">Hidden transfer paths across every program</h2>
@@ -1638,7 +1764,7 @@
   </section>
 
   <!-- OPTIMIZE -->
-  <section class="section fade-in">
+  <section class="section section--light fade-in">
     <div class="container">
       <div class="feature-split">
         <div class="feature-text">
@@ -1675,7 +1801,7 @@
   </section>
 
   <!-- MAXIMIZE -->
-  <section class="section section--secondary fade-in">
+  <section class="section section--secondary section--light fade-in">
     <div class="container">
       <div class="feature-split feature-split--reversed">
         <div class="feature-text">
@@ -1768,7 +1894,7 @@
   </section>
 
   <!-- HOW IT WORKS -->
-  <section class="section section--secondary fade-in" id="how-it-works">
+  <section class="section section--secondary section--light fade-in" id="how-it-works">
     <div class="container">
       <span class="eyebrow">How It Works</span>
       <h2 style="margin-bottom: 48px;">Three steps to maximum value</h2>
@@ -1812,18 +1938,18 @@
   </section>
 
   <!-- FAQ -->
-  <section class="section section--secondary fade-in" id="faq">
+  <section class="section section--secondary section--light fade-in" id="faq">
     <div class="container">
       <span class="eyebrow">FAQ</span>
       <h2 style="margin-bottom: 48px;">Common questions</h2>
       <div class="faq-list" role="list">
 
         <div class="faq-item" data-open="false" role="listitem">
-          <button class="faq-item__trigger" aria-expanded="false">
+          <button class="faq-item__trigger" aria-expanded="false" aria-controls="faq-answer-1">
             How does RedeemFlow access my loyalty accounts?
             <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" role="region">
+          <div class="faq-item__answer" id="faq-answer-1" role="region">
             <div class="faq-item__answer-inner">
               RedeemFlow uses read-only connections to pull balances, expiration dates, and program rules. We never initiate transfers or redemptions on your behalf. Every action requires your explicit confirmation.
             </div>
@@ -1831,11 +1957,11 @@
         </div>
 
         <div class="faq-item" data-open="false" role="listitem">
-          <button class="faq-item__trigger" aria-expanded="false">
+          <button class="faq-item__trigger" aria-expanded="false" aria-controls="faq-answer-2">
             What loyalty programs do you support?
             <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" role="region">
+          <div class="faq-item__answer" id="faq-answer-2" role="region">
             <div class="faq-item__answer-inner">
               At launch, RedeemFlow supports all major credit card transfer programs (Chase UR, Amex MR, Citi ThankYou, Capital One Miles), airline programs (United, AA, Delta, Southwest, Alaska, JetBlue), and hotel programs (Marriott, Hilton, Hyatt, IHG). More programs are added every month.
             </div>
@@ -1843,11 +1969,11 @@
         </div>
 
         <div class="faq-item" data-open="false" role="listitem">
-          <button class="faq-item__trigger" aria-expanded="false">
+          <button class="faq-item__trigger" aria-expanded="false" aria-controls="faq-answer-3">
             How is this different from a travel agent?
             <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" role="region">
+          <div class="faq-item__answer" id="faq-answer-3" role="region">
             <div class="faq-item__answer-inner">
               Travel agents optimize individual bookings. RedeemFlow optimizes your entire portfolio of points across every program simultaneously. The graph engine finds cross-program transfer paths that no human could track manually. At $149/year versus $200+ per booking with a concierge, the economics are not comparable.
             </div>
@@ -1855,11 +1981,11 @@
         </div>
 
         <div class="faq-item" data-open="false" role="listitem">
-          <button class="faq-item__trigger" aria-expanded="false">
+          <button class="faq-item__trigger" aria-expanded="false" aria-controls="faq-answer-4">
             Can RedeemFlow make transfers or bookings for me?
             <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" role="region">
+          <div class="faq-item__answer" id="faq-answer-4" role="region">
             <div class="faq-item__answer-inner">
               No. RedeemFlow finds and recommends. You execute. This is a deliberate architectural decision. Keeping the user in control eliminates liability risk and ensures you never see a transfer you did not explicitly authorize.
             </div>
@@ -1867,11 +1993,11 @@
         </div>
 
         <div class="faq-item" data-open="false" role="listitem">
-          <button class="faq-item__trigger" aria-expanded="false">
+          <button class="faq-item__trigger" aria-expanded="false" aria-controls="faq-answer-5">
             What does it cost?
             <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" role="region">
+          <div class="faq-item__answer" id="faq-answer-5" role="region">
             <div class="faq-item__answer-inner">
               Balance tracking and expiration alerts are free. The full optimization engine, including cross-program transfer analysis, proactive deal scanning, and calendar sync, is $149 per year. Most users recover the cost with their first optimized redemption.
             </div>
@@ -1879,11 +2005,11 @@
         </div>
 
         <div class="faq-item" data-open="false" role="listitem">
-          <button class="faq-item__trigger" aria-expanded="false">
+          <button class="faq-item__trigger" aria-expanded="false" aria-controls="faq-answer-6">
             Is my data secure?
             <span class="faq-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" role="region">
+          <div class="faq-item__answer" id="faq-answer-6" role="region">
             <div class="faq-item__answer-inner">
               All data encrypted at rest and in transit. Read-only access tokens with minimum scope. Account credentials are never stored. Independent security review planned before general availability.
             </div>
@@ -1900,15 +2026,19 @@
     <div class="waitlist__content">
       <h2>Your Points, Optimized<br><span>with RedeemFlow</span></h2>
       <form class="waitlist__form" id="waitlist-form" novalidate>
-        <input
-          type="email"
-          class="waitlist__input"
-          id="waitlist-email"
-          placeholder="you@email.com"
-          aria-label="Email address"
-          required
-          autocomplete="email"
-        >
+        <div>
+          <label for="waitlist-email" class="waitlist__label">Your email</label>
+          <input
+            type="email"
+            class="waitlist__input"
+            id="waitlist-email"
+            placeholder="you@email.com"
+            aria-label="Email address"
+            aria-describedby="waitlist-error"
+            required
+            autocomplete="email"
+          >
+        </div>
         <button type="submit" class="waitlist__submit">Join Waitlist <span aria-hidden="true">&rarr;</span></button>
       </form>
       <div class="waitlist__error" id="waitlist-error" role="alert" aria-live="polite"></div>
@@ -1946,8 +2076,8 @@
               <path d="M4 14L14 4L24 14" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2" stroke-linejoin="miter"/>
               <path d="M4 14L14 24L24 14" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="2" stroke-linejoin="miter"/>
               <path d="M9 14L14 9L19 14L14 19Z" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="1.5"/>
-              <text x="32" y="20" fill="rgba(255,255,255,0.95)" font-family="'Source Serif 4', Georgia, serif" font-weight="600" font-size="18">Redeem</text>
-              <text x="108" y="20" fill="rgba(255,255,255,0.45)" font-family="'Source Serif 4', Georgia, serif" font-weight="300" font-size="18">Flow</text>
+              <text x="32" y="20" fill="rgba(255,255,255,0.95)" font-family="'Fraunces', Georgia, serif" font-weight="600" font-size="18">Redeem</text>
+              <text x="108" y="20" fill="rgba(255,255,255,0.45)" font-family="'Fraunces', Georgia, serif" font-weight="300" font-size="18">Flow</text>
             </svg>
           </div>
           <p class="footer__tagline">Turning forgotten points into real trips<br>for you and the people you love.</p>
@@ -2085,6 +2215,8 @@
             form.style.display = 'none';
             errorEl.style.display = 'none';
             successEl.classList.add('visible');
+            successEl.setAttribute('tabindex', '-1');
+            successEl.focus();
           } else {
             showError(data.error || 'Something went wrong. Please try again.');
             submitBtn.disabled = false;
@@ -2107,6 +2239,8 @@
           if (target) {
             e.preventDefault();
             target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            target.setAttribute('tabindex', '-1');
+            target.focus({ preventScroll: true });
           }
         });
       });
@@ -2161,6 +2295,10 @@
         counterObserver.observe(statEl);
         }
       }
+
+      // === COPYRIGHT YEAR AUTO-UPDATE ===
+      var copyEl = document.querySelector('.footer__copy');
+      if (copyEl) copyEl.innerHTML = '&copy; ' + new Date().getFullYear() + ' RedeemFlow';
 
     })();
   </script>

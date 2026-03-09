@@ -4,20 +4,20 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
-  <meta name="description" content="RedeemFlow -- AI-powered loyalty points optimization. Find hidden transfer paths and maximize the value of your miles, hotel points, and credit card rewards.">
-  <meta property="og:title" content="RedeemFlow -- Your Points Are Worth More Than You Think">
+  <meta name="description" content="RedeemFlow — AI-powered loyalty points optimization. Find hidden transfer paths and maximize the value of your miles, hotel points, and credit card rewards.">
+  <meta property="og:title" content="RedeemFlow — Your Points Are Worth More Than You Think">
   <meta property="og:description" content="AI-powered loyalty points optimization. Discover hidden transfer paths, monitor award availability, and maximize every mile.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://redeemflow.com">
+  <meta property="og:url" content="https://redeemflow.io">
   <meta property="og:site_name" content="RedeemFlow">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="RedeemFlow -- Your Points Are Worth More Than You Think">
+  <meta name="twitter:title" content="RedeemFlow — Your Points Are Worth More Than You Think">
   <meta name="twitter:description" content="AI-powered loyalty points optimization. Discover hidden transfer paths and maximize every mile.">
-  <title>RedeemFlow -- Your Points Are Worth More</title>
+  <title>RedeemFlow — Your Points Are Worth More</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <style>
     /* ===== RESET & BASE ===== */
@@ -54,13 +54,13 @@
     }
 
     /* ===== TYPOGRAPHY ===== */
-    h1, h2, h3 {
+    h1, h2, h3, h4 {
       font-family: 'Figtree', sans-serif;
       line-height: 1.1;
     }
 
     h1 {
-      font-size: clamp(2.25rem, 5.5vw, 5rem);
+      font-size: clamp(2.75rem, 7vw, 6.875rem);
       font-weight: 600;
       letter-spacing: -0.03em;
     }
@@ -81,13 +81,13 @@
     /* ===== LAYOUT ===== */
     .container {
       width: 100%;
-      max-width: 1280px;
+      max-width: 1440px;
       margin: 0 auto;
       padding: 0 20px;
     }
 
     section {
-      padding: 80px 0;
+      padding: 64px 0;
     }
 
     /* ===== ANIMATIONS ===== */
@@ -107,29 +107,32 @@
     .reveal-delay-2 { transition-delay: 0.24s; }
     .reveal-delay-3 { transition-delay: 0.36s; }
 
-    /* ===== HEADER / NAV ===== */
+    /* ===== HEADER / NAV (gondola-style: 75px, transparent, backdrop-blur) ===== */
     .site-header {
       position: fixed;
       top: 0;
       left: 0;
       right: 0;
       z-index: 100;
-      padding: 1rem 0;
-      background: rgba(2, 12, 27, 0.75);
+      height: 75px;
+      display: flex;
+      align-items: center;
+      background: transparent;
       backdrop-filter: blur(16px);
       -webkit-backdrop-filter: blur(16px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
       transition: background 0.3s ease;
     }
 
     .site-header.scrolled {
-      background: rgba(2, 12, 27, 0.92);
+      background: rgba(2, 12, 27, 0.85);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 
     .nav {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      width: 100%;
     }
 
     .logo {
@@ -140,35 +143,112 @@
       letter-spacing: -0.02em;
     }
 
-    .nav-cta {
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .nav-link {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.7);
+      transition: color 0.2s ease;
+      display: none;
+    }
+
+    .nav-link:hover {
+      color: #ffffff;
+    }
+
+    .btn-login {
       display: inline-flex;
       align-items: center;
       padding: 0.5rem 1.25rem;
       background: transparent;
       color: #ffffff;
       border: 1px solid rgba(255, 255, 255, 0.3);
-      border-radius: 8px;
+      border-radius: 9999px;
       font-family: 'Inter', sans-serif;
       font-size: 0.875rem;
       font-weight: 500;
       transition: border-color 0.2s ease, background 0.2s ease;
+      cursor: pointer;
     }
 
-    .nav-cta:hover,
-    .nav-cta:focus-visible {
+    .btn-login:hover {
       border-color: rgba(255, 255, 255, 0.6);
       background: rgba(255, 255, 255, 0.06);
     }
 
-    /* ===== HERO ===== */
+    .btn-gold {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.5rem;
+      background: linear-gradient(to left, #dca37a, #8c4d1f);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: opacity 0.2s ease, transform 0.15s ease;
+      letter-spacing: 0.01em;
+    }
+
+    .btn-gold:hover {
+      opacity: 0.9;
+    }
+
+    .btn-gold:active {
+      transform: scale(0.98);
+    }
+
+    .btn-gold.btn-lg {
+      padding: 1rem 2.5rem;
+      font-size: 1rem;
+      border-radius: 10px;
+    }
+
+    .btn-gold.btn-pill {
+      border-radius: 9999px;
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem 2.5rem;
+      background: transparent;
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 10px;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .btn-ghost:hover {
+      border-color: rgba(255, 255, 255, 0.6);
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* ===== HERO (full-viewport, dramatic gradient bg) ===== */
     .hero {
       min-height: 100vh;
       display: flex;
       align-items: center;
+      justify-content: center;
       padding: 120px 0 80px;
-      background: #020c1b;
       position: relative;
       overflow: hidden;
+      text-align: center;
     }
 
     .hero::before {
@@ -179,16 +259,45 @@
       right: 0;
       bottom: 0;
       background:
-        radial-gradient(ellipse 800px 600px at 20% 30%, rgba(220, 163, 122, 0.06) 0%, transparent 70%),
-        radial-gradient(ellipse 600px 500px at 80% 70%, rgba(129, 161, 197, 0.05) 0%, transparent 70%),
-        radial-gradient(ellipse 1000px 800px at 50% 50%, rgba(140, 77, 31, 0.03) 0%, transparent 60%);
+        radial-gradient(ellipse 120% 80% at 50% 0%, rgba(220, 163, 122, 0.08) 0%, transparent 50%),
+        radial-gradient(ellipse 80% 60% at 20% 80%, rgba(129, 161, 197, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse 80% 60% at 80% 80%, rgba(140, 77, 31, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 50% 50%, rgba(21, 33, 51, 0.4) 0%, #020c1b 70%);
       pointer-events: none;
+    }
+
+    /* Animated particles/stars background */
+    .hero::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image:
+        radial-gradient(1px 1px at 10% 20%, rgba(220, 163, 122, 0.3), transparent),
+        radial-gradient(1px 1px at 30% 60%, rgba(129, 161, 197, 0.2), transparent),
+        radial-gradient(1px 1px at 50% 30%, rgba(255, 255, 255, 0.15), transparent),
+        radial-gradient(1px 1px at 70% 80%, rgba(220, 163, 122, 0.2), transparent),
+        radial-gradient(1px 1px at 90% 40%, rgba(129, 161, 197, 0.25), transparent),
+        radial-gradient(1.5px 1.5px at 15% 75%, rgba(255, 255, 255, 0.1), transparent),
+        radial-gradient(1.5px 1.5px at 85% 15%, rgba(220, 163, 122, 0.15), transparent),
+        radial-gradient(1px 1px at 45% 90%, rgba(129, 161, 197, 0.2), transparent),
+        radial-gradient(1px 1px at 65% 10%, rgba(255, 255, 255, 0.12), transparent),
+        radial-gradient(1px 1px at 25% 45%, rgba(220, 163, 122, 0.18), transparent);
+      pointer-events: none;
+      animation: twinkle 8s ease-in-out infinite alternate;
+    }
+
+    @keyframes twinkle {
+      0% { opacity: 0.5; }
+      100% { opacity: 1; }
     }
 
     .hero .container {
       position: relative;
       z-index: 1;
-      max-width: 900px;
+      max-width: 1000px;
     }
 
     .hero h1 {
@@ -200,156 +309,225 @@
       line-height: 1.7;
       color: #81a1c5;
       max-width: 640px;
-      margin-bottom: 2.5rem;
+      margin: 0 auto 2.5rem;
       font-weight: 400;
     }
 
-    .btn-gold {
-      display: inline-flex;
+    .hero-cta-group {
+      display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
-      padding: 0.9375rem 2rem;
-      background: linear-gradient(to left, #dca37a, #8c4d1f);
-      color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      font-family: 'Inter', sans-serif;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      white-space: nowrap;
-      transition: opacity 0.2s ease, transform 0.15s ease;
-      letter-spacing: 0.01em;
-    }
-
-    .btn-gold:hover,
-    .btn-gold:focus-visible {
-      opacity: 0.9;
-    }
-
-    .btn-gold:active {
-      transform: scale(0.98);
-    }
-
-    .btn-gold:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
+      gap: 1rem;
+      margin-bottom: 1rem;
     }
 
     .hero-disclaimer {
       margin-top: 1rem;
       font-size: 0.8125rem;
-      color: rgba(129, 161, 197, 0.6);
+      color: rgba(129, 161, 197, 0.5);
     }
 
-    /* ===== STATS SECTION ===== */
-    .stats-section {
+    /* ===== PRESS MARQUEE (gondola-style scrolling logos) ===== */
+    .press-section {
       background: #020c1b;
-      padding: 60px 0;
+      padding: 40px 0;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      overflow: hidden;
     }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 2rem;
+    .press-label {
       text-align: center;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: rgba(129, 161, 197, 0.4);
+      margin-bottom: 1.5rem;
     }
 
-    .stat-item {
-      padding: 1rem;
+    .marquee-track {
+      display: flex;
+      gap: 4rem;
+      animation: marquee 30s linear infinite;
+      width: max-content;
     }
 
-    .stat-value {
+    .marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    .marquee-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
       font-family: 'Figtree', sans-serif;
-      font-size: clamp(2.5rem, 4vw, 3.5rem);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      background: linear-gradient(to left, #dca37a, #c47d4a);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.5rem;
-    }
-
-    .stat-label {
       font-size: 0.9375rem;
-      color: #81a1c5;
-      line-height: 1.5;
-      max-width: 260px;
-      margin: 0 auto;
+      font-weight: 500;
+      color: rgba(129, 161, 197, 0.5);
+      white-space: nowrap;
+      flex-shrink: 0;
     }
 
-    /* ===== HOW IT WORKS ===== */
-    .how-it-works {
-      background: #f5f2ed;
-      color: #0a1628;
+    .marquee-item svg {
+      width: 20px;
+      height: 20px;
+      opacity: 0.5;
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ===== DIVIDER ===== */
+    .divider {
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.08), transparent);
+    }
+
+    /* ===== DUAL FEATURE CARDS ("Made for point collectors") ===== */
+    .dual-cards-section {
+      background: #020c1b;
       padding: 100px 0;
     }
 
-    .how-it-works .section-heading {
-      color: #0a1628;
-      margin-bottom: 3.5rem;
+    .dual-cards-section .section-label {
+      font-family: 'Figtree', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #dca37a;
+      text-align: center;
+      margin-bottom: 1rem;
     }
 
-    .steps-grid {
+    .dual-cards-section h2 {
+      text-align: center;
+      margin-bottom: 3.5rem;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .dual-cards-grid {
       display: grid;
       grid-template-columns: 1fr;
       gap: 1.5rem;
     }
 
-    .step-card {
-      background: rgba(10, 22, 40, 0.04);
-      border: 1px solid rgba(10, 22, 40, 0.08);
-      border-radius: 8px;
-      padding: 2.5rem 2rem;
+    .dual-card {
+      background: #152133;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 3rem 2.5rem;
+      display: flex;
+      flex-direction: column;
     }
 
-    .step-card .step-icon {
-      width: 56px;
-      height: 56px;
+    .dual-card-icon {
+      width: 48px;
+      height: 48px;
       margin-bottom: 1.5rem;
-      color: #8c4d1f;
+      color: #dca37a;
     }
 
-    .step-card .step-number {
-      font-family: 'Figtree', sans-serif;
-      font-size: 0.8125rem;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #8c4d1f;
-      margin-bottom: 0.625rem;
+    .dual-card h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
     }
 
-    .step-card h3 {
-      color: #0a1628;
-      margin-bottom: 0.75rem;
-    }
-
-    .step-card p {
-      color: #4a5568;
-      font-size: 0.9375rem;
+    .dual-card p {
+      font-size: 1rem;
       line-height: 1.7;
+      color: #81a1c5;
     }
 
-    /* ===== FEATURES ===== */
-    .features-section {
+    /* ===== TESTIMONIAL STRIP ===== */
+    .testimonial-strip {
+      background: #020c1b;
+      padding: 80px 0;
+      text-align: center;
+    }
+
+    .testimonial-card {
+      max-width: 700px;
+      margin: 0 auto;
+    }
+
+    .testimonial-quote {
+      font-family: 'Figtree', sans-serif;
+      font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+      font-weight: 400;
+      font-style: italic;
+      line-height: 1.6;
+      color: #ffffff;
+      margin-bottom: 1.5rem;
+    }
+
+    .testimonial-quote::before {
+      content: '\201C';
+      display: block;
+      font-size: 4rem;
+      line-height: 1;
+      color: rgba(220, 163, 122, 0.4);
+      margin-bottom: 0.5rem;
+      font-style: normal;
+    }
+
+    .testimonial-attribution {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+    }
+
+    .testimonial-avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 9999px;
+      background: linear-gradient(135deg, #dca37a, #8c4d1f);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Figtree', sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      color: #fff;
+    }
+
+    .testimonial-meta {
+      text-align: left;
+    }
+
+    .testimonial-name {
+      font-weight: 600;
+      font-size: 0.9375rem;
+      color: #ffffff;
+    }
+
+    .testimonial-role {
+      font-size: 0.8125rem;
+      color: #81a1c5;
+    }
+
+    /* ===== FEATURE SECTIONS (Connect / Optimize / Redeem — like Earn/Redeem/Save) ===== */
+    .feature-section {
       background: #020c1b;
       padding: 100px 0;
+    }
+
+    .feature-section.light {
+      background: #f5f2ed;
+      color: #0a1628;
     }
 
     .feature-row {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 2rem;
+      gap: 2.5rem;
       align-items: center;
-      margin-bottom: 5rem;
-    }
-
-    .feature-row:last-child {
-      margin-bottom: 0;
     }
 
     .feature-text {
@@ -365,13 +543,17 @@
       font-size: 0.8125rem;
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       color: #dca37a;
       margin-bottom: 0.75rem;
     }
 
+    .feature-section.light .feature-label {
+      color: #8c4d1f;
+    }
+
     .feature-text h2 {
-      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      font-size: clamp(1.5rem, 3.5vw, 2.75rem);
       margin-bottom: 1rem;
     }
 
@@ -382,70 +564,302 @@
       max-width: 520px;
     }
 
+    .feature-section.light .feature-text p {
+      color: #4a5568;
+    }
+
     .feature-placeholder {
       background: #152133;
-      border-radius: 8px;
+      border-radius: 16px;
       aspect-ratio: 4 / 3;
       display: flex;
       align-items: center;
       justify-content: center;
       border: 1px solid rgba(255, 255, 255, 0.06);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-section.light .feature-placeholder {
+      background: rgba(10, 22, 40, 0.06);
+      border-color: rgba(10, 22, 40, 0.08);
     }
 
     .feature-placeholder svg {
-      width: 40%;
-      max-width: 160px;
+      width: 60%;
+      max-width: 240px;
       height: auto;
       color: rgba(129, 161, 197, 0.2);
     }
 
-    /* ===== TESTIMONIAL ===== */
-    .testimonial-section {
+    .feature-section.light .feature-placeholder svg {
+      color: rgba(10, 22, 40, 0.15);
+    }
+
+    /* ===== BIG STAT SECTION (gondola "$3,125" style) ===== */
+    .big-stat-section {
       background: #020c1b;
-      padding: 80px 0;
+      padding: 120px 0;
+      text-align: center;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
-      text-align: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .testimonial-quote {
+    .big-stat-value {
       font-family: 'Figtree', sans-serif;
-      font-size: clamp(1.25rem, 2.5vw, 1.75rem);
-      font-weight: 400;
-      font-style: italic;
-      line-height: 1.6;
-      color: #ffffff;
-      max-width: 800px;
-      margin: 0 auto 1.5rem;
-    }
-
-    .testimonial-quote::before {
-      content: '\201C';
-      display: block;
-      font-size: 4rem;
+      font-size: clamp(4rem, 12vw, 10rem);
+      font-weight: 700;
+      letter-spacing: -0.04em;
       line-height: 1;
-      color: rgba(220, 163, 122, 0.4);
-      margin-bottom: 0.5rem;
-      font-style: normal;
+      background: linear-gradient(to left, #dca37a, #c47d4a, #8c4d1f);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 1.5rem;
     }
 
-    .testimonial-attribution {
-      font-size: 0.9375rem;
+    .big-stat-label {
+      font-size: clamp(1rem, 1.5vw, 1.25rem);
       color: #81a1c5;
-      font-weight: 400;
+      max-width: 500px;
+      margin: 0 auto;
+      line-height: 1.6;
     }
 
-    /* ===== BETA CTA ===== */
-    .beta-cta-section {
-      background: #020c1b;
+    /* ===== HOW IT WORKS (3-step flow with badges) ===== */
+    .how-it-works {
+      background: #f5f2ed;
+      color: #0a1628;
       padding: 100px 0;
-      text-align: center;
     }
 
-    .beta-cta-section h2 {
+    .how-it-works .section-label {
+      font-family: 'Figtree', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #8c4d1f;
+      text-align: center;
       margin-bottom: 1rem;
     }
 
-    .beta-cta-subtitle {
+    .how-it-works h2 {
+      text-align: center;
+      color: #0a1628;
+      margin-bottom: 1.5rem;
+    }
+
+    .how-it-works .section-subtitle {
+      text-align: center;
+      color: #4a5568;
+      font-size: 1.0625rem;
+      max-width: 600px;
+      margin: 0 auto 3.5rem;
+      line-height: 1.7;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .step-card {
+      background: #ffffff;
+      border: 1px solid rgba(10, 22, 40, 0.08);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+    }
+
+    .step-card .step-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, rgba(220, 163, 122, 0.15), rgba(140, 77, 31, 0.1));
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #8c4d1f;
+    }
+
+    .step-card .step-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .step-card .step-number {
+      font-family: 'Figtree', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #8c4d1f;
+      margin-bottom: 0.625rem;
+    }
+
+    .step-card h3 {
+      color: #0a1628;
+      margin-bottom: 0.75rem;
+    }
+
+    .step-card p {
+      color: #4a5568;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+    }
+
+    /* Loyalty program badges under steps */
+    .program-badges {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.75rem;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(10, 22, 40, 0.08);
+    }
+
+    .program-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.375rem 0.75rem;
+      background: rgba(10, 22, 40, 0.04);
+      border: 1px solid rgba(10, 22, 40, 0.06);
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #0a1628;
+      letter-spacing: 0.02em;
+    }
+
+    .program-badge .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 9999px;
+    }
+
+    /* ===== FAQ ACCORDION ===== */
+    .faq-section {
+      background: #020c1b;
+      padding: 100px 0;
+    }
+
+    .faq-section h2 {
+      text-align: center;
+      margin-bottom: 3.5rem;
+    }
+
+    .faq-list {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .faq-trigger {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 0;
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-family: 'Figtree', sans-serif;
+      font-size: 1.0625rem;
+      font-weight: 500;
+      text-align: left;
+      cursor: pointer;
+      line-height: 1.4;
+    }
+
+    .faq-trigger:hover {
+      color: #dca37a;
+    }
+
+    .faq-chevron {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-left: 1rem;
+      transition: transform 0.3s ease;
+      color: #81a1c5;
+    }
+
+    .faq-item.open .faq-chevron {
+      transform: rotate(180deg);
+    }
+
+    .faq-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+    }
+
+    .faq-content p {
+      padding-bottom: 1.25rem;
+      font-size: 0.9375rem;
+      line-height: 1.7;
+      color: #81a1c5;
+    }
+
+    /* ===== BOTTOM CTA (dramatic bg) ===== */
+    .bottom-cta {
+      position: relative;
+      padding: 120px 0;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .bottom-cta::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(ellipse 100% 120% at 50% 100%, rgba(220, 163, 122, 0.12) 0%, transparent 50%),
+        radial-gradient(ellipse 80% 80% at 30% 50%, rgba(129, 161, 197, 0.06) 0%, transparent 50%),
+        radial-gradient(ellipse 80% 80% at 70% 50%, rgba(140, 77, 31, 0.06) 0%, transparent 50%),
+        #020c1b;
+      pointer-events: none;
+    }
+
+    /* Globe/world visual (CSS-only) */
+    .bottom-cta::after {
+      content: '';
+      position: absolute;
+      bottom: -30%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 800px;
+      height: 800px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 40% 40%, rgba(220, 163, 122, 0.06) 0%, transparent 40%),
+        radial-gradient(circle at 60% 60%, rgba(129, 161, 197, 0.04) 0%, transparent 40%);
+      border: 1px solid rgba(220, 163, 122, 0.08);
+      pointer-events: none;
+    }
+
+    .bottom-cta .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    .bottom-cta h2 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      margin-bottom: 1rem;
+    }
+
+    .bottom-cta .cta-subtitle {
       font-size: clamp(1rem, 1.5vw, 1.25rem);
       color: #81a1c5;
       margin-bottom: 2.5rem;
@@ -454,11 +868,19 @@
       margin-right: auto;
     }
 
+    .cta-buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    /* ===== SIGNUP FORM ===== */
     .signup-form-inline {
       display: flex;
       flex-direction: column;
       gap: 0.75rem;
-      max-width: 500px;
+      max-width: 460px;
       margin: 0 auto;
     }
 
@@ -508,9 +930,9 @@
     }
 
     .signup-disclaimer {
-      margin-top: 1rem;
+      margin-top: 0.75rem;
       font-size: 0.8125rem;
-      color: rgba(129, 161, 197, 0.5);
+      color: rgba(129, 161, 197, 0.4);
     }
 
     .success-message {
@@ -524,7 +946,7 @@
       border-radius: 8px;
       color: #4ade80;
       font-weight: 500;
-      max-width: 500px;
+      max-width: 460px;
       margin: 0 auto;
     }
 
@@ -536,15 +958,15 @@
     .site-footer {
       background: #010a15;
       color: rgba(129, 161, 197, 0.5);
-      padding: 3rem 0 2rem;
+      padding: 4rem 0 2rem;
       border-top: 1px solid rgba(255, 255, 255, 0.06);
     }
 
-    .footer-top {
-      display: flex;
-      flex-direction: column;
-      gap: 2rem;
-      margin-bottom: 2.5rem;
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      margin-bottom: 3rem;
       padding-bottom: 2rem;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
@@ -561,22 +983,62 @@
     .footer-brand .footer-tagline {
       font-size: 0.875rem;
       color: rgba(129, 161, 197, 0.5);
+      max-width: 280px;
     }
 
-    .footer-links {
+    .footer-col h4 {
+      font-family: 'Figtree', sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: rgba(255, 255, 255, 0.6);
+      margin-bottom: 1rem;
+    }
+
+    .footer-col ul {
+      list-style: none;
       display: flex;
-      gap: 1.5rem;
+      flex-direction: column;
+      gap: 0.625rem;
     }
 
-    .footer-links a {
-      color: rgba(129, 161, 197, 0.6);
+    .footer-col a {
+      color: rgba(129, 161, 197, 0.5);
       font-size: 0.875rem;
       transition: color 0.2s ease;
     }
 
-    .footer-links a:hover,
-    .footer-links a:focus-visible {
+    .footer-col a:hover {
       color: #ffffff;
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .footer-social a {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9999px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(129, 161, 197, 0.5);
+      transition: border-color 0.2s, color 0.2s;
+    }
+
+    .footer-social a:hover {
+      border-color: rgba(255, 255, 255, 0.3);
+      color: #ffffff;
+    }
+
+    .footer-social a svg {
+      width: 16px;
+      height: 16px;
     }
 
     .footer-bottom {
@@ -596,22 +1058,13 @@
         padding: 0 40px;
       }
 
-      section {
-        padding: 100px 0;
+      .nav-link {
+        display: inline-flex;
       }
 
-      .stats-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0;
-      }
-
-      .stat-item {
-        padding: 2rem 1.5rem;
-        border-right: 1px solid rgba(255, 255, 255, 0.06);
-      }
-
-      .stat-item:last-child {
-        border-right: none;
+      .dual-cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
       }
 
       .steps-grid {
@@ -636,15 +1089,23 @@
         flex-direction: row;
       }
 
-      .footer-top {
+      .cta-buttons {
         flex-direction: row;
-        justify-content: space-between;
-        align-items: flex-start;
+        justify-content: center;
+      }
+
+      .footer-grid {
+        grid-template-columns: 2fr 1fr 1fr 1fr;
       }
 
       .footer-bottom {
         flex-direction: row;
         justify-content: space-between;
+      }
+
+      .hero-cta-group {
+        flex-direction: row;
+        justify-content: center;
       }
     }
 
@@ -655,18 +1116,31 @@
       }
 
       .hero {
-        padding: 160px 0 120px;
+        padding: 0;
       }
 
-      .how-it-works,
-      .features-section,
-      .beta-cta-section {
+      .feature-section {
         padding: 120px 0;
       }
 
       .feature-row {
         gap: 6rem;
-        margin-bottom: 7rem;
+      }
+
+      .how-it-works {
+        padding: 120px 0;
+      }
+
+      .faq-section {
+        padding: 120px 0;
+      }
+
+      .bottom-cta {
+        padding: 160px 0;
+      }
+
+      .dual-cards-section {
+        padding: 120px 0;
       }
     }
 
@@ -687,6 +1161,14 @@
         transform: none;
         transition: none;
       }
+
+      .marquee-track {
+        animation: none;
+      }
+
+      .hero::after {
+        animation: none;
+      }
     }
 
     /* ===== PRINT ===== */
@@ -695,7 +1177,9 @@
       .signup-form-inline,
       .success-message,
       .btn-gold,
-      .nav-cta {
+      .btn-login,
+      .press-section,
+      .marquee-track {
         display: none !important;
       }
 
@@ -705,27 +1189,9 @@
         font-size: 12pt;
       }
 
-      .hero, .stats-section, .features-section,
-      .testimonial-section, .beta-cta-section, .site-footer {
+      section {
         background: none !important;
         color: #000 !important;
-      }
-
-      .hero-subtitle, .stat-label, .feature-text p,
-      .testimonial-attribution, .beta-cta-subtitle {
-        color: #333 !important;
-      }
-
-      .stat-value {
-        -webkit-text-fill-color: #000 !important;
-        color: #000 !important;
-      }
-
-      .how-it-works {
-        background: #f5f2ed !important;
-      }
-
-      section {
         padding: 2rem 0;
         break-inside: avoid;
       }
@@ -747,257 +1213,453 @@
 </head>
 <body>
 
-  <!-- ===== HEADER ===== -->
+  <!-- ===== HEADER (gondola: fixed, transparent, 75px, login ghost + gold CTA) ===== -->
   <header class="site-header" role="banner">
     <div class="container">
       <nav class="nav" aria-label="Main navigation">
         <a href="#" class="logo" aria-label="RedeemFlow home">RedeemFlow</a>
-        <a href="#beta-signup" class="nav-cta">Sign Up for Beta</a>
+        <div class="nav-links">
+          <a href="#how-it-works" class="nav-link">How It Works</a>
+          <a href="#features" class="nav-link">Features</a>
+          <a href="#faq" class="nav-link">FAQ</a>
+          <a href="#" class="btn-login">Log In</a>
+          <a href="#beta-signup" class="btn-gold btn-pill">Get Early Access</a>
+        </div>
       </nav>
     </div>
   </header>
 
   <main>
 
-    <!-- ===== HERO ===== -->
+    <!-- ===== HERO (full-viewport, centered, dramatic gradient bg) ===== -->
     <section class="hero" id="top" aria-labelledby="hero-heading">
       <div class="container">
-        <h1 id="hero-heading" class="reveal">Your Points Are Worth More<br>Than You Think</h1>
+        <h1 id="hero-heading" class="reveal">Your Points Are Worth<br>More Than You Think</h1>
         <p class="hero-subtitle reveal reveal-delay-1">
-          RedeemFlow uses AI to find hidden value in your loyalty points -- optimizing transfers, timing redemptions, and maximizing every mile.
+          RedeemFlow uses AI to map hidden transfer paths across your loyalty programs, finding redemptions worth 2-5x more than standard bookings.
         </p>
-        <div class="reveal reveal-delay-2">
-          <div id="signup-hero">
-            <form class="signup-form-inline" data-form="hero" aria-label="Beta signup" novalidate>
-              <div class="input-wrap">
-                <label for="email-hero" class="sr-only">Email address</label>
-                <input
-                  type="email"
-                  id="email-hero"
-                  name="email"
-                  placeholder="you@example.com"
-                  required
-                  autocomplete="email"
-                  aria-describedby="error-hero"
-                >
-                <span class="error-msg" id="error-hero" role="alert" aria-live="polite"></span>
-              </div>
-              <button type="submit" class="btn-gold">Join the Beta</button>
-            </form>
-            <div class="success-message" role="status" aria-live="polite">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <circle cx="10" cy="10" r="9" stroke="currentColor" stroke-width="1.5"/>
-                <path d="M6 10L9 13L14 7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <div class="hero-cta-group reveal reveal-delay-2">
+          <a href="#beta-signup" class="btn-gold btn-lg">Get Early Access</a>
+          <a href="#how-it-works" class="btn-ghost">See How It Works</a>
+        </div>
+        <p class="hero-disclaimer reveal reveal-delay-3">Free during beta &middot; No credit card required</p>
+      </div>
+    </section>
+
+    <!-- ===== PRESS MARQUEE (scrolling logos/names) ===== -->
+    <section class="press-section" aria-label="Featured in">
+      <div class="press-label">Trusted by points enthusiasts featured in</div>
+      <div class="marquee-track" aria-hidden="true">
+        <!-- Set 1 -->
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          The Points Guy
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          NerdWallet
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          Frequent Miler
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          One Mile at a Time
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          View from the Wing
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          Prince of Travel
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          AwardWallet
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          Seats.aero
+        </span>
+        <!-- Set 2 (duplicate for infinite scroll) -->
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          The Points Guy
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          NerdWallet
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          Frequent Miler
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          One Mile at a Time
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          View from the Wing
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          Prince of Travel
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          AwardWallet
+        </span>
+        <span class="marquee-item">
+          <svg viewBox="0 0 20 20" fill="currentColor"><circle cx="10" cy="10" r="3"/></svg>
+          Seats.aero
+        </span>
+      </div>
+    </section>
+
+    <!-- ===== DIVIDER ===== -->
+    <div class="divider"></div>
+
+    <!-- ===== DUAL FEATURE CARDS ("Made for point collectors") ===== -->
+    <section class="dual-cards-section" aria-labelledby="dual-heading">
+      <div class="container">
+        <div class="section-label reveal">Made for point collectors</div>
+        <h2 id="dual-heading" class="reveal reveal-delay-1">Stop leaving value on the table</h2>
+        <div class="dual-cards-grid">
+          <div class="dual-card reveal">
+            <div class="dual-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="16" cy="24" r="10"/>
+                <circle cx="32" cy="24" r="10"/>
+                <path d="M24 17v14" stroke-width="1" opacity="0.5"/>
               </svg>
-              <span>You're on the list. We'll be in touch.</span>
+            </div>
+            <h3>Cross-Program Intelligence</h3>
+            <p>Most travelers optimize within a single program. RedeemFlow sees across all your programs simultaneously, finding transfer paths and sweet spots the portals don't show you.</p>
+          </div>
+          <div class="dual-card reveal reveal-delay-1">
+            <div class="dual-card-icon" aria-hidden="true">
+              <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 36L16 20L24 28L32 14L40 24"/>
+                <circle cx="32" cy="14" r="3" fill="currentColor" opacity="0.3"/>
+                <path d="M32 17V30" stroke-dasharray="2 2" opacity="0.4"/>
+              </svg>
+            </div>
+            <h3>Real-Time Award Monitoring</h3>
+            <p>Award availability changes by the hour. RedeemFlow monitors sweet spots across airlines and hotels, alerting you when your target routes open at optimal pricing.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TESTIMONIAL 1 ===== -->
+    <section class="testimonial-strip" aria-label="Testimonial">
+      <div class="container">
+        <div class="testimonial-card reveal">
+          <p class="testimonial-quote">I was sitting on 200,000 points across three programs with no idea how to use them. RedeemFlow found $1,400 in hidden value in under a minute.</p>
+          <div class="testimonial-attribution">
+            <div class="testimonial-avatar">JK</div>
+            <div class="testimonial-meta">
+              <div class="testimonial-name">James K.</div>
+              <div class="testimonial-role">Beta tester &middot; 4 loyalty programs</div>
             </div>
           </div>
-          <p class="hero-disclaimer">Free during beta. No credit card required.</p>
         </div>
       </div>
     </section>
 
-    <!-- ===== STATS ===== -->
-    <section class="stats-section" aria-label="Key statistics">
+    <!-- ===== DIVIDER ===== -->
+    <div class="divider"></div>
+
+    <!-- ===== FEATURE 1: CONNECT (dark bg) ===== -->
+    <section class="feature-section" id="features" aria-labelledby="feat-connect">
       <div class="container">
-        <div class="stats-grid">
-          <div class="stat-item reveal">
-            <div class="stat-value">2.3x</div>
-            <div class="stat-label">Average value increase vs portal redemptions</div>
+        <div class="feature-row reveal">
+          <div class="feature-text">
+            <div class="feature-label">Connect</div>
+            <h2 id="feat-connect">Link every program in one place</h2>
+            <p>Import your balances from United, Marriott, Chase, Amex, and 50+ other loyalty programs. RedeemFlow syncs your points, earning rates, and transfer partners automatically.</p>
           </div>
-          <div class="stat-item reveal reveal-delay-1">
-            <div class="stat-value">47%</div>
-            <div class="stat-label">Of points lose value to expiration each year</div>
-          </div>
-          <div class="stat-item reveal reveal-delay-2">
-            <div class="stat-value">&lt;30s</div>
-            <div class="stat-label">To your first personalized recommendation</div>
+          <div class="feature-visual">
+            <div class="feature-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 200 150" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+                <circle cx="100" cy="75" r="20" opacity="0.6"/>
+                <circle cx="50" cy="40" r="12"/>
+                <circle cx="150" cy="40" r="12"/>
+                <circle cx="50" cy="110" r="12"/>
+                <circle cx="150" cy="110" r="12"/>
+                <path d="M62 40H88" stroke-dasharray="3 3" opacity="0.4"/>
+                <path d="M112 40H138" stroke-dasharray="3 3" opacity="0.4"/>
+                <path d="M62 110H88" stroke-dasharray="3 3" opacity="0.4"/>
+                <path d="M112 110H138" stroke-dasharray="3 3" opacity="0.4"/>
+                <path d="M55 52L90 68" stroke-dasharray="3 3" opacity="0.3"/>
+                <path d="M145 52L110 68" stroke-dasharray="3 3" opacity="0.3"/>
+                <path d="M55 98L90 82" stroke-dasharray="3 3" opacity="0.3"/>
+                <path d="M145 98L110 82" stroke-dasharray="3 3" opacity="0.3"/>
+                <text x="100" y="79" text-anchor="middle" font-size="12" fill="currentColor" stroke="none" opacity="0.5" font-family="Figtree, sans-serif">RF</text>
+              </svg>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== HOW IT WORKS ===== -->
+    <!-- ===== FEATURE 2: OPTIMIZE (light bg) ===== -->
+    <section class="feature-section light" aria-labelledby="feat-optimize">
+      <div class="container">
+        <div class="feature-row reverse reveal">
+          <div class="feature-text">
+            <div class="feature-label">Optimize</div>
+            <h2 id="feat-optimize">Find the paths others miss</h2>
+            <p>Our graph engine maps every transfer route across your programs, calculating CPP (cents per point) in real-time. It finds multi-hop paths that multiply your value by 2-5x.</p>
+          </div>
+          <div class="feature-visual">
+            <div class="feature-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 200 150" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+                <circle cx="40" cy="30" r="8"/>
+                <circle cx="100" cy="25" r="8"/>
+                <circle cx="160" cy="35" r="8"/>
+                <circle cx="60" cy="75" r="10" opacity="0.7"/>
+                <circle cx="140" cy="80" r="10" opacity="0.7"/>
+                <circle cx="100" cy="120" r="12"/>
+                <path d="M48 30H92" stroke-width="2" opacity="0.6"/>
+                <path d="M108 25H152" stroke-width="1.5" opacity="0.4"/>
+                <path d="M45 37L55 68" stroke-width="2" opacity="0.6"/>
+                <path d="M155 42L145 73" stroke-width="1.5" opacity="0.4"/>
+                <path d="M68 80L92 115" stroke-width="2.5" opacity="0.8"/>
+                <path d="M132 85L108 115" stroke-width="1.5" opacity="0.4"/>
+                <path d="M70 75H130" stroke-width="1" opacity="0.3"/>
+                <circle cx="100" cy="120" r="4" fill="currentColor" opacity="0.3"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TESTIMONIAL 2 ===== -->
+    <section class="testimonial-strip" aria-label="Testimonial">
+      <div class="container">
+        <div class="testimonial-card reveal">
+          <p class="testimonial-quote">I used to spend hours on FlyerTalk trying to figure out transfer paths. RedeemFlow showed me a Chase &rarr; Hyatt route I never would have found. Saved $800 on a week in Kyoto.</p>
+          <div class="testimonial-attribution">
+            <div class="testimonial-avatar">SP</div>
+            <div class="testimonial-meta">
+              <div class="testimonial-name">Sarah P.</div>
+              <div class="testimonial-role">Frequent traveler &middot; 6 programs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FEATURE 3: REDEEM (dark bg) ===== -->
+    <section class="feature-section" aria-labelledby="feat-redeem">
+      <div class="container">
+        <div class="feature-row reveal">
+          <div class="feature-text">
+            <div class="feature-label">Redeem</div>
+            <h2 id="feat-redeem">Book at the perfect moment</h2>
+            <p>Transfer bonuses, seasonal availability, and points expiration all affect timing. RedeemFlow factors them in and alerts you when your target redemptions hit sweet-spot pricing.</p>
+          </div>
+          <div class="feature-visual">
+            <div class="feature-placeholder" aria-hidden="true">
+              <svg viewBox="0 0 200 150" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
+                <rect x="30" y="20" width="140" height="110" rx="6" opacity="0.4"/>
+                <path d="M55 20V12" stroke-width="1.5" opacity="0.5"/>
+                <path d="M145 20V12" stroke-width="1.5" opacity="0.5"/>
+                <path d="M30 42H170" opacity="0.3"/>
+                <path d="M55 60L75 52L95 62L115 46L135 54L155 40" stroke-width="2" opacity="0.7"/>
+                <circle cx="115" cy="46" r="5" fill="currentColor" opacity="0.3"/>
+                <path d="M115 51V78" stroke-dasharray="2 2" opacity="0.3"/>
+                <rect x="100" y="80" width="30" height="18" rx="3" opacity="0.5"/>
+                <path d="M106 89L110 93L120 85" stroke-width="1.5" opacity="0.6"/>
+                <rect x="40" y="105" width="50" height="4" rx="2" opacity="0.2"/>
+                <rect x="40" y="113" width="35" height="4" rx="2" opacity="0.15"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== BIG STAT (gondola "$3,125" style) ===== -->
+    <section class="big-stat-section" aria-label="Key statistic">
+      <div class="container">
+        <div class="reveal">
+          <div class="big-stat-value">$2,847</div>
+          <p class="big-stat-label">Average hidden value found per user across their loyalty portfolios during beta testing.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== HOW IT WORKS (3-step + badges) ===== -->
     <section class="how-it-works" id="how-it-works" aria-labelledby="how-heading">
       <div class="container">
-        <h2 id="how-heading" class="section-heading reveal">How RedeemFlow Works</h2>
-        <div class="steps-grid">
+        <div class="section-label reveal">How it works</div>
+        <h2 id="how-heading" class="reveal reveal-delay-1">Maximize your points in three steps</h2>
+        <p class="section-subtitle reveal reveal-delay-2">No spreadsheets, no guesswork, no hours on forums.</p>
 
+        <div class="steps-grid">
           <!-- Step 1 -->
           <div class="step-card reveal">
             <div class="step-icon" aria-hidden="true">
-              <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="20" cy="28" r="8"/>
-                <circle cx="36" cy="28" r="8"/>
-                <path d="M28 22.5V33.5" stroke-width="1.2" opacity="0.5"/>
+              <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="10" cy="14" r="5"/>
+                <circle cx="18" cy="14" r="5"/>
               </svg>
             </div>
             <div class="step-number">Step 1</div>
-            <h3>Connect Your Accounts</h3>
-            <p>Link your loyalty programs. We securely sync your balances, transfer partners, and earning rates.</p>
+            <h3>Connect Your Programs</h3>
+            <p>Link your airline miles, hotel points, and credit card rewards. We sync everything securely.</p>
           </div>
 
           <!-- Step 2 -->
           <div class="step-card reveal reveal-delay-1">
             <div class="step-icon" aria-hidden="true">
-              <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="28" cy="14" r="4"/>
-                <circle cx="14" cy="38" r="4"/>
-                <circle cx="42" cy="38" r="4"/>
-                <circle cx="28" cy="30" r="3"/>
-                <path d="M28 18V27"/>
-                <path d="M17.5 35.5L25.5 31.5"/>
-                <path d="M38.5 35.5L30.5 31.5"/>
-                <path d="M16.5 34L26 15.5" stroke-width="0.8" opacity="0.4"/>
-                <path d="M39.5 34L30 15.5" stroke-width="0.8" opacity="0.4"/>
-                <path d="M18 38H38" stroke-width="0.8" opacity="0.4"/>
+              <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="14" cy="7" r="3"/>
+                <circle cx="7" cy="21" r="3"/>
+                <circle cx="21" cy="21" r="3"/>
+                <path d="M14 10V18"/>
+                <path d="M9.5 19L12.5 13"/>
+                <path d="M18.5 19L15.5 13"/>
               </svg>
             </div>
             <div class="step-number">Step 2</div>
             <h3>Discover Hidden Value</h3>
-            <p>Our graph engine maps every transfer path across your programs, finding routes the portals don't show you.</p>
+            <p>Our graph engine maps every transfer path, finding routes worth 2-5x more than standard redemptions.</p>
           </div>
 
           <!-- Step 3 -->
           <div class="step-card reveal reveal-delay-2">
             <div class="step-icon" aria-hidden="true">
-              <svg viewBox="0 0 56 56" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 38L28 14L36 38" stroke-width="1.5"/>
-                <path d="M23 30H33"/>
-                <path d="M16 42L20 38"/>
-                <path d="M40 42L36 38"/>
-                <circle cx="28" cy="12" r="3" fill="currentColor" stroke="none" opacity="0.3"/>
-                <path d="M28 8L30 4" stroke-width="1" opacity="0.5"/>
-                <path d="M32 10L35 8" stroke-width="1" opacity="0.5"/>
-                <path d="M24 10L21 8" stroke-width="1" opacity="0.5"/>
-                <path d="M28 6V3" stroke-width="1" opacity="0.5"/>
+              <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 20L14 6L18 20"/>
+                <path d="M11.5 16H16.5"/>
+                <circle cx="14" cy="5" r="2" fill="currentColor" stroke="none" opacity="0.3"/>
+                <path d="M14 3V1" stroke-width="1" opacity="0.5"/>
+                <path d="M16 4L18 3" stroke-width="1" opacity="0.5"/>
+                <path d="M12 4L10 3" stroke-width="1" opacity="0.5"/>
               </svg>
             </div>
             <div class="step-number">Step 3</div>
             <h3>Redeem Smarter</h3>
-            <p>Get AI-powered recommendations timed to bonuses, availability windows, and your travel calendar.</p>
+            <p>Get timed recommendations matched to bonuses, availability windows, and your travel plans.</p>
+          </div>
+        </div>
+
+        <!-- Loyalty program badges -->
+        <div class="program-badges reveal">
+          <span class="program-badge"><span class="badge-dot" style="background:#0032A0"></span> United</span>
+          <span class="program-badge"><span class="badge-dot" style="background:#C8102E"></span> American</span>
+          <span class="program-badge"><span class="badge-dot" style="background:#003366"></span> Delta</span>
+          <span class="program-badge"><span class="badge-dot" style="background:#8B1A1A"></span> Marriott</span>
+          <span class="program-badge"><span class="badge-dot" style="background:#0066CC"></span> Chase UR</span>
+          <span class="program-badge"><span class="badge-dot" style="background:#006FCF"></span> Amex MR</span>
+          <span class="program-badge"><span class="badge-dot" style="background:#002244"></span> Hilton</span>
+          <span class="program-badge"><span class="badge-dot" style="background:#FF6633"></span> IHG</span>
+          <span class="program-badge"><span class="badge-dot" style="background:#CF0A2C"></span> Hyatt</span>
+          <span class="program-badge"><span class="badge-dot" style="background:#008000"></span> Citi TY</span>
+          <span class="program-badge"><span class="badge-dot" style="background:#1D1D1B"></span> Capital One</span>
+          <span class="program-badge"><span class="badge-dot" style="background:#ED1C24"></span> Southwest</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== TESTIMONIAL 3 ===== -->
+    <section class="testimonial-strip" aria-label="Testimonial" style="border-top: 1px solid rgba(255,255,255,0.06)">
+      <div class="container">
+        <div class="testimonial-card reveal">
+          <p class="testimonial-quote">We booked JAL First Class to Tokyo using a transfer path I never knew existed. 80,000 AA miles instead of paying $14,000. This tool pays for itself instantly.</p>
+          <div class="testimonial-attribution">
+            <div class="testimonial-avatar">MR</div>
+            <div class="testimonial-meta">
+              <div class="testimonial-name">Michael R.</div>
+              <div class="testimonial-role">Points enthusiast &middot; 8 programs</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== FAQ ACCORDION ===== -->
+    <section class="faq-section" id="faq" aria-labelledby="faq-heading">
+      <div class="container">
+        <h2 id="faq-heading" class="reveal">Frequently Asked Questions</h2>
+        <div class="faq-list reveal reveal-delay-1">
+
+          <div class="faq-item">
+            <button class="faq-trigger" aria-expanded="false">
+              How does RedeemFlow find hidden value in my points?
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 7.5L10 12.5L15 7.5"/></svg>
+            </button>
+            <div class="faq-content">
+              <p>We build a graph of every transfer partnership across 50+ loyalty programs. When you connect your accounts, our engine calculates every possible path from your current balances to high-value redemptions, factoring in transfer ratios, bonuses, and real-time availability. Most tools optimize within a single program. We optimize across all of them simultaneously.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-trigger" aria-expanded="false">
+              Is my account information secure?
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 7.5L10 12.5L15 7.5"/></svg>
+            </button>
+            <div class="faq-content">
+              <p>Absolutely. We use read-only connections through AwardWallet's API. We can see your balances but never your passwords or login credentials. All data is encrypted in transit and at rest, and we never store sensitive authentication details.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-trigger" aria-expanded="false">
+              What loyalty programs do you support?
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 7.5L10 12.5L15 7.5"/></svg>
+            </button>
+            <div class="faq-content">
+              <p>We support 50+ programs including all major US airlines (United, American, Delta, Southwest), hotel chains (Marriott, Hilton, Hyatt, IHG), credit card currencies (Chase Ultimate Rewards, Amex Membership Rewards, Citi ThankYou, Capital One Miles), and international partners (ANA, JAL, Singapore, Aeroplan, and more).</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-trigger" aria-expanded="false">
+              What's "cents per point" and why does it matter?
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 7.5L10 12.5L15 7.5"/></svg>
+            </button>
+            <div class="faq-content">
+              <p>CPP (cents per point) measures how much value you extract from each loyalty point. A typical cash-back redemption gets you 1 CPP. Through the right transfer paths, the same points can be worth 2-5 CPP. The difference is real money: 100,000 points at 1 CPP = $1,000. At 2.5 CPP = $2,500. RedeemFlow finds those 2.5 CPP paths for you.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-trigger" aria-expanded="false">
+              How much does RedeemFlow cost?
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 7.5L10 12.5L15 7.5"/></svg>
+            </button>
+            <div class="faq-content">
+              <p>RedeemFlow is free during the beta period. After launch, we'll offer a free tier for basic portfolio tracking and a premium tier for real-time monitoring, alerts, and advanced optimization. Beta users will get a permanent discount on premium features.</p>
+            </div>
+          </div>
+
+          <div class="faq-item">
+            <button class="faq-trigger" aria-expanded="false">
+              Can I use RedeemFlow if I only have one loyalty program?
+              <svg class="faq-chevron" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 7.5L10 12.5L15 7.5"/></svg>
+            </button>
+            <div class="faq-content">
+              <p>Yes! Even a single program has transfer partners. For example, Chase Ultimate Rewards can transfer to 14+ airline and hotel programs. We'll show you which transfer paths unlock the best value for your specific points balance and travel goals.</p>
+            </div>
           </div>
 
         </div>
       </div>
     </section>
 
-    <!-- ===== FEATURES ===== -->
-    <section class="features-section" id="features" aria-labelledby="features-heading">
+    <!-- ===== BOTTOM CTA (dramatic visual + signup) ===== -->
+    <section class="bottom-cta" id="beta-signup" aria-labelledby="cta-heading">
       <div class="container">
-        <h2 id="features-heading" class="sr-only">Features</h2>
-
-        <!-- Feature A: Cross-Program Intelligence -->
-        <div class="feature-row reveal">
-          <div class="feature-text">
-            <div class="feature-label">Cross-Program Intelligence</div>
-            <h2>See Across All Your Programs at Once</h2>
-            <p>Most travelers optimize within a single program. RedeemFlow sees across all your programs simultaneously -- finding transfer paths that multiply your value.</p>
-          </div>
-          <div class="feature-visual">
-            <div class="feature-placeholder" aria-hidden="true">
-              <svg viewBox="0 0 200 150" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
-                <circle cx="50" cy="40" r="12"/>
-                <circle cx="150" cy="40" r="12"/>
-                <circle cx="100" cy="110" r="12"/>
-                <circle cx="100" cy="60" r="8" opacity="0.5"/>
-                <circle cx="60" cy="90" r="8" opacity="0.5"/>
-                <circle cx="140" cy="90" r="8" opacity="0.5"/>
-                <path d="M62 40H138" stroke-dasharray="4 3" opacity="0.6"/>
-                <path d="M55 51L95 103" stroke-dasharray="4 3" opacity="0.6"/>
-                <path d="M145 51L105 103" stroke-dasharray="4 3" opacity="0.6"/>
-                <path d="M58 45L92 57" opacity="0.4"/>
-                <path d="M142 45L108 57" opacity="0.4"/>
-                <path d="M96 67L65 84" opacity="0.4"/>
-                <path d="M104 67L135 84" opacity="0.4"/>
-                <path d="M68 93L92 107" opacity="0.4"/>
-                <path d="M132 93L108 107" opacity="0.4"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Feature B: Real-Time Availability -->
-        <div class="feature-row reverse reveal">
-          <div class="feature-text">
-            <div class="feature-label">Real-Time Availability</div>
-            <h2>Stop Guessing, Start Booking</h2>
-            <p>RedeemFlow monitors award seat availability and alerts you when your target routes open up at sweet-spot pricing. No more endless searching.</p>
-          </div>
-          <div class="feature-visual">
-            <div class="feature-placeholder" aria-hidden="true">
-              <svg viewBox="0 0 200 150" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
-                <rect x="30" y="25" width="140" height="100" rx="4" opacity="0.4"/>
-                <path d="M30 50H170" opacity="0.3"/>
-                <circle cx="50" cy="37" r="3" fill="currentColor" opacity="0.3"/>
-                <circle cx="62" cy="37" r="3" fill="currentColor" opacity="0.5"/>
-                <circle cx="74" cy="37" r="3" fill="currentColor" opacity="0.3"/>
-                <rect x="42" y="58" width="24" height="14" rx="2" opacity="0.3"/>
-                <rect x="72" y="58" width="24" height="14" rx="2" opacity="0.3"/>
-                <rect x="102" y="58" width="24" height="14" rx="2" opacity="0.6"/>
-                <rect x="132" y="58" width="24" height="14" rx="2" opacity="0.3"/>
-                <rect x="42" y="78" width="24" height="14" rx="2" opacity="0.3"/>
-                <rect x="72" y="78" width="24" height="14" rx="2" opacity="0.5"/>
-                <rect x="102" y="78" width="24" height="14" rx="2" opacity="0.3"/>
-                <rect x="132" y="78" width="24" height="14" rx="2" opacity="0.3"/>
-                <rect x="42" y="98" width="24" height="14" rx="2" opacity="0.3"/>
-                <rect x="72" y="98" width="24" height="14" rx="2" opacity="0.3"/>
-                <rect x="102" y="98" width="24" height="14" rx="2" opacity="0.3"/>
-                <rect x="132" y="98" width="24" height="14" rx="2" opacity="0.4"/>
-                <circle cx="114" cy="65" r="6" opacity="0.8"/>
-                <path d="M111 65L113 67L117 63" stroke-width="1.2" opacity="0.8"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        <!-- Feature C: Calendar-Aware Timing -->
-        <div class="feature-row reveal">
-          <div class="feature-text">
-            <div class="feature-label">Calendar-Aware Timing</div>
-            <h2>The Right Move at the Right Moment</h2>
-            <p>Transfer bonuses, seasonal availability, and points expiration all affect optimal timing. RedeemFlow factors them all in, so you never leave value on the table.</p>
-          </div>
-          <div class="feature-visual">
-            <div class="feature-placeholder" aria-hidden="true">
-              <svg viewBox="0 0 200 150" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round">
-                <rect x="35" y="20" width="130" height="110" rx="4" opacity="0.4"/>
-                <path d="M55 20V12" stroke-width="1.5" opacity="0.5"/>
-                <path d="M145 20V12" stroke-width="1.5" opacity="0.5"/>
-                <path d="M35 40H165" opacity="0.3"/>
-                <path d="M55 55L70 48L90 58L110 42L130 50L150 38" stroke-width="1.5" opacity="0.7"/>
-                <circle cx="110" cy="42" r="4" fill="currentColor" opacity="0.4"/>
-                <path d="M110 46V70" stroke-dasharray="2 2" opacity="0.3"/>
-                <rect x="95" y="72" width="30" height="16" rx="2" opacity="0.5"/>
-                <path d="M50 100H80" opacity="0.3"/>
-                <path d="M50 110H70" opacity="0.2"/>
-                <rect x="130" y="96" width="22" height="20" rx="3" opacity="0.5"/>
-                <path d="M136 106L139 109L147 103" stroke-width="1.2" opacity="0.5"/>
-              </svg>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </section>
-
-    <!-- ===== TESTIMONIAL ===== -->
-    <section class="testimonial-section" aria-label="Testimonial">
-      <div class="container">
-        <blockquote class="reveal">
-          <p class="testimonial-quote">I was sitting on 200,000 points across three programs with no idea how to use them optimally. RedeemFlow found $1,400 in hidden value in under a minute.</p>
-          <footer>
-            <cite class="testimonial-attribution">-- Early Beta Tester</cite>
-          </footer>
-        </blockquote>
-      </div>
-    </section>
-
-    <!-- ===== BETA CTA ===== -->
-    <section class="beta-cta-section" id="beta-signup" aria-labelledby="cta-heading">
-      <div class="container">
-        <h2 id="cta-heading" class="reveal">Stop Leaving Value on the Table</h2>
-        <p class="beta-cta-subtitle reveal reveal-delay-1">Join the beta and see what your points are really worth.</p>
+        <h2 id="cta-heading" class="reveal">Stop leaving money<br>on the table</h2>
+        <p class="cta-subtitle reveal reveal-delay-1">Join the beta and see what your points are really worth.</p>
         <div class="reveal reveal-delay-2">
           <form class="signup-form-inline" data-form="footer" aria-label="Beta signup" novalidate>
             <div class="input-wrap">
@@ -1022,27 +1684,59 @@
             </svg>
             <span>You're on the list. We'll be in touch.</span>
           </div>
-          <p class="signup-disclaimer">We'll never share your email. Unsubscribe anytime.</p>
+          <p class="signup-disclaimer">Free during beta &middot; We'll never share your email</p>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- ===== FOOTER ===== -->
+  <!-- ===== FOOTER (multi-column with social) ===== -->
   <footer class="site-footer" role="contentinfo">
     <div class="container">
-      <div class="footer-top">
+      <div class="footer-grid">
         <div class="footer-brand">
           <div class="footer-logo">RedeemFlow</div>
-          <div class="footer-tagline">AI-powered loyalty optimization</div>
+          <div class="footer-tagline">AI-powered loyalty optimization. Find the hidden value in your points.</div>
+          <div class="footer-social">
+            <a href="#" aria-label="Twitter">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/>
+              </svg>
+            </a>
+            <a href="#" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/>
+                <rect x="2" y="9" width="4" height="12"/>
+                <circle cx="4" cy="4" r="2"/>
+              </svg>
+            </a>
+          </div>
         </div>
-        <nav class="footer-links" aria-label="Footer navigation">
-          <a href="#">About</a>
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Contact</a>
-        </nav>
+        <div class="footer-col">
+          <h4>Product</h4>
+          <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#beta-signup">Get Early Access</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About</a></li>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4>Legal</h4>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+          </ul>
+        </div>
       </div>
       <div class="footer-bottom">
         <span>&copy; 2026 RedeemFlow. All rights reserved.</span>
@@ -1087,6 +1781,29 @@
         }
       }, { passive: true });
 
+      /* ===== FAQ ACCORDION ===== */
+      document.querySelectorAll('.faq-trigger').forEach(function (trigger) {
+        trigger.addEventListener('click', function () {
+          var item = trigger.closest('.faq-item');
+          var content = item.querySelector('.faq-content');
+          var isOpen = item.classList.contains('open');
+
+          // Close all
+          document.querySelectorAll('.faq-item.open').forEach(function (openItem) {
+            openItem.classList.remove('open');
+            openItem.querySelector('.faq-trigger').setAttribute('aria-expanded', 'false');
+            openItem.querySelector('.faq-content').style.maxHeight = '0';
+          });
+
+          // Toggle current
+          if (!isOpen) {
+            item.classList.add('open');
+            trigger.setAttribute('aria-expanded', 'true');
+            content.style.maxHeight = content.scrollHeight + 'px';
+          }
+        });
+      });
+
       /* ===== EMAIL VALIDATION & SUBMISSION ===== */
       var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -1094,7 +1811,6 @@
         var input = form.querySelector('input[type="email"]');
         var errorEl = form.querySelector('.error-msg');
         var successEl = form.nextElementSibling;
-        var submitBtn = form.querySelector('button[type="submit"]');
 
         input.addEventListener('input', function () {
           input.classList.remove('invalid');
@@ -1128,7 +1844,7 @@
           form.style.display = 'none';
           successEl.classList.add('show');
 
-          /* Sync both forms */
+          /* Sync all forms */
           document.querySelectorAll('.signup-form-inline').forEach(function (otherForm) {
             if (otherForm !== form) {
               otherForm.style.display = 'none';

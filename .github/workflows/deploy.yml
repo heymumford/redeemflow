@@ -24,7 +24,7 @@ jobs:
               - 'src/**'
               - 'Dockerfile'
               - 'fly.toml'
-              - 'pyproject.toml'
+              - 'alembic/**'
 
   deploy-landing:
     needs: detect-changes

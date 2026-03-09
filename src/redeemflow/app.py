@@ -8,12 +8,15 @@ from fastapi.responses import JSONResponse
 from redeemflow import __version__
 from redeemflow.billing.routes import router as billing_router
 from redeemflow.billing.stripe_adapter import FakePaymentProvider
+from redeemflow.charity.donation_flow import DonationService, FakeDonationProvider
 from redeemflow.charity.routes import router as charity_router
+from redeemflow.charity.seed_data import CHARITY_NETWORK
 from redeemflow.identity.auth import AuthError, get_current_user
 from redeemflow.identity.models import User
 from redeemflow.portfolio.fake_adapter import FakeBalanceFetcher
 from redeemflow.recommendations.engine import RecommendationEngine
 from redeemflow.valuations.routes import router as valuations_router
+from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
 
 
 def create_app() -> FastAPI:
@@ -22,6 +25,11 @@ def create_app() -> FastAPI:
     app.include_router(billing_router)
     app.include_router(charity_router)
     app.state.payment_provider = FakePaymentProvider()
+    app.state.donation_service = DonationService(
+        provider=FakeDonationProvider(),
+        valuations=PROGRAM_VALUATIONS,
+        charity_network=CHARITY_NETWORK,
+    )
     fetcher = FakeBalanceFetcher()
     engine = RecommendationEngine()
 

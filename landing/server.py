@@ -5,6 +5,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
+import logging
 import os
 import re
 import secrets
@@ -12,11 +13,10 @@ import sqlite3
 import time
 from base64 import urlsafe_b64decode, urlsafe_b64encode
 from datetime import UTC, datetime
+from pathlib import Path
 
 import httpx
 from fastapi import FastAPI, Request
-from pathlib import Path
-
 from fastapi.responses import (
     FileResponse,
     HTMLResponse,
@@ -27,6 +27,68 @@ from fastapi.responses import (
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from starlette.middleware.base import BaseHTTPMiddleware
+
+# --- Structured Logging ---
+LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
+LOG_FORMAT = os.environ.get("LOG_FORMAT", "json")
+
+logger = logging.getLogger("redeemflow.landing")
+logger.setLevel(getattr(logging, LOG_LEVEL, logging.INFO))
+
+if not logger.handlers:
+    handler = logging.StreamHandler()
+    if LOG_FORMAT == "json":
+
+        class JSONFormatter(logging.Formatter):
+            def format(self, record: logging.LogRecord) -> str:
+                log_entry = {
+                    "timestamp": datetime.now(UTC).isoformat(),
+                    "level": record.levelname,
+                    "logger": record.name,
+                    "message": record.getMessage(),
+                }
+                if hasattr(record, "extra_data"):
+                    log_entry.update(record.extra_data)
+                if record.exc_info and record.exc_info[1]:
+                    log_entry["exception"] = str(record.exc_info[1])
+                return json.dumps(log_entry)
+
+        handler.setFormatter(JSONFormatter())
+    else:
+        handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s %(message)s"))
+    logger.addHandler(handler)
+
+
+def log_event(level: str, message: str, **kwargs: object) -> None:
+    """Emit a structured log event with arbitrary key-value context."""
+    record = logger.makeRecord(logger.name, getattr(logging, level.upper(), logging.INFO), "", 0, message, (), None)
+    record.extra_data = kwargs  # type: ignore[attr-defined]
+    logger.handle(record)
+
+
+# --- OTEL (optional, graceful degradation) ---
+_otel_enabled = False
+try:
+    from opentelemetry import trace
+    from opentelemetry.exporter.otlp.proto.http.trace_exporter import OTLPSpanExporter
+    from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
+    from opentelemetry.sdk.resources import Resource
+    from opentelemetry.sdk.trace import TracerProvider
+    from opentelemetry.sdk.trace.export import BatchSpanProcessor
+
+    otel_endpoint = os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "")
+    if otel_endpoint:
+        resource = Resource.create({"service.name": "redeemflow-landing", "service.version": "0.2.0"})
+        provider = TracerProvider(resource=resource)
+        provider.add_span_processor(BatchSpanProcessor(OTLPSpanExporter(endpoint=otel_endpoint)))
+        trace.set_tracer_provider(provider)
+        _otel_enabled = True
+        log_event("info", "OpenTelemetry tracing enabled", endpoint=otel_endpoint)
+except ImportError:
+    log_event("info", "OpenTelemetry not installed, tracing disabled")
+
+VERSION_FILE = Path(__file__).resolve().parent / "VERSION"
+APP_VERSION = VERSION_FILE.read_text().strip() if VERSION_FILE.exists() else "0.0.0"
 
 # --- Config ---
 DB_PATH = os.environ.get("DB_PATH", "/data/signups.db")
@@ -41,9 +103,14 @@ SESSION_SECRET = os.environ.get("SESSION_SECRET", "")
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
+if _otel_enabled:
+    FastAPIInstrumentor.instrument_app(app)
+
 IMG_DIR = Path(__file__).resolve().parent / "img"
 if IMG_DIR.is_dir():
     app.mount("/img", StaticFiles(directory=str(IMG_DIR)), name="images")
+
+log_event("info", "Landing server starting", version=APP_VERSION)
 
 
 # --- Session helpers (signed cookie, no external deps) ---
@@ -192,8 +259,10 @@ async def signup(req: SignupRequest, request: Request):
             (email, datetime.now(UTC).isoformat(), ip, ua),
         )
         conn.commit()
+        log_event("info", "New signup", ip=ip, source="email")
         return {"status": "ok", "message": "You're on the list."}
     except sqlite3.IntegrityError:
+        log_event("info", "Duplicate signup attempt", ip=ip)
         return {"status": "ok", "message": "You're already on the list."}
     finally:
         conn.close()
@@ -396,6 +465,14 @@ async def health():
     return PlainTextResponse("ok")
 
 
+@app.get("/api/version")
+async def version():
+    return {"version": APP_VERSION, "otel": _otel_enabled}
+
+
 @app.get("/")
 async def index():
-    return FileResponse("/app/index.html", media_type="text/html")
+    html_path = Path(__file__).resolve().parent / "index.html"
+    if not html_path.exists():
+        html_path = Path("/app/index.html")
+    return FileResponse(str(html_path), media_type="text/html")

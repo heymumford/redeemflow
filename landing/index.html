@@ -2020,8 +2020,11 @@
       });
 
       // === SCROLL ANIMATIONS (IntersectionObserver) ===
+      var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       var fadeEls = document.querySelectorAll('.fade-in');
-      if ('IntersectionObserver' in window) {
+      if (prefersReducedMotion) {
+        fadeEls.forEach(function(el) { el.classList.add('visible'); });
+      } else if ('IntersectionObserver' in window) {
         var fadeObserver = new IntersectionObserver(function(entries) {
           entries.forEach(function(entry) {
             if (entry.isIntersecting) {
@@ -2038,6 +2041,10 @@
       // === COUNTER ANIMATION ===
       var statEl = document.querySelector('.big-stat__value[data-target]');
       if (statEl && 'IntersectionObserver' in window) {
+        if (prefersReducedMotion) {
+          var target = parseInt(statEl.getAttribute('data-target'), 10);
+          statEl.textContent = '$' + target.toLocaleString();
+        } else {
         var counted = false;
         var counterObserver = new IntersectionObserver(function(entries) {
           entries.forEach(function(entry) {
@@ -2060,6 +2067,7 @@
           });
         }, { threshold: 0.5 });
         counterObserver.observe(statEl);
+        }
       }
 
     })();

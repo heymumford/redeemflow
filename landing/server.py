@@ -41,7 +41,7 @@ SESSION_SECRET = os.environ.get("SESSION_SECRET", "")
 
 app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
-IMG_DIR = Path("/app/img")
+IMG_DIR = Path(__file__).resolve().parent / "img"
 if IMG_DIR.is_dir():
     app.mount("/img", StaticFiles(directory=str(IMG_DIR)), name="images")
 

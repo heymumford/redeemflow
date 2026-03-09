@@ -249,7 +249,10 @@ def list_forum_posts(
     per_page: int = Query(20, ge=1, le=100),
 ):
     service = _get_forum_service(request)
-    cat = ForumCategory(category) if category else None
+    try:
+        cat = ForumCategory(category) if category else None
+    except ValueError:
+        return JSONResponse(status_code=400, content={"detail": f"Invalid category: {category}"})
     posts = service.list_posts(category=cat, page=page, per_page=per_page)
     return {"posts": [_serialize_post(p) for p in posts]}
 

@@ -79,6 +79,11 @@ class TestForumAPI:
         assert len(data["posts"]) == 1
         assert data["posts"][0]["category"] == "strategies"
 
+    def test_list_posts_invalid_category_returns_400(self):
+        resp = self.client.get("/api/forum/posts?category=invalid_category")
+        assert resp.status_code == 400
+        assert "Invalid category" in resp.json()["detail"]
+
     def test_get_post_detail(self):
         create_resp = self.client.post(
             "/api/forum/posts",

@@ -243,15 +243,15 @@ class TestFAQTouchTargets:
     """VS-11: FAQ accordion triggers must meet 48px minimum touch target."""
 
     async def test_faq_trigger_min_height_in_css(self, html):
-        # Look for min-height on faq trigger
-        assert "faq-item__trigger" in html, "FAQ trigger class must exist"
+        # Look for min-height on accordion trigger (renamed from faq-item)
+        assert "accordion-item__trigger" in html, "Accordion trigger class must exist"
         # Check CSS defines adequate sizing
-        pattern = r"\.faq-item__trigger\s*\{[^}]*min-height:\s*4[4-9]px"
+        pattern = r"\.accordion-item__trigger\s*\{[^}]*min-height:\s*4[4-9]px"
         has_explicit = re.search(pattern, html) is not None
         # Also acceptable if padding creates >= 48px
-        pattern2 = r"\.faq-item__trigger\s*\{[^}]*padding:\s*1[6-9]px"
+        pattern2 = r"\.accordion-item__trigger\s*\{[^}]*padding:\s*1[6-9]px"
         has_padding = re.search(pattern2, html) is not None
-        assert has_explicit or has_padding, "FAQ trigger must have min-height >= 44px or padding >= 16px"
+        assert has_explicit or has_padding, "Accordion trigger must have min-height >= 44px or padding >= 16px"
 
 
 # ─── VS-12: Success State Personality ────────────────────────────────────
@@ -338,3 +338,144 @@ class TestWaitlistClosing:
             assert has_decorative or has_gradient, (
                 "Waitlist section must have decorative SVG (aria-hidden) or gradient element"
             )
+
+
+# ─── S9-01: Button Atom with Size Variants ────────────────────────────
+
+
+class TestButtonAtom:
+    """S9-01: Button must have reusable size variant classes."""
+
+    async def test_btn_sm_class_defined(self, html):
+        assert ".btn--sm" in html, "CSS must define .btn--sm size variant"
+
+    async def test_btn_block_class_defined(self, html):
+        assert ".btn--block" in html, "CSS must define .btn--block for full-width buttons"
+
+
+# ─── S9-02: Section Header Molecule ───────────────────────────────────
+
+
+class TestSectionHeaderMolecule:
+    """S9-02: Section headers (eyebrow + h2) must use a shared component class."""
+
+    async def test_section_header_class_in_css(self, html):
+        assert ".section-header" in html, "CSS must define .section-header molecule"
+
+    async def test_no_h2_inline_margin_in_main(self, html):
+        main_start = html.find("<main")
+        main_end = html.find("</main>")
+        main_html = html[main_start:main_end]
+        h2_with_style = re.findall(r'<h2[^>]*style="[^"]*margin-bottom[^"]*"', main_html)
+        assert len(h2_with_style) == 0, (
+            f"Found {len(h2_with_style)} h2 elements with inline margin-bottom — use .section-header instead"
+        )
+
+    async def test_section_header_used_in_html(self, html):
+        main_start = html.find("<main")
+        main_html = html[main_start:]
+        assert 'class="section-header"' in main_html or "section-header" in main_html, (
+            "section-header class must be used in HTML"
+        )
+
+
+# ─── S9-04: Generic Accordion ─────────────────────────────────────────
+
+
+class TestGenericAccordion:
+    """S9-04: FAQ accordion must use generic .accordion class for reuse."""
+
+    async def test_accordion_class_in_html(self, html):
+        main_start = html.find("<main")
+        main_html = html[main_start:]
+        assert 'accordion"' in main_html, "HTML must use an accordion class for reuse"
+
+    async def test_accordion_css_defined(self, html):
+        assert ".accordion" in html, "CSS must define .accordion styles"
+
+
+# ─── S9-06: No Inline Styles ──────────────────────────────────────────
+
+
+class TestNoInlineStyles:
+    """S9-06: Main content should have minimal inline styles."""
+
+    async def test_main_content_minimal_inline_styles(self, html):
+        main_start = html.find("<main")
+        main_end = html.find("</main>")
+        main_html = html[main_start:main_end]
+        inline_styles = re.findall(r'style="[^"]*"', main_html)
+        assert len(inline_styles) <= 2, (
+            f"Found {len(inline_styles)} inline styles in <main> — max 2 allowed after component extraction"
+        )
+
+
+# ─── S9-07: SVG Nav Logo ──────────────────────────────────────────────
+
+
+class TestNavSVGLogo:
+    """S9-07: Nav logo must be inline SVG for CSS color transitions."""
+
+    async def test_nav_logo_is_svg(self, html):
+        logo_start = html.find('class="nav__logo"')
+        logo_end = html.find("</a>", logo_start)
+        logo_html = html[logo_start:logo_end]
+        assert "<svg" in logo_html, "Nav logo link must contain inline SVG, not <img>"
+
+    async def test_nav_logo_has_color_classes(self, html):
+        nav_start = html.find('class="nav"')
+        nav_end = html.find("</nav>", nav_start)
+        nav_html = html[nav_start:nav_end]
+        assert "logo-mark" in nav_html, "Nav SVG logo must have .logo-mark class for CSS color transitions"
+        assert "logo-redeem" in nav_html, "Nav SVG logo must have .logo-redeem class"
+
+    async def test_nav_logo_no_png(self, html):
+        nav_start = html.find('class="nav"')
+        nav_end = html.find("</nav>", nav_start)
+        nav_html = html[nav_start:nav_end]
+        assert "logo-nav.png" not in nav_html, "Nav must not use PNG logo — use inline SVG instead"
+
+
+# ─── S10-02: Reduce Hero Images to 3 ──────────────────────────────────
+
+
+class TestHeroImageCount:
+    """S10-02: Hero should have 3 images (not 5) for stronger emotional connection."""
+
+    async def test_hero_has_three_slides(self, html):
+        hero_start = html.find('class="hero__kaleidoscope"')
+        hero_end = html.find("</div>", hero_start + 30)
+        hero_html = html[hero_start:hero_end]
+        slides = re.findall(r"hero__slide", hero_html)
+        assert len(slides) == 3, f"Hero should have exactly 3 slides, found {len(slides)}"
+
+    async def test_hero_animation_duration_matches(self, html):
+        # 3 slides at 8s = 24s cycle; ensure the 24s duration is specifically used on the hero crossfade animation
+        pattern = r"\.hero__(?:kaleidoscope|slide)[^{]*\{[^}]*animation[^;]*\b24s\b"
+        assert re.search(pattern, html, re.DOTALL), "Hero crossfade animation should be 24s for 3 slides at 8s each"
+
+
+# ─── S10-03: PNG Noise Texture ─────────────────────────────────────────
+
+
+class TestNoiseTexture:
+    """S10-03: Noise texture should use pre-rendered PNG, not inline SVG filter."""
+
+    async def test_no_svg_noise_in_css(self, html):
+        assert "feTurbulence" not in html, "SVG noise filter should be replaced with pre-rendered PNG"
+
+
+# ─── S10-06: Remove Counter Animation ──────────────────────────────────
+
+
+class TestNoCounterAnimation:
+    """S10-06: $3,400 stat should display statically (no counting animation)."""
+
+    async def test_no_counter_animation_in_js(self, app_js):
+        assert "requestAnimationFrame(step)" not in app_js, "Counter step animation should be removed from app.js"
+
+    async def test_stat_shows_static_value(self, html):
+        stat_start = html.find('class="stat-band"', html.find("<main"))
+        region = html[stat_start : stat_start + 500]
+        assert "$3,400" in region, "Stat band must show static $3,400 value"
+        assert "data-target" not in region, "data-target attribute should be removed (no JS counter)"

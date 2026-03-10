@@ -125,8 +125,9 @@
       content: '';
       position: absolute;
       inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      background-image: url("/img/noise-texture.png");
       background-size: 256px 256px;
+      opacity: 0.03;
       pointer-events: none;
       z-index: 0;
     }
@@ -220,6 +221,14 @@
       line-height: 1.3;
       letter-spacing: -0.01em;
       font-variation-settings: 'opsz' 24;
+    }
+
+    /* ===== SECTION HEADER MOLECULE ===== */
+    .section-header {
+      margin-bottom: var(--space-7);
+    }
+    .section-header h2 {
+      margin: 0;
     }
 
     /* ===== LAYOUT ===== */
@@ -324,9 +333,19 @@
       transform: scaleX(1);
     }
 
+    .btn--sm {
+      padding: 8px 16px;
+      font-size: 13px;
+    }
+
     .btn--large {
       padding: 16px 36px;
       font-size: 16px;
+    }
+
+    .btn--block {
+      width: 100%;
+      display: flex;
     }
 
     .btn--hero {
@@ -558,20 +577,18 @@
       height: 100%;
       object-fit: cover;
       opacity: 0;
-      animation: hero-crossfade 40s ease-in-out infinite;
+      animation: hero-crossfade 24s ease-in-out infinite;
     }
 
     .hero__slide:nth-child(1) { animation-delay: 0s; }
     .hero__slide:nth-child(2) { animation-delay: 8s; }
     .hero__slide:nth-child(3) { animation-delay: 16s; }
-    .hero__slide:nth-child(4) { animation-delay: 24s; }
-    .hero__slide:nth-child(5) { animation-delay: 32s; }
 
     @keyframes hero-crossfade {
       0% { opacity: 0; }
-      2.5% { opacity: 1; }
-      20% { opacity: 1; }
-      22.5% { opacity: 0; }
+      2% { opacity: 1; }
+      31% { opacity: 1; }
+      35% { opacity: 0; }
       100% { opacity: 0; }
     }
 
@@ -875,17 +892,17 @@
       line-height: 1.6;
     }
 
-    /* ===== FAQ ===== */
-    .faq-list {
+    /* ===== ACCORDION (generic, reusable) ===== */
+    .accordion {
       max-width: 780px;
       margin: 0 auto;
     }
 
-    .faq-item {
+    .accordion-item {
       border-bottom: 1px solid rgba(0, 0, 0, 0.06);
     }
 
-    .faq-item__trigger {
+    .accordion-item__trigger {
       width: 100%;
       padding: 18px 0;
       min-height: 48px;
@@ -903,15 +920,15 @@
       transition: color 0.2s var(--ease-premium);
     }
 
-    .faq-item__trigger:active {
+    .accordion-item__trigger:active {
       background: rgba(0, 0, 0, 0.02);
     }
 
-    .faq-item__trigger:hover {
+    .accordion-item__trigger:hover {
       color: var(--accent);
     }
 
-    .faq-item__icon {
+    .accordion-item__icon {
       font-family: var(--font-mono);
       font-size: 20px;
       font-weight: 400;
@@ -921,22 +938,22 @@
       transition: transform 0.25s var(--ease-premium);
     }
 
-    .faq-item[data-open="true"] .faq-item__icon {
+    .accordion-item[data-open="true"] .accordion-item__icon {
       transform: rotate(45deg);
     }
 
-    .faq-item__answer {
+    .accordion-item__answer {
       overflow: hidden;
       transition: max-height 0.35s var(--ease-premium), opacity 0.25s var(--ease-premium);
       max-height: 0;
       opacity: 0;
     }
 
-    .faq-item[data-open="true"] .faq-item__answer {
+    .accordion-item[data-open="true"] .accordion-item__answer {
       opacity: 1;
     }
 
-    .faq-item__answer-inner {
+    .accordion-item__answer-inner {
       padding: 0 0 24px;
       color: var(--text-secondary);
       font-size: 16px;
@@ -1270,6 +1287,63 @@
       text-decoration: underline;
     }
 
+    /* ===== SECTION CTA (bottom-of-section call to action) ===== */
+    .section__cta {
+      text-align: center;
+      margin-top: var(--space-7);
+    }
+
+    .section__cta-text {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .section__note {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 14px;
+      color: var(--text-tertiary);
+    }
+
+    .faq-cta {
+      text-align: center;
+      margin-top: var(--space-7);
+      padding-top: var(--space-6);
+      border-top: 1px solid rgba(0,0,0,0.06);
+    }
+
+    .faq-cta__text {
+      font-size: 17px;
+      color: var(--text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    .faq-cta__text a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .cite--inverse {
+      color: var(--accent-warm-light);
+    }
+
+    .waitlist__success-secondary {
+      font-size: 14px;
+      color: var(--text-inverse-muted);
+      margin-top: 12px;
+    }
+
+    .waitlist__success svg {
+      margin-bottom: var(--space-4);
+    }
+
+    .waitlist__decorative {
+      opacity: 0.15;
+      margin-top: var(--space-6);
+    }
+
     /* Mobile CTA: hidden by default, shown only in mobile breakpoint */
     .mobile-cta { display: none; }
 
@@ -1564,7 +1638,7 @@
 
       .feature-card p, .step p { font-size: 16px; }
 
-      .hero__slide:nth-child(n+3) { display: none; }
+      /* Keep all 3 hero slides visible on mobile — 24s animation timing requires all 3 */
 
       .scenario-compare__columns {
         grid-template-columns: 1fr;
@@ -1756,7 +1830,14 @@
   <nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
     <div class="nav__inner">
       <a href="#main-content" class="nav__logo" aria-label="RedeemFlow home">
-        <img src="/img/logo-nav.png" alt="RedeemFlow" height="36" width="91" class="nav__logo-img">
+        <svg viewBox="0 0 180 28" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="RedeemFlow">
+          <title>RedeemFlow</title>
+          <path class="logo-mark" d="M4 14L14 4L24 14" fill="none" stroke-width="2" stroke-linejoin="miter"/>
+          <path class="logo-mark" d="M4 14L14 24L24 14" fill="none" stroke-width="2" stroke-linejoin="miter"/>
+          <path class="logo-mark" d="M9 14L14 9L19 14L14 19Z" fill="none" stroke-width="1.5"/>
+          <text class="logo-redeem" x="32" y="20" font-family="'Fraunces', Georgia, serif" font-weight="600" font-size="18">Redeem</text>
+          <text class="logo-flow" x="108" y="20" font-family="'Fraunces', Georgia, serif" font-weight="300" font-size="18">Flow</text>
+        </svg>
       </a>
       <button class="nav__toggle" aria-expanded="false" aria-controls="nav-drawer" aria-label="Menu">
         <svg class="nav__toggle-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -1788,8 +1869,6 @@
   <section class="hero" aria-label="Introduction">
     <div class="hero__kaleidoscope" aria-hidden="true">
       <img class="hero__slide" src="/img/hero-resort.jpg" alt="" loading="eager">
-      <img class="hero__slide" src="/img/hero-terminal.jpg" alt="" loading="lazy">
-      <img class="hero__slide" src="/img/hero-cabin.jpg" alt="" loading="lazy">
       <img class="hero__slide" src="/img/hero-maldives.jpg" alt="" loading="lazy">
       <img class="hero__slide" src="/img/hero-traveler.jpg" alt="" loading="lazy">
     </div>
@@ -1838,8 +1917,8 @@
   <section class="stat-band" aria-label="Key statistic">
     <div class="container">
       <p class="stat-band__label">Average left on the table each year</p>
-      <p class="stat-band__value" data-target="3400">$3,400</p>
-      <p class="stat-band__qualifier">per household, for frequent travelers<a href="#citations" class="cite" style="color: var(--accent-warm-light);" aria-label="Source 4">4</a></p>
+      <p class="stat-band__value">$3,400</p>
+      <p class="stat-band__qualifier">per household, for frequent travelers<a href="#citations" class="cite cite--inverse" aria-label="Source 4">4</a></p>
     </div>
   </section>
 
@@ -1853,8 +1932,10 @@
   <!-- HOW IT WORKS -->
   <section class="section section--secondary section--light fade-in" id="how-it-works">
     <div class="container">
-      <span class="eyebrow">How It Works</span>
-      <h2 style="margin-bottom: 48px;">Three steps. Five minutes.</h2>
+      <header class="section-header">
+        <span class="eyebrow">How It Works</span>
+        <h2>Three steps. Five minutes.</h2>
+      </header>
       <div class="steps">
         <div class="step fade-in">
           <div class="step__number" aria-hidden="true">01</div>
@@ -1872,8 +1953,8 @@
           <p>Pick the option that works for you. We never move your points — you're always in control.</p>
         </div>
       </div>
-      <div style="text-align: center; margin-top: 48px;">
-        <p style="font-size: 15px; color: var(--text-secondary); margin-bottom: 16px;">Ready to see what you have?</p>
+      <div class="section__cta">
+        <p class="section__cta-text">Ready to see what you have?</p>
         <a href="#waitlist" class="btn btn--primary">Join the Waitlist <span aria-hidden="true">&rarr;</span></a>
       </div>
     </div>
@@ -1882,8 +1963,10 @@
   <!-- DISCOVER -->
   <section class="section section--secondary section--light fade-in" id="features">
     <div class="container">
-      <span class="eyebrow">What You Get</span>
-      <h2 style="margin-bottom: 48px;">See the options that respect your time</h2>
+      <header class="section-header">
+        <span class="eyebrow">What You Get</span>
+        <h2>See the options that respect your time</h2>
+      </header>
       <div class="feature-grid">
         <div class="feature-card fade-in">
           <div class="feature-card__icon">
@@ -1925,15 +2008,17 @@
           <p>Your points are often worth far more used the right way. RedeemFlow finds those options and shows you the difference.</p>
         </div>
       </div>
-      <p style="text-align: center; margin-top: 40px; font-size: 14px; color: var(--text-tertiary);">See your balances free. Smart recommendations from $149/year — vs $200+ for full concierge services.</p>
+      <p class="section__note">See your balances free. Smart recommendations from $149/year — vs $200+ for full concierge services.</p>
     </div>
   </section>
 
   <!-- SCENARIOS -->
   <section class="section fade-in" id="scenarios">
     <div class="container">
-      <span class="eyebrow">Real Examples</span>
-      <h2 style="margin-bottom: 48px;">Same points. Different outcomes.</h2>
+      <header class="section-header">
+        <span class="eyebrow">Real Examples</span>
+        <h2>Same points. Different outcomes.</h2>
+      </header>
 
       <div class="scenario-compare fade-in">
         <div class="scenario-compare__story">
@@ -1955,7 +2040,7 @@
         <p class="scenario-compare__source">Based on published Marriott Bonvoy and Alaska Airlines program rates</p>
       </div>
 
-      <div class="testimonial-grid" style="margin-top: 48px;">
+      <div class="testimonial-grid section__cta">
         <div class="scenario-card fade-in">
           <p class="scenario-card__text"><strong>150,000 credit card points.</strong> Cash out: $1,500 statement credit. Transfer to a hotel partner: $3,150 in stays. One decision. Twice the vacation.</p>
           <p class="scenario-card__source">Based on Chase UR and World of Hyatt published rates</p>
@@ -1976,85 +2061,87 @@
   <!-- FAQ -->
   <section class="section section--secondary section--light fade-in" id="faq">
     <div class="container">
-      <span class="eyebrow">FAQ</span>
-      <h2 style="margin-bottom: 48px;">Common questions</h2>
-      <div class="faq-list">
+      <header class="section-header">
+        <span class="eyebrow">FAQ</span>
+        <h2>Common questions</h2>
+      </header>
+      <div class="accordion">
 
-        <div class="faq-item" data-open="false">
-          <button class="faq-item__trigger" id="faq-trigger-1" aria-expanded="false" aria-controls="faq-answer-1">
+        <div class="accordion-item" data-open="false">
+          <button class="accordion-item__trigger" id="faq-trigger-1" aria-expanded="false" aria-controls="faq-answer-1">
             How does RedeemFlow access my loyalty accounts?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <span class="accordion-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" id="faq-answer-1" role="region" aria-labelledby="faq-trigger-1">
-            <div class="faq-item__answer-inner">
+          <div class="accordion-item__answer" id="faq-answer-1" role="region" aria-labelledby="faq-trigger-1">
+            <div class="accordion-item__answer-inner">
               RedeemFlow uses read-only connections to pull balances, expiration dates, and program rules. We never initiate transfers or redemptions on your behalf. Every action requires your explicit confirmation.
             </div>
           </div>
         </div>
 
-        <div class="faq-item" data-open="false">
-          <button class="faq-item__trigger" id="faq-trigger-2" aria-expanded="false" aria-controls="faq-answer-2">
+        <div class="accordion-item" data-open="false">
+          <button class="accordion-item__trigger" id="faq-trigger-2" aria-expanded="false" aria-controls="faq-answer-2">
             What loyalty programs do you support?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <span class="accordion-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" id="faq-answer-2" role="region" aria-labelledby="faq-trigger-2">
-            <div class="faq-item__answer-inner">
+          <div class="accordion-item__answer" id="faq-answer-2" role="region" aria-labelledby="faq-trigger-2">
+            <div class="accordion-item__answer-inner">
               At launch, RedeemFlow supports all major credit card transfer programs (Chase UR, Amex MR, Citi ThankYou, Capital One Miles), airline programs (United, AA, Delta, Southwest, Alaska, JetBlue), and hotel programs (Marriott, Hilton, Hyatt, IHG). More programs are added every month.
             </div>
           </div>
         </div>
 
-        <div class="faq-item" data-open="false">
-          <button class="faq-item__trigger" id="faq-trigger-3" aria-expanded="false" aria-controls="faq-answer-3">
+        <div class="accordion-item" data-open="false">
+          <button class="accordion-item__trigger" id="faq-trigger-3" aria-expanded="false" aria-controls="faq-answer-3">
             How is this different from a travel agent?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <span class="accordion-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" id="faq-answer-3" role="region" aria-labelledby="faq-trigger-3">
-            <div class="faq-item__answer-inner">
+          <div class="accordion-item__answer" id="faq-answer-3" role="region" aria-labelledby="faq-trigger-3">
+            <div class="accordion-item__answer-inner">
               A travel agent books one trip at a time. RedeemFlow looks at all your points across every program and finds better ways to use them — options you would never find by searching each program individually. At $149/year instead of $200+ per booking with a concierge, it pays for itself with the first trip.
             </div>
           </div>
         </div>
 
-        <div class="faq-item" data-open="false">
-          <button class="faq-item__trigger" id="faq-trigger-4" aria-expanded="false" aria-controls="faq-answer-4">
+        <div class="accordion-item" data-open="false">
+          <button class="accordion-item__trigger" id="faq-trigger-4" aria-expanded="false" aria-controls="faq-answer-4">
             Can RedeemFlow make transfers or bookings for me?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <span class="accordion-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" id="faq-answer-4" role="region" aria-labelledby="faq-trigger-4">
-            <div class="faq-item__answer-inner">
+          <div class="accordion-item__answer" id="faq-answer-4" role="region" aria-labelledby="faq-trigger-4">
+            <div class="accordion-item__answer-inner">
               No. RedeemFlow shows you clear options and you make the call. We never move your points or book anything without your explicit confirmation. Your points, your choice — every time.
             </div>
           </div>
         </div>
 
-        <div class="faq-item" data-open="false">
-          <button class="faq-item__trigger" id="faq-trigger-5" aria-expanded="false" aria-controls="faq-answer-5">
+        <div class="accordion-item" data-open="false">
+          <button class="accordion-item__trigger" id="faq-trigger-5" aria-expanded="false" aria-controls="faq-answer-5">
             What does it cost?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <span class="accordion-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" id="faq-answer-5" role="region" aria-labelledby="faq-trigger-5">
-            <div class="faq-item__answer-inner">
+          <div class="accordion-item__answer" id="faq-answer-5" role="region" aria-labelledby="faq-trigger-5">
+            <div class="accordion-item__answer-inner">
               Seeing your balances and getting expiration alerts is free. The full experience — smart recommendations, deal alerts, and calendar sync — is $149 per year. Most people recover that value on their very first trip.
             </div>
           </div>
         </div>
 
-        <div class="faq-item" data-open="false">
-          <button class="faq-item__trigger" id="faq-trigger-6" aria-expanded="false" aria-controls="faq-answer-6">
+        <div class="accordion-item" data-open="false">
+          <button class="accordion-item__trigger" id="faq-trigger-6" aria-expanded="false" aria-controls="faq-answer-6">
             Is my data secure?
-            <span class="faq-item__icon" aria-hidden="true">+</span>
+            <span class="accordion-item__icon" aria-hidden="true">+</span>
           </button>
-          <div class="faq-item__answer" id="faq-answer-6" role="region" aria-labelledby="faq-trigger-6">
-            <div class="faq-item__answer-inner">
+          <div class="accordion-item__answer" id="faq-answer-6" role="region" aria-labelledby="faq-trigger-6">
+            <div class="accordion-item__answer-inner">
               Your data is encrypted at rest and in transit. We use read-only access with the minimum permissions needed and never store your account credentials. An independent security review is planned before general availability.
             </div>
           </div>
         </div>
 
       </div>
-      <div class="faq-cta fade-in" style="text-align: center; margin-top: 48px; padding-top: 32px; border-top: 1px solid rgba(0,0,0,0.06);">
-        <p style="font-size: 17px; color: var(--text-secondary); margin-bottom: 16px;">Still have questions? <a href="mailto:hello@redeemflow.io" style="color: var(--accent); text-decoration: none; font-weight: 500;">hello@redeemflow.io</a></p>
+      <div class="faq-cta fade-in">
+        <p class="faq-cta__text">Still have questions? <a href="mailto:hello@redeemflow.io">hello@redeemflow.io</a></p>
         <a href="#waitlist" class="btn btn--primary">Join the Waitlist <span aria-hidden="true">&rarr;</span></a>
       </div>
     </div>
@@ -2088,16 +2175,16 @@
       </form>
       <div class="waitlist__error" id="waitlist-error" role="alert" aria-live="polite"></div>
       <div class="waitlist__success" id="waitlist-success" role="status" aria-live="polite">
-        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true" style="margin-bottom: 16px;">
+        <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
           <circle cx="24" cy="24" r="22" stroke="var(--accent-warm-light)" stroke-width="2"/>
           <path d="M15 24L21 30L33 18" stroke="var(--accent-warm-light)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
         <p>You're in. We'll send one email when early access opens — pinky promise.</p>
-        <p style="font-size: 14px; color: var(--text-inverse-muted); margin-top: 12px;">Know someone sitting on unused points? Share this page.</p>
+        <p class="waitlist__success-secondary">Know someone sitting on unused points? Share this page.</p>
       </div>
       <p class="waitlist__note"><strong>Free</strong> to see your balances. <strong>$149/year</strong> for smart recommendations, deal alerts, and calendar sync.</p>
       <p class="waitlist__consent">One email when access opens. No spam.</p>
-      <svg class="waitlist__decorative" width="200" height="40" viewBox="0 0 200 40" fill="none" aria-hidden="true" style="opacity: 0.15; margin-top: 32px;">
+      <svg class="waitlist__decorative" width="200" height="40" viewBox="0 0 200 40" fill="none" aria-hidden="true">
         <path d="M0 20Q50 0 100 20T200 20" stroke="var(--accent-warm-light)" stroke-width="1.5" fill="none"/>
         <path d="M0 25Q50 5 100 25T200 25" stroke="var(--accent-warm-light)" stroke-width="1" fill="none" opacity="0.5"/>
       </svg>

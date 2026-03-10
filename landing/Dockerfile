@@ -7,6 +7,7 @@ RUN pip install --no-cache-dir \
     opentelemetry-instrumentation-fastapi
 COPY server.py .
 COPY index.html .
+COPY style.css .
 COPY app.js .
 COPY VERSION .
 COPY img/ img/

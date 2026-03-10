@@ -138,4 +138,4 @@
 | Conversion Copy | 8 | 7 | 6 | 1 |
 | Component Architecture | 9 | 7 | 2 | 5 |
 | Performance & Testing | 10 | 8 | 2 | 6 |
-| **TOTAL** | | **88** | **67** | **14** |
+| **TOTAL** | | **81** | **67** | **14** |

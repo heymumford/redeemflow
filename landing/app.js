@@ -222,9 +222,11 @@
     function updateMobileCta() {
       if (heroVisible || waitlistVisible) {
         mobileCta.classList.remove('visible');
+        mobileCta.setAttribute('aria-hidden', 'true');
         document.body.classList.remove('mobile-cta-active');
       } else {
         mobileCta.classList.add('visible');
+        mobileCta.setAttribute('aria-hidden', 'false');
         document.body.classList.add('mobile-cta-active');
       }
     }

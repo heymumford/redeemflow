@@ -9,71 +9,18 @@ First run: npx playwright install chromium
 
 from __future__ import annotations
 
-import os
-import sys
 from pathlib import Path
 
 import pytest
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "..", "landing"))
-
-os.environ.setdefault("DB_PATH", "")
-os.environ.setdefault("SESSION_SECRET", "test-secret-key-for-testing-only-32chars!")
 
 SCREENSHOT_DIR = Path(__file__).parent / "screenshots"
 SCREENSHOT_DIR.mkdir(exist_ok=True)
 
 
-@pytest.fixture(scope="module")
-def _ensure_db(tmp_path_factory):
-    db_path = str(tmp_path_factory.mktemp("data") / "test_signups.db")
-    os.environ["DB_PATH"] = db_path
-    import landing.server as srv
-
-    srv.DB_PATH = db_path
-    yield db_path
-
-
-@pytest.fixture(scope="module")
-def server_url(_ensure_db):
-    """Start ASGI server on a random port for Playwright to hit."""
-    import threading
-
-    import uvicorn
-
-    import landing.server as srv
-
-    config = uvicorn.Config(srv.app, host="127.0.0.1", port=0, log_level="error")
-    server = uvicorn.Server(config)
-
-    # Find a free port
-    import socket
-
-    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.bind(("127.0.0.1", 0))
-    port = sock.getsockname()[1]
-    sock.close()
-
-    config = uvicorn.Config(srv.app, host="127.0.0.1", port=port, log_level="error")
-    server = uvicorn.Server(config)
-
-    thread = threading.Thread(target=server.run, daemon=True)
-    thread.start()
-
-    # Wait for server to be ready
-    import time
-
-    for _ in range(50):
-        try:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect(("127.0.0.1", port))
-            sock.close()
-            break
-        except ConnectionRefusedError:
-            time.sleep(0.1)
-
-    yield f"http://127.0.0.1:{port}"
-    server.should_exit = True
+@pytest.fixture()
+def server_url(landing_server):
+    """Alias the shared landing_server fixture from conftest."""
+    return landing_server
 
 
 def _pixel_diff_ratio(img1_bytes: bytes, img2_bytes: bytes) -> float:

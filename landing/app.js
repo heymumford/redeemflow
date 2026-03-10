@@ -112,13 +112,13 @@
       } else {
         showError(data.error || 'Something went wrong. Please try again.');
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Join Waitlist \u2192';
+        submitBtn.textContent = 'Get Early Access \u2192';
       }
     })
     .catch(function() {
       showError('Network error. Please try again.');
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Join Waitlist \u2192';
+      submitBtn.textContent = 'Get Early Access \u2192';
     });
   });
 

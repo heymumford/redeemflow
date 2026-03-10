@@ -53,6 +53,19 @@ async def app_js(client) -> str:
     return resp.text
 
 
+@pytest.fixture()
+async def style_css(client) -> str:
+    resp = await client.get("/style.css")
+    assert resp.status_code == 200
+    return resp.text
+
+
+@pytest.fixture()
+async def all_css(html, style_css) -> str:
+    """Combined inline + external CSS for tests that check CSS rule existence."""
+    return html + style_css
+
+
 # ─── VS-01: Mobile Navigation ───────────────────────────────────────────
 
 
@@ -202,8 +215,8 @@ class TestStatBand:
 class TestHeroMobileViewport:
     """VS-08: Hero must optimize for short mobile viewports."""
 
-    async def test_max_height_media_query_exists(self, html):
-        assert "max-height:" in html or "max-height :" in html, (
+    async def test_max_height_media_query_exists(self, all_css):
+        assert "max-height:" in all_css or "max-height :" in all_css, (
             "CSS must contain max-height media query for short viewports"
         )
 
@@ -242,15 +255,15 @@ class TestPriceAnchoring:
 class TestFAQTouchTargets:
     """VS-11: FAQ accordion triggers must meet 48px minimum touch target."""
 
-    async def test_faq_trigger_min_height_in_css(self, html):
+    async def test_faq_trigger_min_height_in_css(self, all_css):
         # Look for min-height on accordion trigger (renamed from faq-item)
-        assert "accordion-item__trigger" in html, "Accordion trigger class must exist"
+        assert "accordion-item__trigger" in all_css, "Accordion trigger class must exist"
         # Check CSS defines adequate sizing
         pattern = r"\.accordion-item__trigger\s*\{[^}]*min-height:\s*4[4-9]px"
-        has_explicit = re.search(pattern, html) is not None
+        has_explicit = re.search(pattern, all_css) is not None
         # Also acceptable if padding creates >= 48px
         pattern2 = r"\.accordion-item__trigger\s*\{[^}]*padding:\s*1[6-9]px"
-        has_padding = re.search(pattern2, html) is not None
+        has_padding = re.search(pattern2, all_css) is not None
         assert has_explicit or has_padding, "Accordion trigger must have min-height >= 44px or padding >= 16px"
 
 
@@ -283,8 +296,8 @@ class TestSuccessState:
 class TestTabletBreakpoint:
     """VS-13: CSS must define a 640px intermediate breakpoint."""
 
-    async def test_640px_breakpoint_exists(self, html):
-        assert "640px" in html, "CSS must contain a 640px breakpoint for tablet layouts"
+    async def test_640px_breakpoint_exists(self, all_css):
+        assert "640px" in all_css, "CSS must contain a 640px breakpoint for tablet layouts"
 
 
 # ─── VS-14: Section Header Amber Accent ─────────────────────────────────
@@ -390,8 +403,8 @@ class TestGenericAccordion:
         main_html = html[main_start:]
         assert 'accordion"' in main_html, "HTML must use an accordion class for reuse"
 
-    async def test_accordion_css_defined(self, html):
-        assert ".accordion" in html, "CSS must define .accordion styles"
+    async def test_accordion_css_defined(self, all_css):
+        assert ".accordion" in all_css, "CSS must define .accordion styles"
 
 
 # ─── S9-06: No Inline Styles ──────────────────────────────────────────
@@ -479,3 +492,67 @@ class TestNoCounterAnimation:
         region = html[stat_start : stat_start + 500]
         assert "$3,400" in region, "Stat band must show static $3,400 value"
         assert "data-target" not in region, "data-target attribute should be removed (no JS counter)"
+
+
+@pytest.mark.usefixtures("_temp_db")
+class TestWebPHeroImages:
+    """S10-01: Hero images use <picture> with WebP srcset and JPG fallback."""
+
+    async def test_hero_uses_picture_elements(self, html):
+        hero_start = html.find('class="hero__kaleidoscope"')
+        hero_end = html.find("</div>", hero_start + 200)
+        region = html[hero_start:hero_end]
+        assert region.count("<picture") == 3, "Hero must have 3 <picture> elements"
+
+    async def test_hero_has_webp_sources(self, html):
+        hero_start = html.find('class="hero__kaleidoscope"')
+        hero_end = html.find("</div>", hero_start + 1000)
+        region = html[hero_start:hero_end]
+        assert 'type="image/webp"' in region, "Each picture must have a WebP <source>"
+        assert region.count('type="image/webp"') == 3, "All 3 pictures need WebP sources"
+
+    async def test_hero_has_responsive_srcset(self, html):
+        hero_start = html.find('class="hero__kaleidoscope"')
+        hero_end = html.find("</div>", hero_start + 1000)
+        region = html[hero_start:hero_end]
+        assert "640w" in region, "srcset must include 640w breakpoint"
+        assert "1024w" in region, "srcset must include 1024w breakpoint"
+        assert "1920w" in region, "srcset must include 1920w breakpoint"
+
+    async def test_hero_has_jpg_fallback(self, html):
+        hero_start = html.find('class="hero__kaleidoscope"')
+        hero_end = html.find("</div>", hero_start + 1000)
+        region = html[hero_start:hero_end]
+        assert region.count(".jpg") >= 3, "Each picture must have a JPG fallback <img>"
+
+
+@pytest.mark.usefixtures("_temp_db")
+class TestCriticalCSSExtraction:
+    """S10-05: Critical CSS stays inline, rest moves to external stylesheet."""
+
+    async def test_external_stylesheet_linked(self, html):
+        head_end = html.find("</head>")
+        head = html[:head_end]
+        assert 'rel="stylesheet"' in head, "Must link an external stylesheet in <head>"
+        assert "style.css" in head, "External stylesheet should be named style.css"
+
+    async def test_critical_css_still_inline(self, html):
+        head_end = html.find("</head>")
+        head = html[:head_end]
+        assert "<style>" in head, "Critical CSS must remain inline in <head>"
+        # Critical CSS should include nav, hero, above-fold layout tokens
+        style_start = head.find("<style>")
+        style_end = head.find("</style>", style_start)
+        critical = head[style_start:style_end]
+        assert ".nav" in critical, "Critical CSS must include nav styles"
+        assert ".hero" in critical, "Critical CSS must include hero styles"
+        assert "--space-" in critical or "--font-" in critical, "Critical CSS must include design tokens"
+
+    async def test_inline_css_reduced(self, html):
+        head_end = html.find("</head>")
+        head = html[:head_end]
+        style_start = head.find("<style>")
+        style_end = head.find("</style>", style_start)
+        critical = head[style_start:style_end]
+        line_count = critical.count("\n")
+        assert line_count <= 750, f"Critical inline CSS should be <=750 lines, got {line_count}"

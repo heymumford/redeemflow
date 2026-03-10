@@ -140,20 +140,38 @@
   // === SCROLL ANIMATIONS (IntersectionObserver) ===
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var fadeEls = document.querySelectorAll('.fade-in');
+
+  function revealElement(el) {
+    if (!el.classList.contains('visible')) {
+      el.classList.add('visible');
+    }
+  }
+
   if (prefersReducedMotion) {
-    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+    fadeEls.forEach(revealElement);
   } else if ('IntersectionObserver' in window) {
+    var observerFired = false;
     var fadeObserver = new IntersectionObserver(function(entries) {
+      observerFired = true;
       entries.forEach(function(entry) {
         if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
+          revealElement(entry.target);
           fadeObserver.unobserve(entry.target);
         }
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     fadeEls.forEach(function(el) { fadeObserver.observe(el); });
+
+    // Safety net: reveal remaining elements after load if observer hasn't engaged
+    window.addEventListener('load', function() {
+      setTimeout(function() {
+        if (!observerFired) {
+          fadeEls.forEach(revealElement);
+        }
+      }, 1000);
+    });
   } else {
-    fadeEls.forEach(function(el) { el.classList.add('visible'); });
+    fadeEls.forEach(revealElement);
   }
 
   // === COUNTER ANIMATION ===

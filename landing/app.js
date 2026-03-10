@@ -71,10 +71,10 @@
     });
   }
 
-  // === FAQ ACCORDION ===
-  var faqItems = document.querySelectorAll('.accordion-item');
+  // === ACCORDION ===
+  var accordionItems = document.querySelectorAll('.accordion-item');
 
-  faqItems.forEach(function(item) {
+  accordionItems.forEach(function(item) {
     var trigger = item.querySelector('.accordion-item__trigger');
     var answer = item.querySelector('.accordion-item__answer');
     var inner = item.querySelector('.accordion-item__answer-inner');
@@ -83,7 +83,7 @@
       var isOpen = item.getAttribute('data-open') === 'true';
 
       // Close all
-      faqItems.forEach(function(other) {
+      accordionItems.forEach(function(other) {
         other.setAttribute('data-open', 'false');
         other.querySelector('.accordion-item__trigger').setAttribute('aria-expanded', 'false');
         other.querySelector('.accordion-item__answer').style.maxHeight = '0';

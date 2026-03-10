@@ -450,8 +450,9 @@ class TestHeroImageCount:
         assert len(slides) == 3, f"Hero should have exactly 3 slides, found {len(slides)}"
 
     async def test_hero_animation_duration_matches(self, html):
-        # 3 slides at 8s = 24s cycle
-        assert "24s" in html, "Hero crossfade animation should be 24s for 3 slides at 8s each"
+        # 3 slides at 8s = 24s cycle; ensure the 24s duration is specifically used on the hero crossfade animation
+        pattern = r"\.hero__(?:kaleidoscope|slide)[^{]*\{[^}]*animation[^;]*\b24s\b"
+        assert re.search(pattern, html, re.DOTALL), "Hero crossfade animation should be 24s for 3 slides at 8s each"
 
 
 # ─── S10-03: PNG Noise Texture ─────────────────────────────────────────

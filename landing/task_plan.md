@@ -345,7 +345,7 @@
 | Component Architecture | 9 | 5 | 5 | 0 |
 | Performance & Testing | 10 | 6 | 3 | 3 |
 | P2 Icebox | — | 10 | — | — |
-| **TOTAL (active)** | | **97** | **90** | **3** |
+| **TOTAL (active)** | | **93** | **90** | **3** |
 
 ## Vertical Slice Execution Order
 

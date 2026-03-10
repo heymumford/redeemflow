@@ -140,18 +140,31 @@ def _select_adapters() -> dict:
     # Donation boundary: Change API
     change_key = os.environ.get("CHANGE_API_KEY")
     if change_key:
-        # Real adapter when credentials are available
-        adapters["donation_provider"] = FakeDonationProvider()  # TODO: ChangeApiAdapter(change_key)
+        from redeemflow.charity.donation_flow import ChangeApiAdapter
+
+        adapters["donation_provider"] = ChangeApiAdapter(api_key=change_key)
     else:
         adapters["donation_provider"] = FakeDonationProvider()
 
     # Balance boundary: AwardWallet
     aw_key = os.environ.get("AWARDWALLET_API_KEY")
     if aw_key:
-        # Real adapter when credentials are available
-        adapters["balance_fetcher"] = FakeBalanceFetcher()  # TODO: AwardWalletAdapter(aw_key)
+        from redeemflow.portfolio.awardwallet import AwardWalletAdapter
+
+        adapters["balance_fetcher"] = AwardWalletAdapter(api_key=aw_key)
     else:
         adapters["balance_fetcher"] = FakeBalanceFetcher()
+
+    # Award search boundary: Seats.aero
+    seats_key = os.environ.get("SEATS_AERO_API_KEY")
+    if seats_key:
+        from redeemflow.search.award_search import SeatsAeroAdapter
+
+        adapters["award_search"] = SeatsAeroAdapter(api_key=seats_key)
+    else:
+        from redeemflow.search.award_search import FakeAwardSearchProvider
+
+        adapters["award_search"] = FakeAwardSearchProvider()
 
     return adapters
 
@@ -207,6 +220,7 @@ def create_app() -> FastAPI:
     )
     app.state.forum_service = ForumService(repository=repos["forum"] if repos else None)
     app.state.founder_directory = FounderDirectory(repository=repos["founder"] if repos else None)
+    app.state.award_search_provider = adapters["award_search"]
 
     fetcher = adapters["balance_fetcher"]
     rec_engine = RecommendationEngine()

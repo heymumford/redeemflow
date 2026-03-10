@@ -9,6 +9,7 @@ import pytest
 
 from redeemflow.search.award_search import (
     AwardResult,
+    AwardSearchProvider,
     FakeAwardSearchProvider,
     SeatsAeroAdapter,
 )
@@ -106,7 +107,6 @@ class TestSeatsAeroAdapter:
         assert hasattr(adapter, "search")
         assert callable(adapter.search)
 
-    def test_raises_not_implemented(self) -> None:
+    def test_satisfies_protocol(self) -> None:
         adapter = SeatsAeroAdapter(api_key="test-key")
-        with pytest.raises(NotImplementedError):
-            adapter.search(origin="SFO", destination="NRT", date="2026-06-15", cabin="business")
+        assert isinstance(adapter, AwardSearchProvider)

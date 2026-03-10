@@ -108,15 +108,15 @@ class TestFakeDonationProvider:
 
 
 class TestChangeApiAdapter:
-    def test_raises_not_implemented(self):
-        adapter = ChangeApiAdapter()
-        with pytest.raises(NotImplementedError):
-            adapter.process_donation("auth0|eric", "Girl Scouts of the USA", Decimal("50.00"))
+    def test_satisfies_protocol(self):
+        from redeemflow.charity.donation_flow import DonationProvider
 
-    def test_get_status_raises_not_implemented(self):
-        adapter = ChangeApiAdapter()
-        with pytest.raises(NotImplementedError):
-            adapter.get_donation_status("ref-123")
+        adapter = ChangeApiAdapter(api_key="test-key")
+        assert isinstance(adapter, DonationProvider)
+
+    def test_requires_api_key(self):
+        adapter = ChangeApiAdapter(api_key="test-key")
+        assert adapter._api_key == "test-key"
 
 
 class TestDonationService:

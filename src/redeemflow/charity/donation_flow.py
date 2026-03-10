@@ -16,10 +16,15 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Protocol
+from typing import Protocol, runtime_checkable
+
+import httpx
 
 from redeemflow.charity.models import CharityPartnerNetwork
+from redeemflow.middleware.logging import get_logger
 from redeemflow.valuations.models import ProgramValuation
+
+logger = get_logger("donations")
 
 
 class DonationStatus(str, Enum):
@@ -45,9 +50,81 @@ class Donation:
     change_api_reference: str | None = None
 
 
+@runtime_checkable
 class DonationProvider(Protocol):
     def process_donation(self, user_id: str, charity_name: str, dollar_amount: Decimal) -> dict: ...
     def get_donation_status(self, reference_id: str) -> str: ...
+
+
+class ChangeApiError(Exception):
+    """Raised when Change API interaction fails."""
+
+
+class ChangeApiAdapter:
+    """Real Change API adapter — calls Change.org/getchange.io donation API.
+
+    Change API docs: https://docs.getchange.io
+    Authentication: API key as Bearer token.
+    """
+
+    def __init__(
+        self,
+        api_key: str,
+        base_url: str = "https://api.getchange.io/api/v1",
+        timeout: float = 30.0,
+    ) -> None:
+        self._api_key = api_key
+        self._base_url = base_url
+        self._timeout = timeout
+
+    def process_donation(self, user_id: str, charity_name: str, dollar_amount: Decimal) -> dict:
+        """Submit a donation through the Change API."""
+        try:
+            with httpx.Client(timeout=self._timeout) as client:
+                resp = client.post(
+                    f"{self._base_url}/donations",
+                    headers={"Authorization": f"Bearer {self._api_key}"},
+                    json={
+                        "amount": int(dollar_amount * 100),  # cents
+                        "nonprofit_id": charity_name,
+                        "funds_collected": True,
+                        "metadata": {"user_id": user_id, "source": "redeemflow"},
+                    },
+                )
+                resp.raise_for_status()
+                data = resp.json()
+        except httpx.TimeoutException as e:
+            raise ChangeApiError(f"Change API timeout: {e}") from e
+        except httpx.HTTPStatusError as e:
+            raise ChangeApiError(f"Change API error: {e.response.status_code}") from e
+        except httpx.HTTPError as e:
+            raise ChangeApiError(f"Change API connection error: {e}") from e
+
+        reference_id = data.get("id", f"change-{uuid.uuid4().hex[:12]}")
+        status = data.get("status", "completed")
+
+        logger.info(
+            "donation_processed",
+            reference_id=reference_id,
+            charity=charity_name,
+            amount_cents=int(dollar_amount * 100),
+        )
+        return {"reference_id": reference_id, "status": status}
+
+    def get_donation_status(self, reference_id: str) -> str:
+        """Check status of a previously submitted donation."""
+        try:
+            with httpx.Client(timeout=self._timeout) as client:
+                resp = client.get(
+                    f"{self._base_url}/donations/{reference_id}",
+                    headers={"Authorization": f"Bearer {self._api_key}"},
+                )
+                resp.raise_for_status()
+                data = resp.json()
+        except httpx.HTTPError:
+            return "unknown"
+
+        return data.get("status", "unknown")
 
 
 class FakeDonationProvider:
@@ -71,16 +148,6 @@ class FakeDonationProvider:
         if record is None:
             return "unknown"
         return record["status"]
-
-
-class ChangeApiAdapter:
-    """Real Change API adapter — stubbed until API credentials are available."""
-
-    def process_donation(self, user_id: str, charity_name: str, dollar_amount: Decimal) -> dict:
-        raise NotImplementedError("Change API integration not yet configured")
-
-    def get_donation_status(self, reference_id: str) -> str:
-        raise NotImplementedError("Change API integration not yet configured")
 
 
 class DonationService:

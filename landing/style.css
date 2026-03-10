@@ -884,6 +884,12 @@
       }
 
       .big-stat { padding: 80px 0; }
+
+      .logo-bar__inner {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: var(--space-3) var(--space-5);
+      }
     }
 
     /* ===== RESPONSIVE: MOBILE ===== */
@@ -906,6 +912,7 @@
 
       .waitlist__form {
         flex-direction: column;
+        align-items: stretch;
         gap: 12px;
       }
 
@@ -1001,13 +1008,10 @@
       .nav__drawer-backdrop--visible { display: block; }
 
       .logo-bar__inner {
-        justify-content: flex-start;
-        gap: var(--space-5);
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
+        justify-content: center;
+        gap: var(--space-3) var(--space-5);
+        flex-wrap: wrap;
       }
-      .logo-bar__inner::-webkit-scrollbar { display: none; }
 
       .waitlist__input {
         border: 1px solid rgba(255, 255, 255, 0.2);

@@ -1045,6 +1045,9 @@
       text-decoration: underline;
     }
 
+    /* Mobile CTA: hidden by default, shown only in mobile breakpoint */
+    .mobile-cta { display: none; }
+
     .skip-link {
       position: absolute;
       top: -100%;
@@ -1174,6 +1177,7 @@
         transition: transform 0.3s ease;
         border-top: 1px solid rgba(255, 255, 255, 0.1);
       }
+      .mobile-cta { display: flex; }
       .mobile-cta.visible { transform: translateY(0); }
       .mobile-cta__btn {
         width: 100%;
@@ -1191,7 +1195,7 @@
         align-items: center;
         justify-content: center;
       }
-      body { padding-bottom: 68px; }
+      body.mobile-cta-active { padding-bottom: 68px; }
     }
 
     /* Reduce motion */

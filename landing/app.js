@@ -222,18 +222,24 @@
     function updateMobileCta() {
       if (heroVisible || waitlistVisible) {
         mobileCta.classList.remove('visible');
+        document.body.classList.remove('mobile-cta-active');
       } else {
         mobileCta.classList.add('visible');
+        document.body.classList.add('mobile-cta-active');
       }
     }
 
     var heroObs = new IntersectionObserver(function(entries) {
-      heroVisible = entries[0].isIntersecting;
+      entries.forEach(function(entry) {
+        heroVisible = entry.isIntersecting;
+      });
       updateMobileCta();
     }, { threshold: 0.1 });
 
     var waitlistObs = new IntersectionObserver(function(entries) {
-      waitlistVisible = entries[0].isIntersecting;
+      entries.forEach(function(entry) {
+        waitlistVisible = entry.isIntersecting;
+      });
       updateMobileCta();
     }, { threshold: 0.1 });
 

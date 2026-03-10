@@ -22,6 +22,55 @@
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
+  // === MOBILE NAV TOGGLE ===
+  var navToggle = document.querySelector('.nav__toggle');
+  var navDrawer = document.getElementById('nav-drawer');
+  var navBackdrop = document.getElementById('nav-backdrop');
+
+  if (navToggle && navDrawer) {
+    function closeNav() {
+      navToggle.setAttribute('aria-expanded', 'false');
+      navDrawer.classList.remove('nav__drawer--open');
+      if (navBackdrop) navBackdrop.classList.remove('nav__drawer-backdrop--visible');
+    }
+
+    function openNav() {
+      navToggle.setAttribute('aria-expanded', 'true');
+      navDrawer.classList.add('nav__drawer--open');
+      if (navBackdrop) navBackdrop.classList.add('nav__drawer-backdrop--visible');
+      // Focus first link for keyboard users
+      var firstLink = navDrawer.querySelector('a');
+      if (firstLink) firstLink.focus();
+    }
+
+    navToggle.addEventListener('click', function() {
+      var isOpen = navToggle.getAttribute('aria-expanded') === 'true';
+      if (isOpen) {
+        closeNav();
+      } else {
+        openNav();
+      }
+    });
+
+    // Close on backdrop click
+    if (navBackdrop) {
+      navBackdrop.addEventListener('click', closeNav);
+    }
+
+    // Close on Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && navToggle.getAttribute('aria-expanded') === 'true') {
+        closeNav();
+        navToggle.focus();
+      }
+    });
+
+    // Close when clicking nav drawer links (smooth scroll still fires)
+    navDrawer.querySelectorAll('a').forEach(function(link) {
+      link.addEventListener('click', closeNav);
+    });
+  }
+
   // === FAQ ACCORDION ===
   var faqItems = document.querySelectorAll('.faq-item');
 
@@ -159,7 +208,7 @@
           fadeObserver.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+    }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
     fadeEls.forEach(function(el) { fadeObserver.observe(el); });
 
     // Safety net: reveal remaining elements after load if observer hasn't engaged
@@ -175,7 +224,10 @@
   }
 
   // === COUNTER ANIMATION ===
-  var statEl = document.querySelector('.big-stat__value[data-target]');
+  var statEl = document.querySelector('.stat-band__value[data-target]');
+  if (!statEl) {
+    statEl = document.querySelector('.big-stat__value[data-target]');
+  }
   if (statEl && 'IntersectionObserver' in window) {
     if (prefersReducedMotion) {
       var target = parseInt(statEl.getAttribute('data-target'), 10);

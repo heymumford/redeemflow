@@ -208,7 +208,13 @@
 
   // === COPYRIGHT YEAR AUTO-UPDATE ===
   var copyEl = document.querySelector('.footer__copy');
-  if (copyEl) copyEl.textContent = '\u00A9 ' + new Date().getFullYear() + ' RedeemFlow';
+  if (copyEl) {
+    var existingText = copyEl.textContent;
+    var yearMatch = existingText.match(/\u00A9\s*\d{4}/);
+    if (yearMatch) {
+      copyEl.textContent = existingText.replace(/\u00A9\s*\d{4}/, '\u00A9 ' + new Date().getFullYear());
+    }
+  }
 
   // === STICKY MOBILE CTA BAR ===
   var mobileCta = document.getElementById('mobile-cta');
@@ -219,12 +225,18 @@
     var heroVisible = true;
     var waitlistVisible = false;
 
+    var mobileCtaLink = mobileCta.querySelector('a');
+
     function updateMobileCta() {
       if (heroVisible || waitlistVisible) {
         mobileCta.classList.remove('visible');
+        mobileCta.setAttribute('aria-hidden', 'true');
+        if (mobileCtaLink) mobileCtaLink.setAttribute('tabindex', '-1');
         document.body.classList.remove('mobile-cta-active');
       } else {
         mobileCta.classList.add('visible');
+        mobileCta.setAttribute('aria-hidden', 'false');
+        if (mobileCtaLink) mobileCtaLink.removeAttribute('tabindex');
         document.body.classList.add('mobile-cta-active');
       }
     }

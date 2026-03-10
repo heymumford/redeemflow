@@ -495,6 +495,38 @@ async def me(request: Request):
 
 
 # --- Static ---
+@app.get("/privacy")
+async def privacy():
+    return HTMLResponse(
+        "<html><head><title>Privacy Policy — RedeemFlow</title></head>"
+        "<body style='font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 20px'>"
+        "<h1>Privacy Policy</h1>"
+        "<p>RedeemFlow uses read-only access to display your loyalty program balances. "
+        "We never store account credentials, move points, or book on your behalf.</p>"
+        "<p>Your email is stored solely to notify you when early access opens. "
+        "We do not sell or share your information.</p>"
+        "<p>Questions? <a href='mailto:hello@redeemflow.io'>hello@redeemflow.io</a></p>"
+        "<p><a href='/'>Back to RedeemFlow</a></p>"
+        "</body></html>"
+    )
+
+
+@app.get("/terms")
+async def terms():
+    return HTMLResponse(
+        "<html><head><title>Terms of Service — RedeemFlow</title></head>"
+        "<body style='font-family:sans-serif;max-width:640px;margin:40px auto;padding:0 20px'>"
+        "<h1>Terms of Service</h1>"
+        "<p>RedeemFlow is a points visibility tool. We show you what your loyalty points "
+        "are worth and surface better redemption options. All booking decisions are yours.</p>"
+        "<p>The service is provided as-is during early access. "
+        "Point valuations are estimates based on published program rates.</p>"
+        "<p>Questions? <a href='mailto:hello@redeemflow.io'>hello@redeemflow.io</a></p>"
+        "<p><a href='/'>Back to RedeemFlow</a></p>"
+        "</body></html>"
+    )
+
+
 @app.get("/health")
 async def health():
     return PlainTextResponse("ok")

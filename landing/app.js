@@ -210,4 +210,35 @@
   var copyEl = document.querySelector('.footer__copy');
   if (copyEl) copyEl.textContent = '\u00A9 ' + new Date().getFullYear() + ' RedeemFlow';
 
+  // === STICKY MOBILE CTA BAR ===
+  var mobileCta = document.getElementById('mobile-cta');
+  var heroSection = document.querySelector('.hero');
+  var waitlistSection = document.getElementById('waitlist');
+
+  if (mobileCta && heroSection && waitlistSection && 'IntersectionObserver' in window) {
+    var heroVisible = true;
+    var waitlistVisible = false;
+
+    function updateMobileCta() {
+      if (heroVisible || waitlistVisible) {
+        mobileCta.classList.remove('visible');
+      } else {
+        mobileCta.classList.add('visible');
+      }
+    }
+
+    var heroObs = new IntersectionObserver(function(entries) {
+      heroVisible = entries[0].isIntersecting;
+      updateMobileCta();
+    }, { threshold: 0.1 });
+
+    var waitlistObs = new IntersectionObserver(function(entries) {
+      waitlistVisible = entries[0].isIntersecting;
+      updateMobileCta();
+    }, { threshold: 0.1 });
+
+    heroObs.observe(heroSection);
+    waitlistObs.observe(waitlistSection);
+  }
+
 })();

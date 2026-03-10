@@ -350,7 +350,10 @@
       font-family: var(--font-sans);
       font-weight: 600;
       font-size: 14px;
-      padding: 8px 20px;
+      padding: 10px 20px;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
       background: var(--accent-warm-dark);
       color: #FFFFFF;
       text-decoration: none;
@@ -476,38 +479,6 @@
       font-weight: 500;
     }
 
-    /* ===== TRUST BAR ===== */
-    .trust-bar {
-      background: var(--surface-hero);
-      padding: 40px 0;
-      text-align: center;
-    }
-
-    .trust-bar__label {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: rgba(255, 255, 255, 0.5);
-      margin-bottom: 24px;
-    }
-
-    .trust-bar__logos {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 40px;
-      flex-wrap: wrap;
-    }
-
-    .trust-bar__logo {
-      width: 100px;
-      height: 28px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      background: rgba(255, 255, 255, 0.05);
-    }
-
     /* ===== WHAT WE DO ===== */
     .what-we-do {
       padding: 100px 0 60px;
@@ -521,6 +492,18 @@
 
     .what-we-do h2 {
       margin-bottom: 24px;
+    }
+
+    .big-stat__inline {
+      font-size: clamp(28px, 4vw, 42px);
+      font-family: var(--font-serif);
+      color: var(--text-primary);
+      margin: 32px 0;
+      line-height: 1.3;
+    }
+
+    .big-stat__inline .big-stat__value {
+      color: var(--accent-warm-dark);
     }
 
     .what-we-do p {
@@ -586,27 +569,31 @@
       line-height: 1.7;
     }
 
-    /* ===== TESTIMONIAL ===== */
-    .testimonial {
-      text-align: center;
-      max-width: 780px;
+    /* ===== SCENARIO CARDS ===== */
+    .scenario-card {
+      max-width: 680px;
       margin: 0 auto;
+      padding: 32px;
+      border-left: 3px solid var(--accent-warm);
+      background: var(--surface-warm-card);
+      border-radius: 0 8px 8px 0;
     }
 
-    .testimonial__quote {
-      font-family: var(--font-serif);
-      font-style: italic;
-      font-size: clamp(22px, 3vw, 32px);
-      line-height: 1.55;
+    .scenario-card__text {
+      font-size: 17px;
+      line-height: 1.7;
       color: var(--text-primary);
-      margin-bottom: 24px;
+      margin-bottom: 12px;
     }
 
-    .testimonial__attr {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-secondary);
-      letter-spacing: 0.5px;
+    .scenario-card__source {
+      font-family: var(--font-sans);
+      font-size: 13px;
+      color: var(--text-tertiary);
+    }
+
+    .testimonial-grid .scenario-card + .scenario-card {
+      margin-top: 24px;
     }
 
     /* Two-up testimonial */
@@ -817,7 +804,7 @@
       height: 48px;
       padding: 0 20px;
       font-family: var(--font-sans);
-      font-size: 15px;
+      font-size: 16px;
       background: #FFFFFF;
       border: none;
       border-radius: 8px 0 0 8px;
@@ -860,6 +847,12 @@
 
     .waitlist__submit:active {
       transform: scale(0.98);
+    }
+
+    .waitlist__submit:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
     }
 
     .waitlist__error {
@@ -1151,15 +1144,53 @@
         text-align: center;
       }
 
-      .footer__links a { padding: 10px 0; display: inline-block; }
+      .footer__links a { padding: 12px 0; display: block; min-height: 44px; }
 
-      .big-stat { padding: 64px 0; }
-      .big-stat__value { font-size: clamp(48px, 10vw, 72px); }
+      .cta-link { padding: 12px 0; min-height: 44px; }
 
-      .trust-bar__logos { gap: 20px; }
-      .trust-bar__logo { width: 72px; height: 20px; }
+      .feature-card p, .step p { font-size: 16px; }
+
+      .hero__slide:nth-child(n+3) { display: none; }
 
       .nav__link { display: none; }
+
+      /* Sticky mobile CTA bar */
+      .mobile-cta {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 12px 20px;
+        padding-bottom: calc(12px + env(safe-area-inset-bottom));
+        background: rgba(17, 17, 17, 0.95);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        z-index: 900;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+      }
+      .mobile-cta.visible { transform: translateY(0); }
+      .mobile-cta__btn {
+        width: 100%;
+        height: 44px;
+        font-family: var(--font-sans);
+        font-weight: 600;
+        font-size: 15px;
+        background: var(--accent-warm-dark);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      body { padding-bottom: 68px; }
     }
 
     /* Reduce motion */
@@ -1217,6 +1248,9 @@
         <img src="/img/logo-nav.png" alt="RedeemFlow" height="36" width="91" class="nav__logo-img">
       </a>
       <div class="nav__actions">
+        <a href="#how-it-works" class="nav__link">How It Works</a>
+        <a href="#features" class="nav__link">Features</a>
+        <a href="#faq" class="nav__link">FAQ</a>
         <a href="#waitlist" class="nav__btn">Get Early Access</a>
       </div>
     </div>
@@ -1239,7 +1273,7 @@
       <span class="eyebrow eyebrow--inverse">Travel Rewards, Simplified</span>
       <h1>Claim the value<br>you already earned.</h1>
       <p class="hero__subtitle">Turn scattered points into clear, flexible travel choices — so you can protect value, keep control, and stop doing rewards admin on your own time.</p>
-      <a href="#waitlist" class="btn btn--primary btn--large">See My Options <span aria-hidden="true">&rarr;</span></a>
+      <a href="#waitlist" class="btn btn--primary btn--large">Get Early Access <span aria-hidden="true">&rarr;</span></a>
       <p class="hero__trust">Read-only access. We never act without your approval.</p>
       <div class="hero__stats">
         <span class="hero__stat"><strong>10B+</strong> points wasted annually<a href="#citations" class="cite" aria-label="Source 1">1</a></span>
@@ -1256,9 +1290,38 @@
       <div class="what-we-do__inner">
         <span class="eyebrow">The Problem</span>
         <h2>You already earned this value</h2>
-        <p>$10 billion in loyalty points expire unused every year<a href="#citations" class="cite" aria-label="Source 1">1</a> — not because people don't care, but because 16 scattered programs<a href="#citations" class="cite" aria-label="Source 2">2</a> make it impossible to see the full picture. Those points could be flights home, vacations you've been putting off, or hotel nights that seemed out of reach. RedeemFlow gives you one clear view so nothing slips away.</p>
+        <p>$10 billion in loyalty points expire unused every year<a href="#citations" class="cite" aria-label="Source 1">1</a> — not because people don't care, but because 16 scattered programs<a href="#citations" class="cite" aria-label="Source 2">2</a> make it impossible to see the full picture.</p>
+        <p class="big-stat__inline"><strong class="big-stat__value" data-target="3400">$3,400</strong> per person, per year — left on the table.<a href="#citations" class="cite" aria-label="Source 4">4</a></p>
+        <p>Those points could be flights home, vacations you've been putting off, or hotel nights that seemed out of reach. RedeemFlow gives you one clear view so nothing slips away.</p>
       </div>
-      <div class="divider"></div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="section section--secondary section--light fade-in" id="how-it-works">
+    <div class="container">
+      <span class="eyebrow">How It Works</span>
+      <h2 style="margin-bottom: 48px;">Three steps. Five minutes.</h2>
+      <div class="steps">
+        <div class="step fade-in">
+          <div class="step__number" aria-hidden="true">01</div>
+          <h3>Connect your accounts</h3>
+          <p>Link your airline, hotel, and credit card loyalty programs. RedeemFlow pulls your balances and expiration dates into one place — takes about two minutes.</p>
+        </div>
+        <div class="step fade-in">
+          <div class="step__number" aria-hidden="true">02</div>
+          <h3>See what your points are worth</h3>
+          <p>RedeemFlow shows you the real dollar value of your points and finds options you'd never find on your own — like a flight worth $4,000 using points you were about to cash in for $1,500.</p>
+        </div>
+        <div class="step fade-in">
+          <div class="step__number" aria-hidden="true">03</div>
+          <h3>Book when you're ready</h3>
+          <p>Pick the option that works for you and book it. RedeemFlow never moves your points or makes decisions for you — you're always in control.</p>
+        </div>
+      </div>
+      <div style="text-align: center;">
+        <a href="#waitlist" class="cta-link">Join the waitlist <span aria-hidden="true">&rarr;</span></a>
+      </div>
     </div>
   </section>
 
@@ -1317,86 +1380,13 @@
     </div>
   </section>
 
-  <!-- SCENARIO ILLUSTRATION -->
+  <!-- SCENARIO -->
   <section class="section fade-in">
     <div class="container">
-      <div class="testimonial">
-        <p class="testimonial__quote">&ldquo;I had 200,000 hotel points sitting unused for over a year. I assumed they were worth maybe $1,200 toward a future stay. RedeemFlow showed me they could cover a first-class flight to Tokyo worth $4,800. Same points — completely different trip.&rdquo;</p>
-        <p class="testimonial__attr">Illustrative example based on published program rates</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- VALUE -->
-  <section class="section section--light fade-in">
-    <div class="container">
-      <div class="feature-text" style="max-width: 680px;">
-        <span class="eyebrow">Your Points Are Worth More</span>
-        <h2>See the real value — not just the balance</h2>
-        <p>Most people look at their points balance and have no idea what it's actually worth. RedeemFlow shows you the dollar value of every program you belong to, and whether you're leaving money on the table by cashing out instead of booking travel.</p>
-        <p style="margin-top: 16px; color: var(--text-secondary); line-height: 1.7;">For example, 150,000 credit card points might be worth $1,500 as a statement credit — or $3,150 in hotel stays. Same points, very different outcome. RedeemFlow shows you both so you can decide.</p>
-        <a href="#waitlist" class="cta-link">See what yours are worth <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- CHOICE -->
-  <section class="section section--secondary section--light fade-in">
-    <div class="container">
-      <div class="feature-text" style="max-width: 680px;">
-        <span class="eyebrow">Your Decision, Not Ours</span>
-        <h2>Every option, side by side</h2>
-        <p>Should you cash out or book a flight? Use your hotel points or save them for a bigger trip? RedeemFlow lays out every option with its real dollar value — no fine print, no pressure. You pick the one that fits your life right now.</p>
-        <a href="#waitlist" class="cta-link">See my options <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- PROTECT -->
-  <section class="section fade-in">
-    <div class="container">
-      <div class="feature-text" style="max-width: 680px;">
-        <span class="eyebrow">Nothing Expires by Surprise</span>
-        <h2>We watch the clock so you don't have to</h2>
-        <p>Every loyalty program has different expiration rules, and they're not designed to be easy to follow. RedeemFlow tracks all of them and sends you a heads-up while you still have time. Sometimes all it takes is one small purchase to save points worth hundreds of dollars.</p>
-        <a href="#waitlist" class="cta-link">Protect what you've earned <span aria-hidden="true">&rarr;</span></a>
-      </div>
-    </div>
-  </section>
-
-  <!-- BIG STAT -->
-  <section class="big-stat fade-in" aria-label="Key statistic">
-    <div class="container">
-      <p class="big-stat__pre">The average American leaves</p>
-      <p class="big-stat__value" data-target="3400">$3,400</p>
-      <p class="big-stat__post">in unredeemed points on the table each year.<a href="#citations" class="cite" aria-label="Source 4" style="color: rgba(255,255,255,0.7);">4</a></p>
-    </div>
-  </section>
-
-  <!-- HOW IT WORKS -->
-  <section class="section section--secondary section--light fade-in" id="how-it-works">
-    <div class="container">
-      <span class="eyebrow">How It Works</span>
-      <h2 style="margin-bottom: 48px;">Three steps. Five minutes.</h2>
-      <div class="steps">
-        <div class="step fade-in">
-          <div class="step__number" aria-hidden="true">01</div>
-          <h3>Connect your accounts</h3>
-          <p>Link your airline, hotel, and credit card loyalty programs. RedeemFlow pulls your balances and expiration dates into one place — takes about two minutes.</p>
-        </div>
-        <div class="step fade-in">
-          <div class="step__number" aria-hidden="true">02</div>
-          <h3>See what your points are worth</h3>
-          <p>RedeemFlow shows you the real dollar value of your points and finds options you'd never find on your own — like a flight worth $4,000 using points you were about to cash in for $1,500.</p>
-        </div>
-        <div class="step fade-in">
-          <div class="step__number" aria-hidden="true">03</div>
-          <h3>Book when you're ready</h3>
-          <p>Pick the option that works for you and book it. RedeemFlow never moves your points or makes decisions for you — you're always in control.</p>
-        </div>
-      </div>
-      <div style="text-align: center;">
-        <a href="#waitlist" class="cta-link">See my options <span aria-hidden="true">&rarr;</span></a>
+      <div class="scenario-card">
+        <span class="eyebrow">What This Looks Like</span>
+        <p class="scenario-card__text">200,000 hotel points sitting unused for a year. Cash value: roughly $1,200. But transferred to the right airline, those same points cover a first-class flight to Tokyo worth $4,800. Same points — completely different trip.</p>
+        <p class="scenario-card__source">Based on published Marriott Bonvoy and Alaska Airlines program rates</p>
       </div>
     </div>
   </section>
@@ -1405,13 +1395,13 @@
   <section class="section fade-in">
     <div class="container">
       <div class="testimonial-grid">
-        <div class="testimonial">
-          <p class="testimonial__quote">&ldquo;I was about to cash in 150,000 credit card points for a $1,500 statement credit. RedeemFlow showed me those same points could cover $3,150 in hotel stays. One decision. Twice the vacation.&rdquo;</p>
-          <p class="testimonial__attr">Illustrative example based on published program rates</p>
+        <div class="scenario-card">
+          <p class="scenario-card__text"><strong>150,000 credit card points.</strong> Cash out: $1,500 statement credit. Transfer to a hotel partner: $3,150 in stays. One decision. Twice the vacation.</p>
+          <p class="scenario-card__source">Based on Chase UR and World of Hyatt published rates</p>
         </div>
-        <div class="testimonial">
-          <p class="testimonial__quote">&ldquo;48,000 hotel points, 30 days from expiring. A $40 dinner was all it took to reset the clock and save $240&ndash;$480 in future hotel nights. I never would have known without the alert.&rdquo;</p>
-          <p class="testimonial__attr">Based on published program expiration policies</p>
+        <div class="scenario-card">
+          <p class="scenario-card__text"><strong>48,000 hotel points, 30 days from expiring.</strong> A $40 dinner resets the clock and saves $240&ndash;$480 in future hotel nights.</p>
+          <p class="scenario-card__source">Based on Hilton Honors expiration policy</p>
         </div>
       </div>
     </div>
@@ -1523,9 +1513,9 @@
       </form>
       <div class="waitlist__error" id="waitlist-error" role="alert" aria-live="polite"></div>
       <div class="waitlist__success" id="waitlist-success" role="status" aria-live="polite">
-        <p>You are on the list. We will be in touch.</p>
+        <p>You're in. We'll email you when early access opens — typically within a few weeks. Check your inbox for a confirmation.</p>
       </div>
-      <p class="waitlist__note">Free balance tracking. Full experience from $149/year.</p>
+      <p class="waitlist__note"><strong>Free</strong> to see your balances. <strong>$149/year</strong> for smart recommendations, deal alerts, and calendar sync.</p>
     </div>
   </section>
 
@@ -1583,6 +1573,10 @@
       </div>
     </div>
   </footer>
+
+  <div class="mobile-cta" id="mobile-cta" aria-hidden="true">
+    <a href="#waitlist" class="mobile-cta__btn">Get Early Access <span aria-hidden="true">&rarr;</span></a>
+  </div>
 
   <script src="/app.js"></script>
 

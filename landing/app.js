@@ -152,6 +152,16 @@
       });
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
     fadeEls.forEach(function(el) { fadeObserver.observe(el); });
+
+    // Safety net: force all sections visible after 2s if observer hasn't fired
+    // Prevents blank page on slow connections or observer timing issues
+    setTimeout(function() {
+      fadeEls.forEach(function(el) {
+        if (!el.classList.contains('visible')) {
+          el.classList.add('visible');
+        }
+      });
+    }, 2000);
   } else {
     fadeEls.forEach(function(el) { el.classList.add('visible'); });
   }

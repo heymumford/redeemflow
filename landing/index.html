@@ -488,6 +488,13 @@
       display: none;
     }
 
+    /* ===== MOBILE NAV OVERRIDES (after base rules to win cascade) ===== */
+    @media (max-width: 768px) {
+      .nav__toggle { display: inline-flex; }
+      .nav__link { display: none; }
+      .nav__btn { display: none; }
+    }
+
     /* ===== LOGO BAR ===== */
     .logo-bar {
       padding: var(--space-4) 0;

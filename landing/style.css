@@ -123,7 +123,7 @@
 
     .scenario-card__source {
       font-family: var(--font-sans);
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-tertiary);
     }
 
@@ -328,7 +328,7 @@
     }
 
     .waitlist__label {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-inverse-secondary);
       margin-bottom: 8px;
       display: block;
@@ -406,7 +406,7 @@
     }
 
     .waitlist__error {
-      font-size: 13px;
+      font-size: 14px;
       color: #EF5350;
       margin-top: 8px;
       min-height: 20px;
@@ -435,10 +435,9 @@
     }
 
     .waitlist__consent {
-      font-size: 12px;
+      font-size: 14px;
       color: var(--text-inverse-muted);
       margin-top: 8px;
-      opacity: 0.7;
     }
 
     /* ===== FOOTER ===== */
@@ -470,7 +469,7 @@
 
     .footer__col-title {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 14px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1.5px;
@@ -507,7 +506,7 @@
     }
 
     .footer__copy {
-      font-size: 13px;
+      font-size: 14px;
       color: var(--text-inverse-muted);
     }
 
@@ -563,7 +562,7 @@
     }
     .citations h3 {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 14px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 2px;
@@ -894,7 +893,7 @@
 
       body { font-size: 16px; }
 
-      .eyebrow { font-size: 12px; }
+      .eyebrow { font-size: 14px; }
 
       .hero__stats {
         flex-direction: column;

@@ -204,15 +204,18 @@ class SecurityHeadersMiddleware(BaseHTTPMiddleware):
         response.headers["X-XSS-Protection"] = "1; mode=block"
         response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
         response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-        csp = (
-            "default-src 'self'; "
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
-            "font-src 'self' https://fonts.gstatic.com; "
-            "script-src 'self'; "
-            "img-src 'self' data: https://lh3.googleusercontent.com "
-            "https://media.licdn.com https://*.amazonaws.com https://*.auth0.com; "
-            "connect-src 'self'"
-        )
+        if request.url.path == "/admin":
+            csp = "default-src 'self'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; connect-src 'self'"
+        else:
+            csp = (
+                "default-src 'self'; "
+                "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+                "font-src 'self' https://fonts.gstatic.com; "
+                "script-src 'self'; "
+                "img-src 'self' data: https://lh3.googleusercontent.com "
+                "https://media.licdn.com https://*.amazonaws.com https://*.auth0.com; "
+                "connect-src 'self'"
+            )
         response.headers["Content-Security-Policy"] = csp
         return response
 
@@ -322,12 +325,12 @@ async def list_signups(request: Request):
 
     conn = _get_db()
     try:
-        rows = conn.execute("SELECT email, created_at, ip FROM signups ORDER BY created_at DESC").fetchall()
+        rows = conn.execute("SELECT email, created_at, ip, user_agent FROM signups ORDER BY created_at DESC").fetchall()
     finally:
         conn.close()
     return {
         "count": len(rows),
-        "signups": [{"email": r[0], "created_at": r[1], "ip": r[2]} for r in rows],
+        "signups": [{"email": r[0], "created_at": r[1], "ip": r[2], "user_agent": r[3] or ""} for r in rows],
     }
 
 
@@ -506,6 +509,179 @@ async def me(request: Request):
             "provider": session.get("provider", ""),
         }
     }
+
+
+# --- Admin Dashboard ---
+_ADMIN_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RedeemFlow Admin</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0f1117; color: #e0e0e0; padding: 24px; }
+  h1 { font-size: 22px; font-weight: 600; margin-bottom: 4px; }
+  .subtitle { color: #888; font-size: 14px; margin-bottom: 24px; }
+  .stats { display: flex; gap: 16px; margin-bottom: 24px; }
+  .stat-card { background: #1a1d27; border: 1px solid #2a2d37; border-radius: 8px; padding: 16px 20px; min-width: 140px; }
+  .stat-card__value { font-size: 28px; font-weight: 700; color: #fff; }
+  .stat-card__label { font-size: 13px; color: #888; margin-top: 4px; }
+  .actions { display: flex; gap: 8px; margin-bottom: 16px; }
+  .btn { padding: 8px 16px; border: 1px solid #2a2d37; border-radius: 6px; background: #1a1d27; color: #e0e0e0; font-size: 13px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; }
+  .btn:hover { background: #252833; }
+  .btn--primary { background: #2d5da1; border-color: #2d5da1; color: #fff; }
+  .btn--primary:hover { background: #3a6db5; }
+  table { width: 100%; border-collapse: collapse; background: #1a1d27; border-radius: 8px; overflow: hidden; border: 1px solid #2a2d37; }
+  th { text-align: left; padding: 10px 14px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #888; background: #14161e; border-bottom: 1px solid #2a2d37; }
+  td { padding: 10px 14px; font-size: 14px; border-bottom: 1px solid #1e2130; }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #1e2130; }
+  .tag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+  .tag--social { background: #1e3a5f; color: #6db3f8; }
+  .tag--email { background: #2a3520; color: #8bc34a; }
+  .empty { text-align: center; padding: 48px; color: #666; }
+  .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+  .tab { padding: 8px 16px; border: none; background: transparent; color: #888; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab--active { color: #fff; border-bottom-color: #2d5da1; }
+  .panel { display: none; }
+  .panel--active { display: block; }
+  #refresh-indicator { color: #555; font-size: 12px; }
+</style>
+</head>
+<body>
+<h1>RedeemFlow Admin</h1>
+<p class="subtitle">Signup and user management &middot; <span id="refresh-indicator">Auto-refresh: 60s</span></p>
+
+<div class="stats" id="stats"></div>
+
+<div class="tabs">
+  <button class="tab tab--active" data-panel="signups-panel">Email Signups</button>
+  <button class="tab" data-panel="users-panel">Social Logins</button>
+</div>
+
+<div class="actions">
+  <button class="btn btn--primary" onclick="refresh()">Refresh</button>
+  <a class="btn" id="csv-link" href="#" download="redeemflow-signups.csv">Export CSV</a>
+</div>
+
+<div id="signups-panel" class="panel panel--active"></div>
+<div id="users-panel" class="panel"></div>
+
+<script>
+const TOKEN = new URLSearchParams(location.search).get('token');
+const headers = {'Authorization': 'Bearer ' + TOKEN};
+
+async function fetchJSON(url) {
+  const r = await fetch(url, {headers});
+  if (!r.ok) throw new Error(r.status);
+  return r.json();
+}
+
+function escapeHtml(s) {
+  const d = document.createElement('div');
+  d.textContent = s || '';
+  return d.innerHTML;
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}) +
+    ' ' + d.toLocaleTimeString('en-US', {hour:'2-digit', minute:'2-digit'});
+}
+
+function sourceTag(ua) {
+  if (ua && ua.startsWith('social:'))
+    return '<span class="tag tag--social">' + escapeHtml(ua.replace('social:','')) + '</span>';
+  return '<span class="tag tag--email">email</span>';
+}
+
+function buildCSV(signups) {
+  const rows = [['Email','Date','IP','Source']];
+  signups.forEach(s => rows.push([s.email, s.created_at, s.ip || '', s.user_agent || '']));
+  const csv = rows.map(r => r.map(c => '"' + String(c).replace(/"/g,'""') + '"').join(',')).join('\\n');
+  return 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+}
+
+async function refresh() {
+  try {
+    const [signupData, userData] = await Promise.all([
+      fetchJSON('/api/signups'),
+      fetchJSON('/api/users')
+    ]);
+
+    document.getElementById('stats').innerHTML =
+      '<div class="stat-card"><div class="stat-card__value">' + signupData.count + '</div><div class="stat-card__label">Total signups</div></div>' +
+      '<div class="stat-card"><div class="stat-card__value">' + userData.count + '</div><div class="stat-card__label">Social logins</div></div>';
+
+    if (signupData.signups.length === 0) {
+      document.getElementById('signups-panel').innerHTML = '<div class="empty">No signups yet.</div>';
+    } else {
+      let html = '<table><thead><tr><th>Email</th><th>Date</th><th>Source</th><th>IP</th></tr></thead><tbody>';
+      signupData.signups.forEach(s => {
+        html += '<tr><td>' + escapeHtml(s.email) + '</td><td>' + formatDate(s.created_at) + '</td><td>' + sourceTag(s.user_agent) + '</td><td>' + escapeHtml(s.ip) + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      document.getElementById('signups-panel').innerHTML = html;
+    }
+
+    if (userData.users.length === 0) {
+      document.getElementById('users-panel').innerHTML = '<div class="empty">No social logins yet.</div>';
+    } else {
+      let html = '<table><thead><tr><th>Email</th><th>Name</th><th>Provider</th><th>Last Login</th></tr></thead><tbody>';
+      userData.users.forEach(u => {
+        html += '<tr><td>' + escapeHtml(u.email) + '</td><td>' + escapeHtml(u.name) + '</td><td>' + escapeHtml(u.provider) + '</td><td>' + formatDate(u.last_login) + '</td></tr>';
+      });
+      html += '</tbody></table>';
+      document.getElementById('users-panel').innerHTML = html;
+    }
+
+    document.getElementById('csv-link').href = buildCSV(signupData.signups);
+  } catch(e) {
+    document.getElementById('signups-panel').innerHTML = '<div class="empty">Failed to load: ' + escapeHtml(e.message) + '</div>';
+  }
+}
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('tab--active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('panel--active'));
+    tab.classList.add('tab--active');
+    document.getElementById(tab.dataset.panel).classList.add('panel--active');
+  });
+});
+
+refresh();
+setInterval(refresh, 60000);
+</script>
+</body>
+</html>"""
+
+
+def _check_admin_token(request: Request) -> bool:
+    """Verify admin token from Authorization header or query param."""
+    if not ADMIN_TOKEN:
+        return False
+    auth = request.headers.get("authorization", "")
+    if hmac.compare_digest(auth, f"Bearer {ADMIN_TOKEN}"):
+        return True
+    token_param = request.query_params.get("token", "")
+    if token_param and hmac.compare_digest(token_param, ADMIN_TOKEN):
+        return True
+    return False
+
+
+@app.get("/admin")
+async def admin_dashboard(request: Request):
+    if not _check_admin_token(request):
+        return HTMLResponse(
+            "<html><body style='font-family:sans-serif;padding:40px;text-align:center'>"
+            "<h2>Unauthorized</h2><p>Append <code>?token=YOUR_ADMIN_TOKEN</code> to the URL.</p>"
+            "</body></html>",
+            status_code=401,
+        )
+    return HTMLResponse(_ADMIN_HTML)
 
 
 # --- Static ---

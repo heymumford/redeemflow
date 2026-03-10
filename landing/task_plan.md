@@ -294,20 +294,20 @@
 #### Sprint 9: Component Architecture
 > "Every section is bespoke. If you built a second page, you'd copy-paste everything." — Frost
 
-- [ ] S9-01: Extract Button atom with size variants (--sm, --md, --lg, --block)
-- [ ] S9-02: Extract Section Header molecule (eyebrow + h2, replaces 6 inline styles)
-- [ ] S9-04: Rename FAQ accordion to generic .accordion for reuse
-- [ ] S9-06: Replace inline styles with utility/component classes
-- [ ] S9-07: Replace nav PNG logo with inline SVG for CSS color transitions
+- [x] S9-01: Extract Button atom with size variants (--sm, --md, --lg, --block)
+- [x] S9-02: Extract Section Header molecule (eyebrow + h2, replaces 6 inline styles)
+- [x] S9-04: Rename FAQ accordion to generic .accordion for reuse
+- [x] S9-06: Replace inline styles with utility/component classes
+- [x] S9-07: Replace nav PNG logo with inline SVG for CSS color transitions
 
 #### Sprint 10: Performance & Polish
 > "Five JPGs totaling ~1.45MB. No responsive sizes, no modern formats." — Rams
 
 - [ ] S10-01: Convert hero images to WebP, add `<picture>` with srcset (640w, 1024w, 1920w)
-- [ ] S10-02: Reduce hero images from 5 to 3 (8s per image = more emotional connection)
-- [ ] S10-03: Replace SVG noise texture with pre-rendered PNG (hardware acceleration)
+- [x] S10-02: Reduce hero images from 5 to 3 (8s per image = more emotional connection)
+- [x] S10-03: Replace SVG noise texture with pre-rendered PNG (hardware acceleration)
 - [ ] S10-05: Extract critical CSS inline (~400 lines), move rest to external stylesheet
-- [ ] S10-06: Remove counter animation on $3,400 (adds no info, GPU cost)
+- [x] S10-06: Remove counter animation on $3,400 (adds no info, GPU cost)
 - [ ] S10-08: Playwright visual regression tests: desktop (1440px) + mobile (375px)
 
 ---
@@ -342,10 +342,10 @@
 | Accessibility & Ethics | 7 | 11 | 11 | 0 |
 | Conversion Copy | 8 | 7 | 7 | 0 |
 | **Phase 3 Vertical Slices** | VS | **16** | **16** | **0** |
-| Component Architecture | 9 | 5 | 0 | 5 |
-| Performance & Testing | 10 | 6 | 0 | 6 |
+| Component Architecture | 9 | 5 | 5 | 0 |
+| Performance & Testing | 10 | 6 | 3 | 3 |
 | P2 Icebox | — | 10 | — | — |
-| **TOTAL (active)** | | **97** | **82** | **11** |
+| **TOTAL (active)** | | **97** | **90** | **3** |
 
 ## Vertical Slice Execution Order
 

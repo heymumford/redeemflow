@@ -72,12 +72,12 @@
   }
 
   // === FAQ ACCORDION ===
-  var faqItems = document.querySelectorAll('.faq-item');
+  var faqItems = document.querySelectorAll('.accordion-item');
 
   faqItems.forEach(function(item) {
-    var trigger = item.querySelector('.faq-item__trigger');
-    var answer = item.querySelector('.faq-item__answer');
-    var inner = item.querySelector('.faq-item__answer-inner');
+    var trigger = item.querySelector('.accordion-item__trigger');
+    var answer = item.querySelector('.accordion-item__answer');
+    var inner = item.querySelector('.accordion-item__answer-inner');
 
     trigger.addEventListener('click', function() {
       var isOpen = item.getAttribute('data-open') === 'true';
@@ -85,8 +85,8 @@
       // Close all
       faqItems.forEach(function(other) {
         other.setAttribute('data-open', 'false');
-        other.querySelector('.faq-item__trigger').setAttribute('aria-expanded', 'false');
-        other.querySelector('.faq-item__answer').style.maxHeight = '0';
+        other.querySelector('.accordion-item__trigger').setAttribute('aria-expanded', 'false');
+        other.querySelector('.accordion-item__answer').style.maxHeight = '0';
       });
 
       // Toggle current
@@ -221,41 +221,6 @@
     });
   } else {
     fadeEls.forEach(revealElement);
-  }
-
-  // === COUNTER ANIMATION ===
-  var statEl = document.querySelector('.stat-band__value[data-target]');
-  if (!statEl) {
-    statEl = document.querySelector('.big-stat__value[data-target]');
-  }
-  if (statEl && 'IntersectionObserver' in window) {
-    if (prefersReducedMotion) {
-      var target = parseInt(statEl.getAttribute('data-target'), 10);
-      statEl.textContent = '$' + target.toLocaleString();
-    } else {
-      var counted = false;
-      var counterObserver = new IntersectionObserver(function(entries) {
-        entries.forEach(function(entry) {
-          if (entry.isIntersecting && !counted) {
-            counted = true;
-            var target = parseInt(statEl.getAttribute('data-target'), 10);
-            var duration = 1500;
-            var start = performance.now();
-            function step(now) {
-              var elapsed = now - start;
-              var progress = Math.min(elapsed / duration, 1);
-              var eased = 1 - Math.pow(1 - progress, 3);
-              var current = Math.round(eased * target);
-              statEl.textContent = '$' + current.toLocaleString();
-              if (progress < 1) requestAnimationFrame(step);
-            }
-            requestAnimationFrame(step);
-            counterObserver.unobserve(statEl);
-          }
-        });
-      }, { threshold: 0.5 });
-      counterObserver.observe(statEl);
-    }
   }
 
   // === COPYRIGHT YEAR AUTO-UPDATE ===

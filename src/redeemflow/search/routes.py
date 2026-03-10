@@ -6,7 +6,7 @@ Safety endpoints are public (no auth required).
 
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel
 
 from redeemflow.identity.auth import get_current_user
@@ -14,16 +14,23 @@ from redeemflow.identity.models import User
 from redeemflow.optimization.graph import TransferGraph
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
 from redeemflow.portfolio.awardwallet import FakeAwardWalletAdapter
-from redeemflow.search.award_search import FakeAwardSearchProvider
+from redeemflow.search.award_search import AwardSearchProvider, FakeAwardSearchProvider
 from redeemflow.search.conference_planner import WOMEN_CONFERENCES, ConferencePlanner
 from redeemflow.search.safety_scores import FakeSafetyDataProvider
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
 
 router = APIRouter()
 
-_SEARCH_PROVIDER = FakeAwardSearchProvider()
 _SAFETY_PROVIDER = FakeSafetyDataProvider()
 _FETCHER = FakeAwardWalletAdapter()
+
+
+def _get_search_provider(request: Request) -> AwardSearchProvider:
+    """Get award search provider from app state, fallback to fake."""
+    provider = getattr(request.app.state, "award_search_provider", None)
+    if provider is not None:
+        return provider
+    return FakeAwardSearchProvider()
 
 
 def _build_graph() -> TransferGraph:
@@ -51,8 +58,12 @@ class ConferencePlanRequest(BaseModel):
 
 
 @router.post("/api/award-search")
-def award_search(req: AwardSearchRequest, user: User = Depends(get_current_user)):
-    results = _SEARCH_PROVIDER.search(
+def award_search(
+    req: AwardSearchRequest,
+    user: User = Depends(get_current_user),
+    provider: AwardSearchProvider = Depends(_get_search_provider),
+):
+    results = provider.search(
         origin=req.origin,
         destination=req.destination,
         date=req.date,

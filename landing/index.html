@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="index, follow">
-  <meta name="description" content="RedeemFlow helps you build a better life with loyalty points you have already earned. See every transfer path, protect expiring points, and redeem smarter.">
+  <meta name="description" content="RedeemFlow helps you claim the full value of travel rewards you already earned. One clear view across every loyalty program — with real control and none of the extra work.">
   <meta name="theme-color" content="#0A0F1C">
-  <meta property="og:title" content="RedeemFlow — Redeem More. Waste Less.">
-  <meta property="og:description" content="Build a better life with points you have already earned. RedeemFlow finds transfer paths, protects expiring miles, and shows you the best redemption for every trip.">
+  <meta property="og:title" content="RedeemFlow — Claim the Value You Already Earned">
+  <meta property="og:description" content="Turn scattered loyalty points into clear, flexible travel choices. RedeemFlow finds the best paths across your programs — so you keep more of what you earned, with less work.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://redeemflow.io">
   <meta property="og:site_name" content="RedeemFlow">
@@ -15,12 +15,13 @@
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="RedeemFlow — Redeem More. Waste Less.">
-  <meta name="twitter:description" content="Build a better life with points you have already earned. See every transfer path, protect expiring miles, and redeem smarter.">
+  <meta name="twitter:title" content="RedeemFlow — Claim the Value You Already Earned">
+  <meta name="twitter:description" content="Turn scattered loyalty points into clear, flexible travel choices. Keep more of what you earned, with less work.">
   <meta name="twitter:image" content="https://redeemflow-landing.fly.dev/img/hero-resort.jpg">
   <link rel="canonical" href="https://redeemflow.io">
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 2L28 16L16 30L4 16Z' fill='%232D5DA1'/%3E%3Cpath d='M16 6L24 16L16 26L8 16Z' fill='%23DCA37A'/%3E%3C/svg%3E">
-  <title>RedeemFlow — Redeem More. Waste Less.</title>
+  <link rel="icon" type="image/png" href="/img/favicon-32.png">
+  <link rel="apple-touch-icon" href="/img/apple-touch-icon.png">
+  <title>RedeemFlow — Claim the Value You Already Earned</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -438,8 +439,21 @@
       font-size: 18px;
       color: var(--text-inverse-secondary);
       max-width: 520px;
-      margin-bottom: 40px;
+      margin-bottom: 32px;
       line-height: 1.6;
+    }
+
+    .hero__trust {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 32px;
+      letter-spacing: 0.02em;
+    }
+
+    .nav__logo-img {
+      display: block;
+      height: 36px;
+      width: auto;
     }
 
     .hero__stats {
@@ -1553,7 +1567,7 @@
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
     "name": "RedeemFlow",
-    "description": "RedeemFlow helps you build a better life with loyalty points you have already earned. See every transfer path, protect expiring miles, and get the most from every redemption.",
+    "description": "RedeemFlow helps you claim the full value of travel rewards you already earned. One clear view across every loyalty program, with real control and none of the extra work.",
     "url": "https://redeemflow.io",
     "applicationCategory": "FinanceApplication",
     "operatingSystem": "Web",
@@ -1579,19 +1593,10 @@
   <nav class="nav" id="nav" role="navigation" aria-label="Main navigation">
     <div class="nav__inner">
       <a href="#main-content" class="nav__logo" aria-label="RedeemFlow home">
-        <svg viewBox="0 0 180 28" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
-          <title>RedeemFlow</title>
-          <!-- Abstract mark: two arrow paths forming diamond -->
-          <path class="logo-mark" d="M4 14L14 4L24 14" fill="none" stroke-width="2" stroke-linejoin="miter"/>
-          <path class="logo-mark" d="M4 14L14 24L24 14" fill="none" stroke-width="2" stroke-linejoin="miter"/>
-          <path class="logo-mark" d="M9 14L14 9L19 14L14 19Z" fill="none" stroke-width="1.5"/>
-          <!-- Text -->
-          <text x="32" y="20" class="logo-redeem" font-family="'Fraunces', Georgia, serif" font-weight="600" font-size="18">Redeem</text>
-          <text x="108" y="20" class="logo-flow" font-family="'Fraunces', Georgia, serif" font-weight="300" font-size="18">Flow</text>
-        </svg>
+        <img src="/img/logo-nav.png" alt="RedeemFlow" height="36" width="91" class="nav__logo-img">
       </a>
       <div class="nav__actions">
-        <a href="#waitlist" class="nav__btn">Join Waitlist</a>
+        <a href="#waitlist" class="nav__btn">Get Early Access</a>
       </div>
     </div>
   </nav>
@@ -1610,10 +1615,11 @@
     </div>
     <div class="hero__overlay" aria-hidden="true"></div>
     <div class="hero__content container">
-      <span class="eyebrow eyebrow--inverse">Points Optimization Platform</span>
-      <h1>Redeem More.<br>Waste Less.</h1>
-      <p class="hero__subtitle">You earned the points. We help you use them for the trips, stays, and experiences that matter most.</p>
-      <a href="#waitlist" class="btn btn--primary btn--large">Join the Waitlist <span aria-hidden="true">&rarr;</span></a>
+      <span class="eyebrow eyebrow--inverse">Travel Rewards, Simplified</span>
+      <h1>Claim the value<br>you already earned.</h1>
+      <p class="hero__subtitle">Turn scattered points into clear, flexible travel choices — so you can protect value, keep control, and stop doing rewards admin on your own time.</p>
+      <a href="#waitlist" class="btn btn--primary btn--large">See My Options <span aria-hidden="true">&rarr;</span></a>
+      <p class="hero__trust">Read-only access. We never act without your approval.</p>
       <div class="hero__stats">
         <span class="hero__stat"><strong>10B+</strong> points wasted annually<a href="#citations" class="cite" aria-label="Source 1">1</a></span>
         <span class="hero__stat"><strong>16+</strong> programs per person<a href="#citations" class="cite" aria-label="Source 2">2</a></span>
@@ -1628,8 +1634,8 @@
     <div class="container">
       <div class="what-we-do__inner">
         <span class="eyebrow">The Problem</span>
-        <h2>Your points are a depreciating asset</h2>
-        <p>$10 billion in loyalty points expire unused every year.<a href="#citations" class="cite" aria-label="Source 1">1</a> The average American holds 16 programs<a href="#citations" class="cite" aria-label="Source 2">2</a> with no strategy connecting them. Those points could be flights home, vacations you have been putting off, or hotel nights you thought you couldn't afford. RedeemFlow helps you get there.</p>
+        <h2>You already earned this value</h2>
+        <p>$10 billion in loyalty points expire unused every year<a href="#citations" class="cite" aria-label="Source 1">1</a> — not because people don't care, but because 16 scattered programs<a href="#citations" class="cite" aria-label="Source 2">2</a> make it impossible to see the full picture. Those points could be flights home, vacations you've been putting off, or hotel nights that seemed out of reach. RedeemFlow gives you one clear view so nothing slips away.</p>
       </div>
       <div class="divider"></div>
     </div>
@@ -1707,7 +1713,7 @@
   <section class="section section--secondary section--light fade-in" id="features">
     <div class="container">
       <span class="eyebrow">Discover</span>
-      <h2 style="margin-bottom: 48px;">Your points can do more than you think</h2>
+      <h2 style="margin-bottom: 48px;">See the options that respect your time</h2>
       <div class="feature-grid">
         <div class="feature-card fade-in">
           <div class="feature-card__icon">
@@ -1722,8 +1728,8 @@
               <line x1="30" y1="13" x2="30" y2="27" stroke="var(--accent)" stroke-width="1.2"/>
             </svg>
           </div>
-          <h3>Every path between your programs</h3>
-          <p>Your points can move between programs in ways most people never see. RedeemFlow maps every transfer partnership, bonus route, and conversion rate so you always know the best way to use what you have.</p>
+          <h3>Every path, clearly shown</h3>
+          <p>Your points can move between programs in ways most people never see. RedeemFlow maps every transfer partnership, bonus route, and conversion rate — so you know the tradeoffs before you decide.</p>
         </div>
         <div class="feature-card fade-in">
           <div class="feature-card__icon">
@@ -1737,8 +1743,8 @@
               <line x1="38" y1="20" x2="34" y2="20" stroke="var(--accent)" stroke-width="1.2"/>
             </svg>
           </div>
-          <h3>Deals found while you sleep</h3>
-          <p>Award seats, transfer bonuses, and flash deals come and go fast. RedeemFlow watches around the clock and tells you the moment something opens up for a trip you care about.</p>
+          <h3>Quiet, always-on monitoring</h3>
+          <p>Award seats, transfer bonuses, and flash deals come and go fast. RedeemFlow watches around the clock and lets you know the moment something opens up for a trip you care about — no spreadsheets, no daily checking.</p>
         </div>
         <div class="feature-card fade-in">
           <div class="feature-card__icon">
@@ -1751,8 +1757,8 @@
               <path d="M20 23v3.5l2.5 1.5" stroke="var(--accent)" stroke-width="1.2"/>
             </svg>
           </div>
-          <h3>Ready before every trip</h3>
-          <p>Link your travel calendar and RedeemFlow does the homework before you pack. Transfer bonuses, open award seats, and the best redemption options are waiting when you need them.</p>
+          <h3>Ready when you are</h3>
+          <p>Link your travel calendar and RedeemFlow does the homework before you pack. Transfer bonuses, open award seats, and the best options are waiting — so planning a trip fits real life instead of becoming another task.</p>
         </div>
       </div>
     </div>
@@ -1773,10 +1779,10 @@
     <div class="container">
       <div class="feature-split">
         <div class="feature-text">
-          <span class="eyebrow">Optimize</span>
-          <h2>See what your points are really worth</h2>
-          <p>Most people use points one program at a time and never realize they can do better. RedeemFlow connects the dots between your programs and shows you where your points go further — so you can take the trip, not settle for the statement credit.</p>
-          <a href="#waitlist" class="cta-link">See your transfer paths <span aria-hidden="true">&rarr;</span></a>
+          <span class="eyebrow">Clear Value</span>
+          <h2>Know exactly what you have</h2>
+          <p>Most people use points one program at a time and never see the full picture. RedeemFlow connects the dots and shows you where your points go further — so you can choose the trip, not settle for the statement credit.</p>
+          <a href="#waitlist" class="cta-link">See my options <span aria-hidden="true">&rarr;</span></a>
         </div>
         <div class="mock-ui">
           <div class="mock-ui__header">Transfer Path Analysis</div>
@@ -1805,15 +1811,15 @@
     </div>
   </section>
 
-  <!-- MAXIMIZE -->
+  <!-- CLEAR CHOICE -->
   <section class="section section--secondary section--light fade-in">
     <div class="container">
       <div class="feature-split feature-split--reversed">
         <div class="feature-text">
-          <span class="eyebrow">Maximize</span>
-          <h2>Make the most of every point</h2>
-          <p>Cashing out your points for a statement credit means leaving real trips on the table. RedeemFlow shows you every option side by side — what each path costs, what each one is worth — so you can choose the redemption that gives your family the most.</p>
-          <a href="#waitlist" class="cta-link">Start optimizing <span aria-hidden="true">&rarr;</span></a>
+          <span class="eyebrow">Clear Choice</span>
+          <h2>Know the tradeoffs before you decide</h2>
+          <p>Cashing out your points for a statement credit means leaving real trips on the table. RedeemFlow shows you every option side by side — what each path costs, what each one is worth — so you can choose on your terms.</p>
+          <a href="#waitlist" class="cta-link">See my options <span aria-hidden="true">&rarr;</span></a>
         </div>
         <div class="mock-ui">
           <div class="mock-value-table">
@@ -1854,9 +1860,9 @@
       <div class="feature-split">
         <div class="feature-text">
           <span class="eyebrow">Protect</span>
-          <h2>Never lose a point to expiration</h2>
+          <h2>Protect what's yours</h2>
           <p>Every program has different expiration rules, and they are not designed to be easy to follow. RedeemFlow watches the clock for you and sends a heads-up while you still have time. Sometimes all it takes is one coffee purchase to save thousands of points.</p>
-          <a href="#waitlist" class="cta-link">Protect your points <span aria-hidden="true">&rarr;</span></a>
+          <a href="#waitlist" class="cta-link">Protect what's yours <span aria-hidden="true">&rarr;</span></a>
         </div>
         <div class="mock-ui">
           <div class="mock-ui__header">Expiration Monitor</div>
@@ -1902,7 +1908,7 @@
   <section class="section section--secondary section--light fade-in" id="how-it-works">
     <div class="container">
       <span class="eyebrow">How It Works</span>
-      <h2 style="margin-bottom: 48px;">Three steps to better trips</h2>
+      <h2 style="margin-bottom: 48px;">Three steps. Less rewards work.</h2>
       <div class="steps">
         <div class="step fade-in">
           <div class="step__number" aria-hidden="true">01</div>
@@ -1917,11 +1923,11 @@
         <div class="step fade-in">
           <div class="step__number" aria-hidden="true">03</div>
           <h3>Redeem with confidence</h3>
-          <p>Review the recommendation, confirm the transfer, and book. You are always in control — RedeemFlow shows you the path, and you decide when to take it.</p>
+          <p>Review the recommendation, confirm the transfer, and book. You stay in control — RedeemFlow shows you the path, and you decide when to take it.</p>
         </div>
       </div>
       <div style="text-align: center;">
-        <a href="#waitlist" class="cta-link">See what your points are worth <span aria-hidden="true">&rarr;</span></a>
+        <a href="#waitlist" class="cta-link">See my options <span aria-hidden="true">&rarr;</span></a>
       </div>
     </div>
   </section>
@@ -1980,7 +1986,7 @@
           </button>
           <div class="faq-item__answer" id="faq-answer-3" role="region">
             <div class="faq-item__answer-inner">
-              A travel agent books one trip at a time. RedeemFlow looks at all your points across every program and finds the transfer paths that get you more value — paths you would never find by searching each program individually. And at $149/year instead of $200+ per booking with a concierge, it pays for itself fast.
+              A travel agent books one trip at a time. RedeemFlow looks at all your points across every program and finds transfer paths that protect and stretch your value — paths you would never find by searching each program individually. At $149/year instead of $200+ per booking with a concierge, it pays for itself with the first trip.
             </div>
           </div>
         </div>
@@ -1992,7 +1998,7 @@
           </button>
           <div class="faq-item__answer" id="faq-answer-4" role="region">
             <div class="faq-item__answer-inner">
-              No. RedeemFlow shows you the best options and you make the call. We will never move your points or book anything without you saying so. Your points, your decision — every time.
+              No. RedeemFlow shows you clear options and you make the call. We never move your points or book anything without your explicit confirmation. Your points, your choice — every time.
             </div>
           </div>
         </div>
@@ -2004,7 +2010,7 @@
           </button>
           <div class="faq-item__answer" id="faq-answer-5" role="region">
             <div class="faq-item__answer-inner">
-              Seeing your balances and getting expiration alerts is free. The full experience — transfer path analysis, deal alerts, and calendar sync — is $149 per year. Most people make that back on their very first optimized booking.
+              Seeing your balances and getting expiration alerts is free. The full experience — transfer path analysis, deal alerts, and calendar sync — is $149 per year. Most people recover that value on their very first trip.
             </div>
           </div>
         </div>
@@ -2029,7 +2035,7 @@
   <section class="waitlist" id="waitlist">
     <div class="waitlist__kaleidoscope" aria-hidden="true"></div>
     <div class="waitlist__content">
-      <h2>Your Points, Optimized<br> <span>with RedeemFlow</span></h2>
+      <h2>Keep the Value.<br> <span>Keep the Choice.</span></h2>
       <form class="waitlist__form" id="waitlist-form" novalidate>
         <div>
           <label for="waitlist-email" class="waitlist__label">Your email</label>
@@ -2044,13 +2050,13 @@
             autocomplete="email"
           >
         </div>
-        <button type="submit" class="waitlist__submit">Join Waitlist <span aria-hidden="true">&rarr;</span></button>
+        <button type="submit" class="waitlist__submit">Get Early Access <span aria-hidden="true">&rarr;</span></button>
       </form>
       <div class="waitlist__error" id="waitlist-error" role="alert" aria-live="polite"></div>
       <div class="waitlist__success" id="waitlist-success" role="status" aria-live="polite">
         <p>You are on the list. We will be in touch.</p>
       </div>
-      <p class="waitlist__note">Free balance tracking. Full optimization from $149/year.</p>
+      <p class="waitlist__note">Free balance tracking. Full experience from $149/year.</p>
     </div>
   </section>
 

@@ -536,119 +536,6 @@
       margin: 60px auto;
     }
 
-    /* ===== MOCK DASHBOARD ===== */
-    .dashboard {
-      padding: 0 0 100px;
-    }
-
-    .dashboard__eyebrow {
-      text-align: center;
-      margin-bottom: 32px;
-    }
-
-    .dashboard__card {
-      border-radius: 12px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-      overflow: hidden;
-      border: 1px solid rgba(0,0,0,0.06);
-    }
-
-    .dashboard__stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 2px;
-      margin-bottom: 2px;
-    }
-
-    .dashboard__stat-card {
-      background: var(--surface-inverse);
-      padding: 28px 24px;
-      border-radius: 8px;
-    }
-
-    .dashboard__stat-label {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-inverse-muted);
-      margin-bottom: 8px;
-    }
-
-    .dashboard__stat-value {
-      font-family: var(--font-mono);
-      font-size: 28px;
-      font-weight: 500;
-      color: var(--text-inverse);
-    }
-
-    .dashboard__stat-value--green { color: #66BB6A; }
-    .dashboard__stat-value--amber { color: #FFA726; }
-
-    .dashboard__table-scroll {
-      overflow-x: auto;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .dashboard__table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-
-    .dashboard__table thead {
-      background: var(--surface-inverse);
-    }
-
-    .dashboard__table thead tr {
-      background-color: var(--surface-inverse);
-    }
-
-    .dashboard__table th {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-inverse-muted);
-      padding: 14px 24px;
-      text-align: left;
-    }
-
-    .dashboard__table th:last-child {
-      text-align: right;
-    }
-
-    .dashboard__table td {
-      font-family: var(--font-sans);
-      font-size: 15px;
-      padding: 16px 24px;
-      color: var(--text-primary);
-      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-    }
-
-    .dashboard__table td:last-child {
-      text-align: right;
-      font-family: var(--font-mono);
-      font-size: 14px;
-      font-weight: 500;
-    }
-
-    .dashboard__table tbody tr:nth-child(even) {
-      background: var(--surface-secondary);
-    }
-
-    .dashboard__table tbody tr:nth-child(odd) {
-      background: var(--surface-primary);
-    }
-
-    .dashboard__table .program-name {
-      font-weight: 600;
-    }
-
-    .dashboard__table .cpp-good { color: var(--green); }
-    .dashboard__table .cpp-warn { color: var(--amber); }
-
     /* ===== FEATURE SECTIONS ===== */
     .feature-grid {
       display: grid;
@@ -689,22 +576,6 @@
       line-height: 1.6;
     }
 
-    /* Two-column feature layout */
-    .feature-split {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 64px;
-      align-items: center;
-    }
-
-    .feature-split--reversed {
-      direction: rtl;
-    }
-
-    .feature-split--reversed > * {
-      direction: ltr;
-    }
-
     .feature-text h2 {
       margin-bottom: 20px;
     }
@@ -713,196 +584,6 @@
       color: var(--text-secondary);
       margin-bottom: 24px;
       line-height: 1.7;
-    }
-
-    /* ===== MOCK UIs ===== */
-    .mock-ui {
-      background: var(--surface-primary);
-      border: 1px solid rgba(0, 0, 0, 0.06);
-      overflow: hidden;
-      border-radius: 12px;
-    }
-
-    .section--secondary .mock-ui {
-      border-color: rgba(0, 0, 0, 0.04);
-    }
-
-    .mock-ui__header {
-      background: var(--surface-inverse);
-      padding: 12px 20px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-inverse-muted);
-      border-radius: 12px 12px 0 0;
-    }
-
-    .mock-ui__row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 20px;
-      font-size: 14px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-    }
-
-    .mock-ui__row:nth-child(even) {
-      background: var(--surface-secondary);
-    }
-
-    .mock-ui__row-label {
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex: 1;
-    }
-
-    .mock-ui__row-path {
-      font-family: var(--font-mono);
-      font-size: 12px;
-      color: var(--text-tertiary);
-      flex: 2;
-      text-align: center;
-    }
-
-    .mock-ui__row-value {
-      font-family: var(--font-mono);
-      font-size: 14px;
-      font-weight: 500;
-      text-align: right;
-      min-width: 60px;
-    }
-
-    .badge {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 3px 8px;
-      display: inline-block;
-      border-radius: 4px;
-    }
-
-    .badge--best {
-      background: var(--green);
-      color: #FFFFFF;
-    }
-
-    .badge--safe { background: rgba(46, 125, 50, 0.1); color: var(--green); }
-    .badge--warn { background: rgba(191, 68, 0, 0.1); color: var(--amber); }
-    .badge--danger { background: rgba(198, 40, 40, 0.1); color: var(--red); }
-
-    /* Value comparison mock */
-    .mock-value-table {
-      width: 100%;
-    }
-
-    .mock-value-table__header {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr;
-      background: var(--surface-inverse);
-      padding: 12px 20px;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1.5px;
-      color: var(--text-inverse-muted);
-    }
-
-    .mock-value-table__row {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr;
-      padding: 14px 20px;
-      font-size: 14px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-    }
-
-    .mock-value-table__row:nth-child(even) {
-      background: var(--surface-secondary);
-    }
-
-    .mock-value-table__row span:first-child {
-      font-weight: 500;
-    }
-
-    .mock-value-table__row span:nth-child(2) {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--text-tertiary);
-    }
-
-    .mock-value-table__row span:nth-child(3) {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--green);
-    }
-
-    .mock-value-table__total {
-      display: grid;
-      grid-template-columns: 1.5fr 1fr 1fr;
-      padding: 14px 20px;
-      font-weight: 600;
-      font-size: 14px;
-      border-top: 2px solid var(--surface-inverse);
-    }
-
-    .mock-value-table__total span:nth-child(2) {
-      font-family: var(--font-mono);
-      font-size: 13px;
-    }
-
-    .mock-value-table__total span:nth-child(3) {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--green);
-      font-weight: 600;
-    }
-
-    /* Expiration monitor */
-    .mock-expiry__row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 14px 20px;
-      font-size: 14px;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
-    }
-
-    .mock-expiry__row:nth-child(even) {
-      background: var(--surface-secondary);
-    }
-
-    .mock-expiry__program {
-      font-weight: 500;
-      flex: 1;
-    }
-
-    .mock-expiry__points {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--text-tertiary);
-      flex: 1;
-      text-align: center;
-    }
-
-    .mock-expiry__days {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 500;
-      min-width: 80px;
-      text-align: right;
-      margin-right: 12px;
-    }
-
-    .mock-expiry__badge {
-      min-width: 70px;
-      text-align: right;
     }
 
     /* ===== TESTIMONIAL ===== */
@@ -1401,22 +1082,9 @@
     @media (max-width: 1024px) {
       .section { padding: 100px 0; }
 
-      .dashboard__stats {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
       .feature-grid {
         grid-template-columns: 1fr;
         gap: 24px;
-      }
-
-      .feature-split {
-        grid-template-columns: 1fr;
-        gap: 40px;
-      }
-
-      .feature-split--reversed {
-        direction: ltr;
       }
 
       .steps {
@@ -1445,21 +1113,6 @@
       body { font-size: 16px; }
 
       .eyebrow { font-size: 12px; }
-      .dashboard__stat-label { font-size: 12px; }
-
-      .dashboard__stats {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .dashboard__stat-value {
-        font-size: 22px;
-      }
-
-      .dashboard__table {
-        display: block;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-      }
 
       .hero__stats {
         flex-direction: column;
@@ -1485,38 +1138,6 @@
       .waitlist__submit {
         width: 100%;
         border-radius: 8px;
-      }
-
-      .mock-ui__row {
-        font-size: 13px;
-        padding: 12px 16px;
-        flex-wrap: wrap;
-      }
-
-      .mock-ui__row-path {
-        flex-basis: 100%;
-        text-align: left;
-        font-size: 11px;
-        margin-top: 2px;
-        order: 3;
-      }
-
-      .mock-value-table__header,
-      .mock-value-table__row,
-      .mock-value-table__total {
-        grid-template-columns: 1.2fr 1fr 1fr;
-        font-size: 13px;
-        padding: 12px 16px;
-      }
-
-      .mock-expiry__row {
-        flex-wrap: wrap;
-        gap: 4px;
-        padding: 12px 16px;
-      }
-
-      .mock-expiry__points {
-        font-size: 12px;
       }
 
       .footer__top {
@@ -1623,7 +1244,7 @@
       <div class="hero__stats">
         <span class="hero__stat"><strong>10B+</strong> points wasted annually<a href="#citations" class="cite" aria-label="Source 1">1</a></span>
         <span class="hero__stat"><strong>16+</strong> programs per person<a href="#citations" class="cite" aria-label="Source 2">2</a></span>
-        <span class="hero__stat"><strong>3x</strong> value unlocked<a href="#citations" class="cite" aria-label="Source 3">3</a></span>
+        <span class="hero__stat"><strong>2&ndash;3x</strong> more from the same points<a href="#citations" class="cite" aria-label="Source 3">3</a></span>
       </div>
     </div>
   </section>
@@ -1638,74 +1259,6 @@
         <p>$10 billion in loyalty points expire unused every year<a href="#citations" class="cite" aria-label="Source 1">1</a> — not because people don't care, but because 16 scattered programs<a href="#citations" class="cite" aria-label="Source 2">2</a> make it impossible to see the full picture. Those points could be flights home, vacations you've been putting off, or hotel nights that seemed out of reach. RedeemFlow gives you one clear view so nothing slips away.</p>
       </div>
       <div class="divider"></div>
-    </div>
-  </section>
-
-  <!-- MOCK DASHBOARD -->
-  <section class="dashboard" aria-label="Portfolio Dashboard Preview">
-    <div class="container">
-      <div class="dashboard__eyebrow">
-        <span class="eyebrow">Your Dashboard &mdash; Preview</span>
-      </div>
-      <div class="dashboard__card">
-        <div class="dashboard__stats">
-          <div class="dashboard__stat-card">
-            <div class="dashboard__stat-label">Total Points</div>
-            <div class="dashboard__stat-value">487,200</div>
-          </div>
-          <div class="dashboard__stat-card">
-            <div class="dashboard__stat-label">Cash Value</div>
-            <div class="dashboard__stat-value">$3,898</div>
-          </div>
-          <div class="dashboard__stat-card">
-            <div class="dashboard__stat-label">Optimized Value</div>
-            <div class="dashboard__stat-value dashboard__stat-value--green">$7,640</div>
-          </div>
-          <div class="dashboard__stat-card">
-            <div class="dashboard__stat-label">Expiring Soon</div>
-            <div class="dashboard__stat-value dashboard__stat-value--amber">24,000</div>
-          </div>
-        </div>
-        <div class="dashboard__table-scroll">
-          <table class="dashboard__table" role="table">
-            <thead>
-              <tr>
-                <th scope="col">Program</th>
-                <th scope="col">Balance</th>
-                <th scope="col">Expiration</th>
-                <th scope="col">cpp</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td class="program-name">Chase Ultimate Rewards</td>
-                <td>186,400</td>
-                <td>None</td>
-                <td class="cpp-good">2.1 <span class="sr-only">(good)</span></td>
-              </tr>
-              <tr>
-                <td class="program-name">AA AAdvantage</td>
-                <td>124,800</td>
-                <td>None</td>
-                <td class="cpp-good">1.8 <span class="sr-only">(good)</span></td>
-              </tr>
-              <tr>
-                <td class="program-name">Marriott Bonvoy</td>
-                <td>92,000</td>
-                <td>Mar 2027</td>
-                <td class="cpp-warn">0.9 <span class="sr-only">(low)</span></td>
-              </tr>
-              <tr>
-                <td class="program-name">Amex Membership Rewards</td>
-                <td>84,000</td>
-                <td>None</td>
-                <td class="cpp-good">2.0 <span class="sr-only">(good)</span></td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-      <p style="font-size: 13px; color: var(--text-tertiary); margin-top: 16px; text-align: center;"><abbr title="cents per point">cpp</abbr> values represent median redemption value across available award inventory. <a href="#citations" class="cite" aria-label="Source 5">5</a></p>
     </div>
   </section>
 
@@ -1728,8 +1281,8 @@
               <line x1="30" y1="13" x2="30" y2="27" stroke="var(--accent)" stroke-width="1.2"/>
             </svg>
           </div>
-          <h3>Every path, clearly shown</h3>
-          <p>Your points can move between programs in ways most people never see. RedeemFlow maps every transfer partnership, bonus route, and conversion rate — so you know the tradeoffs before you decide.</p>
+          <h3>One view of everything</h3>
+          <p>Airlines, hotels, credit cards — your points are scattered across a dozen programs. RedeemFlow pulls them together so you can see what you actually have, in one place, in plain dollars.</p>
         </div>
         <div class="feature-card fade-in">
           <div class="feature-card__icon">
@@ -1743,8 +1296,8 @@
               <line x1="38" y1="20" x2="34" y2="20" stroke="var(--accent)" stroke-width="1.2"/>
             </svg>
           </div>
-          <h3>Quiet, always-on monitoring</h3>
-          <p>Award seats, transfer bonuses, and flash deals come and go fast. RedeemFlow watches around the clock and lets you know the moment something opens up for a trip you care about — no spreadsheets, no daily checking.</p>
+          <h3>Alerts before points expire</h3>
+          <p>Points expire quietly. By the time you notice, they're gone. RedeemFlow watches your expiration dates and sends you a heads-up while you still have time to use them.</p>
         </div>
         <div class="feature-card fade-in">
           <div class="feature-card__icon">
@@ -1757,8 +1310,8 @@
               <path d="M20 23v3.5l2.5 1.5" stroke="var(--accent)" stroke-width="1.2"/>
             </svg>
           </div>
-          <h3>Ready when you are</h3>
-          <p>Link your travel calendar and RedeemFlow does the homework before you pack. Transfer bonuses, open award seats, and the best options are waiting — so planning a trip fits real life instead of becoming another task.</p>
+          <h3>Better options, found for you</h3>
+          <p>Your points are often worth two or three times more when used the right way. RedeemFlow finds those options automatically and shows you the difference — so you can make a quick, confident decision.</p>
         </div>
       </div>
     </div>
@@ -1768,88 +1321,33 @@
   <section class="section fade-in">
     <div class="container">
       <div class="testimonial">
-        <p class="testimonial__quote">&ldquo;200,000 Marriott Bonvoy points had been sitting there for 18 months. RedeemFlow found a transfer path to Alaska Airlines at 1.5 <abbr title="cents per point">cpp</abbr> that unlocked first class to Tokyo at 2.4 <abbr title="cents per point">cpp</abbr> &mdash; 60% more value than redeeming through Marriott directly.&rdquo;</p>
-        <p class="testimonial__attr">Illustrative example based on published award charts and transfer ratios</p>
+        <p class="testimonial__quote">&ldquo;I had 200,000 hotel points sitting unused for over a year. I assumed they were worth maybe $1,200 toward a future stay. RedeemFlow showed me they could cover a first-class flight to Tokyo worth $4,800. Same points — completely different trip.&rdquo;</p>
+        <p class="testimonial__attr">Illustrative example based on published program rates</p>
       </div>
     </div>
   </section>
 
-  <!-- OPTIMIZE -->
+  <!-- VALUE -->
   <section class="section section--light fade-in">
     <div class="container">
-      <div class="feature-split">
-        <div class="feature-text">
-          <span class="eyebrow">Clear Value</span>
-          <h2>Know exactly what you have</h2>
-          <p>Most people use points one program at a time and never see the full picture. RedeemFlow connects the dots and shows you where your points go further — so you can choose the trip, not settle for the statement credit.</p>
-          <a href="#waitlist" class="cta-link">See my options <span aria-hidden="true">&rarr;</span></a>
-        </div>
-        <div class="mock-ui">
-          <div class="mock-ui__header">Transfer Path Analysis</div>
-          <div class="mock-ui__row">
-            <span class="mock-ui__row-label">Chase UR</span>
-            <span class="mock-ui__row-path">Chase &rarr; Hyatt &rarr; Book</span>
-            <span class="mock-ui__row-value cpp-good">2.3 cpp <span class="badge badge--best">Best</span></span>
-          </div>
-          <div class="mock-ui__row">
-            <span class="mock-ui__row-label">Chase UR</span>
-            <span class="mock-ui__row-path">Chase &rarr; United &rarr; Book</span>
-            <span class="mock-ui__row-value">1.8 cpp</span>
-          </div>
-          <div class="mock-ui__row">
-            <span class="mock-ui__row-label">Amex MR</span>
-            <span class="mock-ui__row-path">Amex &rarr; ANA &rarr; Book</span>
-            <span class="mock-ui__row-value">2.1 cpp</span>
-          </div>
-          <div class="mock-ui__row">
-            <span class="mock-ui__row-label">Marriott</span>
-            <span class="mock-ui__row-path">Marriott &rarr; Alaska &rarr; Book</span>
-            <span class="mock-ui__row-value">1.5 cpp</span>
-          </div>
-        </div>
+      <div class="feature-text" style="max-width: 680px;">
+        <span class="eyebrow">Your Points Are Worth More</span>
+        <h2>See the real value — not just the balance</h2>
+        <p>Most people look at their points balance and have no idea what it's actually worth. RedeemFlow shows you the dollar value of every program you belong to, and whether you're leaving money on the table by cashing out instead of booking travel.</p>
+        <p style="margin-top: 16px; color: var(--text-secondary); line-height: 1.7;">For example, 150,000 credit card points might be worth $1,500 as a statement credit — or $3,150 in hotel stays. Same points, very different outcome. RedeemFlow shows you both so you can decide.</p>
+        <a href="#waitlist" class="cta-link">See what yours are worth <span aria-hidden="true">&rarr;</span></a>
       </div>
     </div>
   </section>
 
-  <!-- CLEAR CHOICE -->
+  <!-- CHOICE -->
   <section class="section section--secondary section--light fade-in">
     <div class="container">
-      <div class="feature-split feature-split--reversed">
-        <div class="feature-text">
-          <span class="eyebrow">Clear Choice</span>
-          <h2>Know the tradeoffs before you decide</h2>
-          <p>Cashing out your points for a statement credit means leaving real trips on the table. RedeemFlow shows you every option side by side — what each path costs, what each one is worth — so you can choose on your terms.</p>
-          <a href="#waitlist" class="cta-link">See my options <span aria-hidden="true">&rarr;</span></a>
-        </div>
-        <div class="mock-ui">
-          <div class="mock-value-table">
-            <div class="mock-value-table__header">
-              <span>Program</span>
-              <span>Cash Out</span>
-              <span>Transfer</span>
-            </div>
-            <div class="mock-value-table__row">
-              <span>Chase UR (186K)</span>
-              <span>$1,864</span>
-              <span>$3,910</span>
-            </div>
-            <div class="mock-value-table__row">
-              <span>AA AAdvantage (125K)</span>
-              <span>$875</span>
-              <span>$2,250</span>
-            </div>
-            <div class="mock-value-table__row">
-              <span>Amex MR (84K)</span>
-              <span>$504</span>
-              <span>$1,680</span>
-            </div>
-            <div class="mock-value-table__total">
-              <span>Total</span>
-              <span>$3,243</span>
-              <span>$7,840</span>
-            </div>
-          </div>
-        </div>
+      <div class="feature-text" style="max-width: 680px;">
+        <span class="eyebrow">Your Decision, Not Ours</span>
+        <h2>Every option, side by side</h2>
+        <p>Should you cash out or book a flight? Use your hotel points or save them for a bigger trip? RedeemFlow lays out every option with its real dollar value — no fine print, no pressure. You pick the one that fits your life right now.</p>
+        <a href="#waitlist" class="cta-link">See my options <span aria-hidden="true">&rarr;</span></a>
       </div>
     </div>
   </section>
@@ -1857,40 +1355,11 @@
   <!-- PROTECT -->
   <section class="section fade-in">
     <div class="container">
-      <div class="feature-split">
-        <div class="feature-text">
-          <span class="eyebrow">Protect</span>
-          <h2>Protect what's yours</h2>
-          <p>Every program has different expiration rules, and they are not designed to be easy to follow. RedeemFlow watches the clock for you and sends a heads-up while you still have time. Sometimes all it takes is one coffee purchase to save thousands of points.</p>
-          <a href="#waitlist" class="cta-link">Protect what's yours <span aria-hidden="true">&rarr;</span></a>
-        </div>
-        <div class="mock-ui">
-          <div class="mock-ui__header">Expiration Monitor</div>
-          <div class="mock-expiry__row">
-            <span class="mock-expiry__program">British Airways Avios</span>
-            <span class="mock-expiry__points">24,000 pts</span>
-            <span class="mock-expiry__days">18 days</span>
-            <span class="mock-expiry__badge"><span class="badge badge--danger">Urgent</span></span>
-          </div>
-          <div class="mock-expiry__row">
-            <span class="mock-expiry__program">Hilton Honors</span>
-            <span class="mock-expiry__points">48,200 pts</span>
-            <span class="mock-expiry__days">45 days</span>
-            <span class="mock-expiry__badge"><span class="badge badge--warn">Warning</span></span>
-          </div>
-          <div class="mock-expiry__row">
-            <span class="mock-expiry__program">Marriott Bonvoy</span>
-            <span class="mock-expiry__points">92,000 pts</span>
-            <span class="mock-expiry__days">186 days</span>
-            <span class="mock-expiry__badge"><span class="badge badge--safe">Safe</span></span>
-          </div>
-          <div class="mock-expiry__row">
-            <span class="mock-expiry__program">Southwest RR</span>
-            <span class="mock-expiry__points">31,400 pts</span>
-            <span class="mock-expiry__days">340 days</span>
-            <span class="mock-expiry__badge"><span class="badge badge--safe">Safe</span></span>
-          </div>
-        </div>
+      <div class="feature-text" style="max-width: 680px;">
+        <span class="eyebrow">Nothing Expires by Surprise</span>
+        <h2>We watch the clock so you don't have to</h2>
+        <p>Every loyalty program has different expiration rules, and they're not designed to be easy to follow. RedeemFlow tracks all of them and sends you a heads-up while you still have time. Sometimes all it takes is one small purchase to save points worth hundreds of dollars.</p>
+        <a href="#waitlist" class="cta-link">Protect what you've earned <span aria-hidden="true">&rarr;</span></a>
       </div>
     </div>
   </section>
@@ -1908,22 +1377,22 @@
   <section class="section section--secondary section--light fade-in" id="how-it-works">
     <div class="container">
       <span class="eyebrow">How It Works</span>
-      <h2 style="margin-bottom: 48px;">Three steps. Less rewards work.</h2>
+      <h2 style="margin-bottom: 48px;">Three steps. Five minutes.</h2>
       <div class="steps">
         <div class="step fade-in">
           <div class="step__number" aria-hidden="true">01</div>
-          <h3>Connect your programs</h3>
-          <p>Link your loyalty accounts in two minutes. RedeemFlow pulls your balances, expiration dates, and transfer options so everything is in one place for the first time.</p>
+          <h3>Connect your accounts</h3>
+          <p>Link your airline, hotel, and credit card loyalty programs. RedeemFlow pulls your balances and expiration dates into one place — takes about two minutes.</p>
         </div>
         <div class="step fade-in">
           <div class="step__number" aria-hidden="true">02</div>
-          <h3>See your best options</h3>
-          <p>RedeemFlow compares transfer paths, award charts, and current promotions across your programs. Every option is scored so you can see exactly which route stretches your points the furthest.</p>
+          <h3>See what your points are worth</h3>
+          <p>RedeemFlow shows you the real dollar value of your points and finds options you'd never find on your own — like a flight worth $4,000 using points you were about to cash in for $1,500.</p>
         </div>
         <div class="step fade-in">
           <div class="step__number" aria-hidden="true">03</div>
-          <h3>Redeem with confidence</h3>
-          <p>Review the recommendation, confirm the transfer, and book. You stay in control — RedeemFlow shows you the path, and you decide when to take it.</p>
+          <h3>Book when you're ready</h3>
+          <p>Pick the option that works for you and book it. RedeemFlow never moves your points or makes decisions for you — you're always in control.</p>
         </div>
       </div>
       <div style="text-align: center;">
@@ -1937,12 +1406,12 @@
     <div class="container">
       <div class="testimonial-grid">
         <div class="testimonial">
-          <p class="testimonial__quote">&ldquo;150,000 Chase UR points cashed out at 1.0 <abbr title="cents per point">cpp</abbr> would be $1,500. Those same points transferred to Hyatt at 2.1 <abbr title="cents per point">cpp</abbr> are worth $3,150 in hotel stays. One transfer decision. Twice the vacation.&rdquo;</p>
-          <p class="testimonial__attr">Based on Chase and World of Hyatt published transfer rates</p>
+          <p class="testimonial__quote">&ldquo;I was about to cash in 150,000 credit card points for a $1,500 statement credit. RedeemFlow showed me those same points could cover $3,150 in hotel stays. One decision. Twice the vacation.&rdquo;</p>
+          <p class="testimonial__attr">Illustrative example based on published program rates</p>
         </div>
         <div class="testimonial">
-          <p class="testimonial__quote">&ldquo;48,000 Hilton Honors points, 30 days from vanishing. One dinner out resets the expiration clock. The cost of that meal saved $240&ndash;$480 in hotel nights.&rdquo;</p>
-          <p class="testimonial__attr">Based on Hilton Honors expiration policy (24 months of inactivity)</p>
+          <p class="testimonial__quote">&ldquo;48,000 hotel points, 30 days from expiring. A $40 dinner was all it took to reset the clock and save $240&ndash;$480 in future hotel nights. I never would have known without the alert.&rdquo;</p>
+          <p class="testimonial__attr">Based on published program expiration policies</p>
         </div>
       </div>
     </div>
@@ -1986,7 +1455,7 @@
           </button>
           <div class="faq-item__answer" id="faq-answer-3" role="region">
             <div class="faq-item__answer-inner">
-              A travel agent books one trip at a time. RedeemFlow looks at all your points across every program and finds transfer paths that protect and stretch your value — paths you would never find by searching each program individually. At $149/year instead of $200+ per booking with a concierge, it pays for itself with the first trip.
+              A travel agent books one trip at a time. RedeemFlow looks at all your points across every program and finds better ways to use them — options you would never find by searching each program individually. At $149/year instead of $200+ per booking with a concierge, it pays for itself with the first trip.
             </div>
           </div>
         </div>
@@ -2010,7 +1479,7 @@
           </button>
           <div class="faq-item__answer" id="faq-answer-5" role="region">
             <div class="faq-item__answer-inner">
-              Seeing your balances and getting expiration alerts is free. The full experience — transfer path analysis, deal alerts, and calendar sync — is $149 per year. Most people recover that value on their very first trip.
+              Seeing your balances and getting expiration alerts is free. The full experience — smart recommendations, deal alerts, and calendar sync — is $149 per year. Most people recover that value on their very first trip.
             </div>
           </div>
         </div>
@@ -2067,9 +1536,8 @@
       <ol>
         <li id="cite-1"><strong>$10B+ in unredeemed loyalty points annually.</strong> Antavo Global Customer Loyalty Report 2026: 26.2% of loyalty points go unspent, 11.9% expire. Applied to estimated $40B+ in annual points issuance. <a href="https://antavo.com/global-customer-loyalty-report/" target="_blank" rel="noopener">antavo.com/global-customer-loyalty-report</a></li>
         <li id="cite-2"><strong>16+ loyalty programs per American.</strong> Bond Brand Loyalty Report: average of 16.7 memberships per US consumer. Statista (2023) independently estimates ~18. We use the conservative figure. <a href="https://www.bondbrandloyalty.com/the-loyalty-report" target="_blank" rel="noopener">bondbrandloyalty.com/the-loyalty-report</a></li>
-        <li id="cite-3"><strong>3x value unlocked.</strong> Derived from the difference between baseline cash-out rates (0.6&ndash;1.0 <abbr title="cents per point">cpp</abbr>) and optimized transfer redemption rates (1.8&ndash;3.0 <abbr title="cents per point">cpp</abbr>) across Chase UR, Amex MR, and major airline programs. Based on published award charts and transfer partner valuations from The Points Guy and Frequent Miler.</li>
+        <li id="cite-3"><strong>2&ndash;3x more from the same points.</strong> Based on the difference between typical cash-out values and travel redemption values across major credit card, airline, and hotel programs. Sources include published program rates and independent valuations from The Points Guy and Frequent Miler.</li>
         <li id="cite-4"><strong>$3,400 per year in unredeemed points.</strong> Formula: $10B annual waste &divide; ~2.94M US households with 200K+ combined points (estimated from Bond and Federal Reserve payment studies). This figure represents the addressable segment, not the average across all consumers.</li>
-        <li id="cite-5"><strong>cpp methodology.</strong> Cents-per-point values shown in the dashboard preview represent median redemption values calculated across available saver-level award inventory for the trailing 90 days. Sources include published award charts, transfer partner ratios, and availability data from Seats.aero and individual airline/hotel booking engines.</li>
       </ol>
     </div>
   </section>

@@ -8,7 +8,7 @@ import httpx
 import pytest
 
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def base_url() -> str:
     """Base URL for e2e tests. Defaults to local TestClient, override with E2E_BASE_URL."""
     return os.environ.get("E2E_BASE_URL", "http://testserver")

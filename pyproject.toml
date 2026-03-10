@@ -50,6 +50,7 @@ markers = [
     "smoke: post-deploy health checks against live URL",
     "e2e: end-to-end user workflow tests",
     "live: needs live infrastructure",
+    "playwright: browser-based tests requiring Playwright",
 ]
 
 [tool.ruff]
@@ -69,7 +70,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["S101", "S105", "S106"]
+"tests/**" = ["S101", "S105", "S106", "S108", "S603"]
 "landing/server.py" = ["E501"]
 
 [tool.coverage.run]

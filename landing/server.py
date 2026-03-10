@@ -119,6 +119,9 @@ if IMG_DIR.is_dir():
 JS_FILE = Path(__file__).resolve().parent / "app.js"
 _JS_EXISTS = JS_FILE.exists()
 
+CSS_FILE = Path(__file__).resolve().parent / "style.css"
+_CSS_EXISTS = CSS_FILE.exists()
+
 
 @app.get("/app.js")
 async def app_js():
@@ -126,6 +129,17 @@ async def app_js():
         return FileResponse(
             str(JS_FILE),
             media_type="application/javascript",
+            headers={"Cache-Control": "public, max-age=3600"},
+        )
+    return PlainTextResponse("", status_code=404)
+
+
+@app.get("/style.css")
+async def style_css():
+    if _CSS_EXISTS:
+        return FileResponse(
+            str(CSS_FILE),
+            media_type="text/css",
             headers={"Cache-Control": "public, max-age=3600"},
         )
     return PlainTextResponse("", status_code=404)

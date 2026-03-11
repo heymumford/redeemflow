@@ -3891,6 +3891,20 @@
         }
       }
     },
+    "/api/notifications/expiration-alerts": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
     "/api/notifications/preferences": {
       "get": {
         "responses": {

@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
+from redeemflow.notifications.expiration_alerts import check_portfolio_expirations
 from redeemflow.notifications.preferences import (
     NotificationChannel,
     NotificationFrequency,
@@ -140,6 +141,39 @@ def update_alert(alert_type: str, body: AlertToggle, user: User = Depends(get_cu
             "channels": [c.value for c in updated.channels],
             "muted": updated.muted,
         }
+    }
+
+
+@router.get("/api/notifications/expiration-alerts")
+def expiration_alerts(user: User = Depends(get_current_user)):
+    """Get expiration alerts for the user's portfolio."""
+    from redeemflow.portfolio.awardwallet import FakeAwardWalletAdapter
+
+    fetcher = FakeAwardWalletAdapter()
+    balances = fetcher.fetch_balances(user.id)
+    summary = check_portfolio_expirations(balances)
+    return {
+        "total_programs_at_risk": summary.total_programs_at_risk,
+        "total_points_at_risk": summary.total_points_at_risk,
+        "total_value_at_risk": str(summary.total_value_at_risk),
+        "critical_count": summary.critical_count,
+        "warning_count": summary.warning_count,
+        "watch_count": summary.watch_count,
+        "highest_priority": summary.highest_priority.value,
+        "notifications": [
+            {
+                "notification_id": n.notification_id,
+                "program_code": n.program_code,
+                "points_at_risk": n.points_at_risk,
+                "estimated_value": str(n.estimated_value),
+                "days_remaining": n.days_remaining,
+                "priority": n.priority.value,
+                "title": n.title,
+                "message": n.message,
+                "actions": n.actions,
+            }
+            for n in summary.notifications
+        ],
     }
 
 

@@ -19,6 +19,7 @@ from redeemflow.search.conference_planner import WOMEN_CONFERENCES, ConferencePl
 from redeemflow.search.filters import SearchFilters, SortDirection, SortField, apply_filters, search_summary
 from redeemflow.search.safety_scores import FakeSafetyDataProvider
 from redeemflow.search.sweet_spots import SweetSpotCategory, ValueRating, find_sweet_spots
+from redeemflow.search.trip_comparison import RedemptionOption, compare_options, rank_options
 from redeemflow.search.trip_planner import build_trip_from_segments, get_trip, get_trips, next_trip_id, save_trip
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
 
@@ -340,6 +341,82 @@ def list_sweet_spots(
             }
             for s in spots
         ],
+    }
+
+
+class TripCompareOptionInput(BaseModel):
+    program_code: str
+    program_name: str
+    points_required: int
+    cash_price: str
+    cpp: str
+    cabin_class: str = "economy"
+    stops: int = 0
+    transfer_required: bool = False
+    transfer_from: str = ""
+    availability: str = "available"
+
+
+class TripCompareRequest(BaseModel):
+    route: str
+    options: list[TripCompareOptionInput]
+
+
+@router.post("/api/trip-compare")
+def trip_compare(req: TripCompareRequest, user: User = Depends(get_current_user)):
+    """Compare redemption options for the same route side-by-side."""
+    from decimal import Decimal
+
+    if not req.options:
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(status_code=400, content={"detail": "At least one option is required"})
+
+    options = [
+        RedemptionOption(
+            program_code=o.program_code,
+            program_name=o.program_name,
+            points_required=o.points_required,
+            cash_price=Decimal(o.cash_price),
+            cpp=Decimal(o.cpp),
+            cabin_class=o.cabin_class,
+            route=req.route,
+            stops=o.stops,
+            transfer_required=o.transfer_required,
+            transfer_from=o.transfer_from,
+            availability=o.availability,
+        )
+        for o in req.options
+    ]
+
+    result = compare_options(req.route, options)
+    ranked = rank_options(options)
+
+    return {
+        "route": result.route,
+        "best_value": {
+            "program_code": result.best_value.program_code,
+            "program_name": result.best_value.program_name,
+            "cpp": str(result.best_value.cpp),
+        },
+        "cheapest_points": {
+            "program_code": result.cheapest_points.program_code,
+            "points_required": result.cheapest_points.points_required,
+        },
+        "value_spread": str(result.value_spread),
+        "options": [
+            {
+                "program_code": o.program_code,
+                "program_name": o.program_name,
+                "points_required": o.points_required,
+                "cash_price": str(o.cash_price),
+                "cpp": str(o.cpp),
+                "cabin_class": o.cabin_class,
+                "availability": o.availability,
+            }
+            for o in result.options
+        ],
+        "rankings": ranked,
     }
 
 

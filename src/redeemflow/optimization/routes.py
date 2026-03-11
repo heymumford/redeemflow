@@ -13,6 +13,7 @@ from pydantic import BaseModel
 from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
 from redeemflow.notifications.alerts import AlertEngine
+from redeemflow.optimization.booking_optimizer import analyze_booking
 from redeemflow.optimization.graph import TransferGraph
 from redeemflow.optimization.graph_analytics import (
     find_transfer_bonuses,
@@ -44,6 +45,14 @@ def _build_graph() -> TransferGraph:
 
 _GRAPH = _build_graph()
 _FETCHER = FakeAwardWalletAdapter()
+
+
+class BookingAnalysisRequest(BaseModel):
+    cash_price: float
+    points_price: int
+    program_code: str
+    available_points: int = 0
+    transfers: list[dict] = []
 
 
 class TimingAdviceRequest(BaseModel):
@@ -303,5 +312,50 @@ def efficient_paths(req: PathSearchRequest):
                 "efficiency_score": str(p.efficiency_score),
             }
             for p in paths
+        ],
+    }
+
+
+@router.post("/api/booking-analysis")
+def booking_analysis(req: BookingAnalysisRequest, user: User = Depends(get_current_user)):
+    """Analyze booking payment options: points vs cash vs mix."""
+    val = PROGRAM_VALUATIONS.get(req.program_code)
+    if val is None:
+        return {"error": f"Unknown program: {req.program_code}"}
+
+    result = analyze_booking(
+        cash_price=Decimal(str(req.cash_price)),
+        points_price=req.points_price,
+        program_code=req.program_code,
+        program_cpp=val.median_cpp,
+        available_points=req.available_points,
+        transfer_options=req.transfers if req.transfers else None,
+    )
+
+    return {
+        "cash_price": str(result.cash_price),
+        "recommendation": {
+            "method": result.recommended.method.value,
+            "points_cost": result.recommended.points_cost,
+            "cash_cost": str(result.recommended.cash_cost),
+            "effective_cpp": str(result.recommended.effective_cpp),
+            "value_score": str(result.recommended.value_score),
+            "description": result.recommended.description,
+            "savings_vs_cash": str(result.recommended.savings_vs_cash),
+        },
+        "reason": result.recommendation_reason,
+        "options": [
+            {
+                "method": o.method.value,
+                "points_cost": o.points_cost,
+                "cash_cost": str(o.cash_cost),
+                "effective_cpp": str(o.effective_cpp),
+                "value_score": str(o.value_score),
+                "program_code": o.program_code,
+                "description": o.description,
+                "is_recommended": o.is_recommended,
+                "savings_vs_cash": str(o.savings_vs_cash),
+            }
+            for o in result.options
         ],
     }

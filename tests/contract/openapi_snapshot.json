@@ -128,6 +128,43 @@
         "title": "BalanceResponse",
         "type": "object"
       },
+      "BookingAnalysisRequest": {
+        "properties": {
+          "available_points": {
+            "default": 0,
+            "title": "Available Points",
+            "type": "integer"
+          },
+          "cash_price": {
+            "title": "Cash Price",
+            "type": "number"
+          },
+          "points_price": {
+            "title": "Points Price",
+            "type": "integer"
+          },
+          "program_code": {
+            "title": "Program Code",
+            "type": "string"
+          },
+          "transfers": {
+            "default": [],
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Transfers",
+            "type": "array"
+          }
+        },
+        "required": [
+          "cash_price",
+          "points_price",
+          "program_code"
+        ],
+        "title": "BookingAnalysisRequest",
+        "type": "object"
+      },
       "BuyAnalysisRequest": {
         "properties": {
           "points": {
@@ -1773,6 +1810,40 @@
               }
             },
             "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/booking-analysis": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookingAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         }
       }

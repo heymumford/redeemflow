@@ -10,8 +10,9 @@ from redeemflow.identity.models import User
 from redeemflow.notifications.preferences import (
     NotificationChannel,
     NotificationFrequency,
-    default_preferences,
+    get_notification_prefs,
     should_notify,
+    update_alert_preference,
 )
 
 router = APIRouter()
@@ -43,7 +44,7 @@ class PreferencesUpdate(BaseModel):
 @router.get("/api/notifications/preferences")
 def get_preferences(user: User = Depends(get_current_user)):
     """Get user's notification preferences."""
-    prefs = default_preferences(user.id)
+    prefs = get_notification_prefs(user.id)
     return {
         "user_id": prefs.user_id,
         "channels": {
@@ -71,7 +72,7 @@ def get_preferences(user: User = Depends(get_current_user)):
 @router.post("/api/notifications/preferences")
 def update_preferences(update: PreferencesUpdate, user: User = Depends(get_current_user)):
     """Update user's notification preferences."""
-    prefs = default_preferences(user.id)
+    prefs = get_notification_prefs(user.id)
 
     if update.channels:
         for ch in update.channels:
@@ -92,10 +93,60 @@ def update_preferences(update: PreferencesUpdate, user: User = Depends(get_curre
     return {"status": "updated", "user_id": user.id}
 
 
+class ChannelToggle(BaseModel):
+    enabled: bool
+
+
+class AlertToggle(BaseModel):
+    muted: bool = False
+    channels: list[str] | None = None
+
+
+@router.put("/api/notifications/preferences/channel/{channel_name}")
+def update_channel(channel_name: str, body: ChannelToggle, user: User = Depends(get_current_user)):
+    """Enable/disable a notification channel."""
+    prefs = get_notification_prefs(user.id)
+    if channel_name not in prefs.channels:
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(status_code=400, content={"detail": f"Unknown channel: {channel_name}"})
+    prefs.channels[channel_name].enabled = body.enabled
+    cp = prefs.channels[channel_name]
+    return {
+        "channel": {
+            "name": channel_name,
+            "enabled": cp.enabled,
+            "frequency": cp.frequency.value,
+        }
+    }
+
+
+@router.put("/api/notifications/preferences/alert/{alert_type}")
+def update_alert(alert_type: str, body: AlertToggle, user: User = Depends(get_current_user)):
+    """Update preferences for a specific alert type."""
+    prefs = get_notification_prefs(user.id)
+    channels = None
+    if body.channels is not None:
+        channels = []
+        for ch in body.channels:
+            try:
+                channels.append(NotificationChannel(ch))
+            except ValueError:
+                pass
+    updated = update_alert_preference(prefs, alert_type, channels=channels, muted=body.muted)
+    return {
+        "alert": {
+            "alert_type": updated.alert_type,
+            "channels": [c.value for c in updated.channels],
+            "muted": updated.muted,
+        }
+    }
+
+
 @router.get("/api/notifications/check/{alert_type}/{channel}")
 def check_notification(alert_type: str, channel: str, user: User = Depends(get_current_user)):
     """Check if a notification should be sent for this alert type on this channel."""
-    prefs = default_preferences(user.id)
+    prefs = get_notification_prefs(user.id)
     try:
         ch = NotificationChannel(channel)
     except ValueError:

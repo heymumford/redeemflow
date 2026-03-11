@@ -58,6 +58,31 @@
         "title": "AlertPreferenceUpdate",
         "type": "object"
       },
+      "AlertToggle": {
+        "properties": {
+          "channels": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channels"
+          },
+          "muted": {
+            "default": false,
+            "title": "Muted",
+            "type": "boolean"
+          }
+        },
+        "title": "AlertToggle",
+        "type": "object"
+      },
       "AwardSearchRequest": {
         "properties": {
           "cabin": {
@@ -340,6 +365,19 @@
           "monthly_spend"
         ],
         "title": "CardRecommendRequest",
+        "type": "object"
+      },
+      "ChannelToggle": {
+        "properties": {
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "enabled"
+        ],
+        "title": "ChannelToggle",
         "type": "object"
       },
       "ChannelUpdate": {
@@ -3650,6 +3688,96 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/PreferencesUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/notifications/preferences/alert/{alert_type}": {
+      "put": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alert_type",
+            "required": true,
+            "schema": {
+              "title": "Alert Type",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AlertToggle"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/notifications/preferences/channel/{channel_name}": {
+      "put": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "channel_name",
+            "required": true,
+            "schema": {
+              "title": "Channel Name",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChannelToggle"
               }
             }
           },

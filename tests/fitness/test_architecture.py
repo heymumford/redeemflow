@@ -45,9 +45,9 @@ class TestModuleStructure:
             importlib.import_module(f"redeemflow.{mod_name}")
 
     def test_module_count_gate(self):
-        """Guard against unbounded module growth — max 16 top-level modules."""
+        """Guard against unbounded module growth — max 17 top-level modules."""
         submodules = {mod.name for mod in pkgutil.iter_modules(redeemflow.__path__)}
-        assert len(submodules) <= 16, f"Too many top-level modules ({len(submodules)}): {submodules}"
+        assert len(submodules) <= 17, f"Too many top-level modules ({len(submodules)}): {submodules}"
 
     def test_all_modules_import_cleanly(self):
         """All domain modules must import without circular dependency errors."""

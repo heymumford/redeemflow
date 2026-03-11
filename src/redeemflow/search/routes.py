@@ -18,6 +18,7 @@ from redeemflow.search.award_search import AwardSearchProvider, FakeAwardSearchP
 from redeemflow.search.conference_planner import WOMEN_CONFERENCES, ConferencePlanner
 from redeemflow.search.filters import SearchFilters, SortDirection, SortField, apply_filters, search_summary
 from redeemflow.search.safety_scores import FakeSafetyDataProvider
+from redeemflow.search.saved_searches import SearchCriteria, get_saved_search_store
 from redeemflow.search.seasonal_pricing import seasonal_advisory
 from redeemflow.search.sweet_spots import SweetSpotCategory, ValueRating, find_sweet_spots
 from redeemflow.search.trip_comparison import RedemptionOption, compare_options, rank_options
@@ -529,6 +530,92 @@ def get_trip_detail(trip_id: str, user: User = Depends(get_current_user)):
             }
             for s in summary.segments
         ],
+    }
+
+
+# ---------------------------------------------------------------------------
+# Trip sharing endpoints
+# ---------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Saved searches endpoints
+# ---------------------------------------------------------------------------
+
+
+class SaveSearchRequest(BaseModel):
+    name: str
+    origin: str
+    destination: str
+    cabin: str = "economy"
+    programs: list[str] = []
+    max_points: int | None = None
+    direct_only: bool = False
+    alert_on_change: bool = False
+
+
+@router.post("/api/saved-searches")
+def save_search(req: SaveSearchRequest, user: User = Depends(get_current_user)):
+    """Save search criteria for later replay."""
+    store = get_saved_search_store()
+    criteria = SearchCriteria(
+        origin=req.origin,
+        destination=req.destination,
+        cabin=req.cabin,
+        programs=req.programs,
+        max_points=req.max_points,
+        direct_only=req.direct_only,
+    )
+    saved = store.save(user.id, req.name, criteria, alert_on_change=req.alert_on_change)
+    return {
+        "search_id": saved.search_id,
+        "name": saved.name,
+        "created_at": saved.created_at,
+        "criteria": {
+            "origin": saved.criteria.origin,
+            "destination": saved.criteria.destination,
+            "cabin": saved.criteria.cabin,
+        },
+    }
+
+
+@router.get("/api/saved-searches")
+def list_saved_searches(user: User = Depends(get_current_user)):
+    """List all saved searches for the current user."""
+    store = get_saved_search_store()
+    searches = store.list_searches(user.id)
+    return {
+        "searches": [
+            {
+                "search_id": s.search_id,
+                "name": s.name,
+                "origin": s.criteria.origin,
+                "destination": s.criteria.destination,
+                "cabin": s.criteria.cabin,
+                "run_count": s.run_count,
+                "last_run_at": s.last_run_at,
+                "alert_on_change": s.alert_on_change,
+            }
+            for s in searches
+        ],
+    }
+
+
+@router.delete("/api/saved-searches/{search_id}")
+def delete_saved_search(search_id: str, user: User = Depends(get_current_user)):
+    """Delete a saved search."""
+    store = get_saved_search_store()
+    deleted = store.delete(search_id, user.id)
+    if deleted is None:
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(status_code=404, content={"detail": "Search not found"})
+    return {
+        "search": {
+            "search_id": deleted.search_id,
+            "name": deleted.name,
+            "is_active": deleted.is_active,
+        },
     }
 
 

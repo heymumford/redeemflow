@@ -1,6 +1,37 @@
 {
   "components": {
     "schemas": {
+      "AddMemberRequest": {
+        "properties": {
+          "member_id": {
+            "title": "Member Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "programs": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Programs",
+            "type": "object"
+          },
+          "role": {
+            "default": "other",
+            "title": "Role",
+            "type": "string"
+          }
+        },
+        "required": [
+          "member_id",
+          "name"
+        ],
+        "title": "AddMemberRequest",
+        "type": "object"
+      },
       "AlertPreferenceUpdate": {
         "properties": {
           "alert_type": {
@@ -2556,6 +2587,89 @@
               "default": 100000,
               "title": "Points",
               "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/household": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/household/member": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddMemberRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/household/member/{member_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "member_id",
+            "required": true,
+            "schema": {
+              "title": "Member Id",
+              "type": "string"
             }
           }
         ],

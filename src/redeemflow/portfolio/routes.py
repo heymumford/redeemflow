@@ -13,6 +13,15 @@ from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
 from redeemflow.portfolio.calendar import build_calendar
 from redeemflow.portfolio.expiration import EXPIRATION_POLICIES
+from redeemflow.portfolio.goals import (
+    GoalCategory,
+    SavingsGoal,
+    add_goal,
+    get_goals,
+    next_goal_id,
+    summarize_goals,
+    update_goal_points,
+)
 from redeemflow.portfolio.household import HouseholdMember, get_or_create_household
 from redeemflow.portfolio.ports import PortfolioPort
 from redeemflow.recommendations.engine import RecommendationEngine
@@ -208,3 +217,90 @@ def remove_household_member(member_id: str, user: User = Depends(get_current_use
     household = get_or_create_household(user.id)
     removed = household.remove_member(member_id)
     return {"status": "removed" if removed else "not_found", "member_id": member_id}
+
+
+class CreateGoalRequest(BaseModel):
+    name: str
+    category: str = "custom"
+    program_code: str
+    target_points: int
+    current_points: int = 0
+    target_redemption: str = ""
+    estimated_value: float = 0
+    notes: str = ""
+
+
+class UpdateGoalPointsRequest(BaseModel):
+    current_points: int
+
+
+@router.get("/api/goals")
+def list_goals(user: User = Depends(get_current_user)):
+    """Get all savings goals with progress."""
+    goals = get_goals(user.id)
+    summary = summarize_goals(goals)
+    return {
+        "total_goals": summary.total_goals,
+        "active_goals": summary.active_goals,
+        "completed_goals": summary.completed_goals,
+        "overall_progress": str(summary.overall_progress),
+        "total_points_needed": summary.total_points_needed,
+        "total_points_saved": summary.total_points_saved,
+        "goals": [
+            {
+                "goal_id": p.goal.goal_id,
+                "name": p.goal.name,
+                "category": p.goal.category.value,
+                "program_code": p.goal.program_code,
+                "target_points": p.goal.target_points,
+                "current_points": p.goal.current_points,
+                "status": p.goal.status.value,
+                "target_redemption": p.goal.target_redemption,
+                "points_remaining": p.points_remaining,
+                "percent_complete": str(p.percent_complete),
+                "is_achievable": p.is_achievable,
+                "earning_rate_needed": p.earning_rate_needed,
+            }
+            for p in summary.goals
+        ],
+    }
+
+
+@router.post("/api/goals")
+def create_goal(req: CreateGoalRequest, user: User = Depends(get_current_user)):
+    """Create a new savings goal."""
+    from decimal import Decimal
+
+    try:
+        category = GoalCategory(req.category)
+    except ValueError:
+        category = GoalCategory.CUSTOM
+
+    goal_id = next_goal_id(user.id)
+    goal = SavingsGoal(
+        goal_id=goal_id,
+        name=req.name,
+        category=category,
+        program_code=req.program_code,
+        target_points=req.target_points,
+        current_points=req.current_points,
+        target_redemption=req.target_redemption,
+        estimated_value=Decimal(str(req.estimated_value)),
+        notes=req.notes,
+    )
+    add_goal(user.id, goal)
+    return {"status": "created", "goal_id": goal_id}
+
+
+@router.put("/api/goals/{goal_id}/points")
+def update_points(goal_id: str, req: UpdateGoalPointsRequest, user: User = Depends(get_current_user)):
+    """Update progress on a goal."""
+    updated = update_goal_points(user.id, goal_id, req.current_points)
+    if updated is None:
+        return {"error": "Goal not found"}
+    return {
+        "status": "updated",
+        "goal_id": goal_id,
+        "current_points": updated.current_points,
+        "goal_status": updated.status.value,
+    }

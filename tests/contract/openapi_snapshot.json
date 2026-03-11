@@ -275,6 +275,54 @@
         "title": "ConferencePlanRequest",
         "type": "object"
       },
+      "CreateGoalRequest": {
+        "properties": {
+          "category": {
+            "default": "custom",
+            "title": "Category",
+            "type": "string"
+          },
+          "current_points": {
+            "default": 0,
+            "title": "Current Points",
+            "type": "integer"
+          },
+          "estimated_value": {
+            "default": 0,
+            "title": "Estimated Value",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "notes": {
+            "default": "",
+            "title": "Notes",
+            "type": "string"
+          },
+          "program_code": {
+            "title": "Program Code",
+            "type": "string"
+          },
+          "target_points": {
+            "title": "Target Points",
+            "type": "integer"
+          },
+          "target_redemption": {
+            "default": "",
+            "title": "Target Redemption",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "program_code",
+          "target_points"
+        ],
+        "title": "CreateGoalRequest",
+        "type": "object"
+      },
       "CreatePoolRequest": {
         "properties": {
           "goal_amount": {
@@ -1057,6 +1105,19 @@
           "balances"
         ],
         "title": "TravelerInput",
+        "type": "object"
+      },
+      "UpdateGoalPointsRequest": {
+        "properties": {
+          "current_points": {
+            "title": "Current Points",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "current_points"
+        ],
+        "title": "UpdateGoalPointsRequest",
         "type": "object"
       },
       "ValidationError": {
@@ -2448,6 +2509,97 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/goals": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        }
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateGoalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/goals/{goal_id}/points": {
+      "put": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "goal_id",
+            "required": true,
+            "schema": {
+              "title": "Goal Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateGoalPointsRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "content": {

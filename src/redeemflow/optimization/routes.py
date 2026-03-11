@@ -29,6 +29,7 @@ from redeemflow.optimization.hotel_transfers import assess_hotel_transfer, summa
 from redeemflow.optimization.multi_traveler import MultiTravelerOptimizer, Traveler
 from redeemflow.optimization.path_optimizer import find_efficient_paths, find_top_paths
 from redeemflow.optimization.personal_optimizer import PersonalOptimizer
+from redeemflow.optimization.points_calculator import break_even, project_earnings
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
 from redeemflow.optimization.timing_advisor import TimingAdvisor
 from redeemflow.portfolio.awardwallet import FakeAwardWalletAdapter
@@ -73,6 +74,64 @@ class TravelerInput(BaseModel):
 class MultiTravelerRequest(BaseModel):
     destination: str
     travelers: list[TravelerInput]
+
+
+class EarningsRequest(BaseModel):
+    program_code: str
+    monthly_spend: str
+    category: str = "other"
+    target_points: int = 0
+    existing_points: int = 0
+
+
+class BreakEvenRequest(BaseModel):
+    program_code: str
+    annual_fee: str
+    monthly_spend: str
+    category: str = "other"
+    cpp: str = "1.5"
+
+
+@router.post("/api/calculator/earnings")
+def calculator_earnings(req: EarningsRequest, user: User = Depends(get_current_user)):
+    """Project points earned from monthly spending."""
+    proj = project_earnings(
+        program_code=req.program_code,
+        monthly_spend=Decimal(req.monthly_spend),
+        category=req.category,
+        target_points=req.target_points,
+        existing_points=req.existing_points,
+    )
+    return {
+        "program_code": proj.program_code,
+        "monthly_spend": str(proj.monthly_spend),
+        "earn_rate": str(proj.earn_rate),
+        "monthly_points": proj.monthly_points,
+        "annual_points": proj.annual_points,
+        "months_to_target": proj.months_to_target,
+    }
+
+
+@router.post("/api/calculator/break-even")
+def calculator_break_even(req: BreakEvenRequest, user: User = Depends(get_current_user)):
+    """Analyze whether a card's annual fee is justified."""
+    result = break_even(
+        program_code=req.program_code,
+        annual_fee=Decimal(req.annual_fee),
+        monthly_spend=Decimal(req.monthly_spend),
+        category=req.category,
+        cpp=Decimal(req.cpp),
+    )
+    return {
+        "program_code": result.program_code,
+        "annual_fee": str(result.annual_fee),
+        "monthly_points_earned": result.monthly_points_earned,
+        "annual_points_earned": result.annual_points_earned,
+        "annual_value": str(result.annual_value),
+        "net_value": str(result.net_value),
+        "break_even_monthly_spend": str(result.break_even_monthly_spend),
+        "is_worth_it": result.is_worth_it,
+    }
 
 
 @router.post("/api/optimize")

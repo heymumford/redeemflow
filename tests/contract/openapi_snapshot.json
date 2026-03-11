@@ -1394,6 +1394,34 @@
     "version": "0.2.0"
   },
   "paths": {
+    "/api/achievements": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/achievements/me": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
     "/api/admin/audit": {
       "get": {
         "parameters": [

@@ -14,6 +14,7 @@ from pydantic import BaseModel, Field
 from redeemflow.optimization.graph import TransferGraph
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
 from redeemflow.valuations.aggregator import AggregationStrategy, aggregate_cpp, batch_aggregate
+from redeemflow.valuations.savings import analyze_savings
 from redeemflow.valuations.seed_data import CREDIT_CARDS, PROGRAM_VALUATIONS
 
 router = APIRouter()
@@ -184,6 +185,43 @@ def savings_analysis(req: SavingsRequest):
         "total_cash_back_value": str(total_cash),
         "total_opportunity_cost": str(total_travel - total_cash),
         "programs": programs,
+    }
+
+
+@router.post("/api/savings-dashboard")
+def savings_dashboard(req: SavingsRequest, strategy: str = "median"):
+    """Enhanced savings analysis with optimization hints and portfolio summary."""
+    try:
+        strat = AggregationStrategy(strategy)
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=f"Unknown strategy: {strategy}") from err
+
+    balances = {item.program: item.points for item in req.balances}
+    analysis = analyze_savings(balances, PROGRAM_VALUATIONS, strat)
+
+    return {
+        "total_points": analysis.total_points,
+        "total_travel_value": str(analysis.total_travel_value),
+        "total_cash_back_value": str(analysis.total_cash_back_value),
+        "total_opportunity_cost": str(analysis.total_opportunity_cost),
+        "weighted_avg_cpp": str(analysis.weighted_avg_cpp),
+        "best_program": analysis.best_program,
+        "worst_program": analysis.worst_program,
+        "strategy": strat.value,
+        "programs": [
+            {
+                "program_code": p.program_code,
+                "program_name": p.program_name,
+                "points": p.points,
+                "travel_value": str(p.travel_value),
+                "cash_back_value": str(p.cash_back_value),
+                "opportunity_cost": str(p.opportunity_cost),
+                "aggregated_cpp": str(p.aggregated_cpp),
+                "confidence": p.confidence,
+                "optimization_hint": p.optimization_hint,
+            }
+            for p in analysis.programs
+        ],
     }
 
 

@@ -2062,6 +2062,52 @@
         }
       }
     },
+    "/api/savings-dashboard": {
+      "post": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "strategy",
+            "required": false,
+            "schema": {
+              "default": "median",
+              "title": "Strategy",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SavingsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
     "/api/timing-advice": {
       "post": {
         "requestBody": {

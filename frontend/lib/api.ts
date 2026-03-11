@@ -88,6 +88,68 @@ export interface HealthResponse {
   dependencies: Record<string, string>;
 }
 
+export interface SweetSpot {
+  program: string;
+  program_name: string;
+  category: string;
+  description: string;
+  points_required: number;
+  cash_equivalent: string;
+  effective_cpp: string;
+  rating: string;
+  route: string | null;
+  cabin: string | null;
+}
+
+export interface SweetSpotsResponse {
+  count: number;
+  sweet_spots: SweetSpot[];
+}
+
+export interface GraphSummary {
+  total_programs: number;
+  total_partnerships: number;
+  hub_programs: string[];
+  isolated_programs: string[];
+  avg_connections: number;
+  densest_program: string;
+  density: number;
+}
+
+export interface ProgramConnectivity {
+  program: string;
+  outbound_partners: number;
+  inbound_partners: number;
+  total_connections: number;
+  is_hub: boolean;
+}
+
+export interface ValuationResponse {
+  program_code: string;
+  program_name: string;
+  aggregated_cpp: string;
+  strategy: string;
+  source_count: number;
+  confidence: string;
+}
+
+export interface QuizResult {
+  archetype: string;
+  description: string;
+  confidence: string;
+  scores: Record<string, number>;
+  recommendations: string[];
+}
+
+export interface PathResult {
+  route: string;
+  hops: number;
+  effective_cpp: string;
+  source_points_needed: number;
+  redemption: string;
+  efficiency_score: string;
+}
+
 // --- API methods ---
 
 export async function getPortfolio(): Promise<PortfolioResponse> {
@@ -113,4 +175,49 @@ export async function getSubscription(): Promise<SubscriptionResponse> {
 
 export async function getHealth(): Promise<HealthResponse> {
   return request<HealthResponse>("/health");
+}
+
+export async function getSweetSpots(
+  params?: { category?: string; min_rating?: string },
+): Promise<SweetSpotsResponse> {
+  const query = new URLSearchParams();
+  if (params?.category) query.set("category", params.category);
+  if (params?.min_rating) query.set("min_rating", params.min_rating);
+  const qs = query.toString();
+  return request<SweetSpotsResponse>(`/api/sweet-spots${qs ? `?${qs}` : ""}`);
+}
+
+export async function getGraphSummary(): Promise<GraphSummary> {
+  return request<GraphSummary>("/api/graph/summary");
+}
+
+export async function getProgramConnectivity(
+  program: string,
+): Promise<ProgramConnectivity> {
+  return request<ProgramConnectivity>(`/api/graph/connectivity/${program}`);
+}
+
+export async function getValuation(
+  program: string,
+): Promise<ValuationResponse> {
+  return request<ValuationResponse>(`/api/valuations/${program}`);
+}
+
+export async function submitQuiz(
+  answers: Record<string, string | boolean>,
+): Promise<{ result: QuizResult }> {
+  return request<{ result: QuizResult }>("/api/strategy-quiz", {
+    method: "POST",
+    body: JSON.stringify(answers),
+  });
+}
+
+export async function getTopPaths(
+  program: string,
+  points: number,
+): Promise<{ paths: PathResult[] }> {
+  return request<{ paths: PathResult[] }>("/api/paths/top", {
+    method: "POST",
+    body: JSON.stringify({ program, points }),
+  });
 }

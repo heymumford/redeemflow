@@ -13,6 +13,7 @@ from pydantic import BaseModel
 
 from redeemflow.billing.models import SubscriptionTier
 from redeemflow.billing.stripe_adapter import PaymentProvider, StripeAdapter
+from redeemflow.billing.webhook_processor import WebhookEventLog, process_webhook_event
 from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
 
@@ -21,6 +22,12 @@ router = APIRouter()
 
 def get_payment_provider(request: Request) -> PaymentProvider:
     return request.app.state.payment_provider
+
+
+def get_webhook_log(request: Request) -> WebhookEventLog:
+    if not hasattr(request.app.state, "webhook_event_log"):
+        request.app.state.webhook_event_log = WebhookEventLog()
+    return request.app.state.webhook_event_log
 
 
 class SubscribeRequest(BaseModel):
@@ -136,6 +143,68 @@ async def stripe_webhook(
         return result
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Webhook verification failed: {e}") from e
+
+
+class IdempotentWebhookRequest(BaseModel):
+    event_id: str
+    event_type: str
+    source: str = "stripe"
+    data: dict[str, Any] = {}
+
+
+@router.post("/api/billing/webhook/idempotent")
+def idempotent_webhook(
+    req: IdempotentWebhookRequest,
+    provider: PaymentProvider = Depends(get_payment_provider),
+    event_log: WebhookEventLog = Depends(get_webhook_log),
+):
+    """Process webhook with idempotency — duplicate events return original result."""
+    result = process_webhook_event(
+        event_log=event_log,
+        handler=provider,
+        event_id=req.event_id,
+        event_type=req.event_type,
+        source=req.source,
+        payload=req.data,
+    )
+    return result
+
+
+@router.get("/api/billing/webhook/events")
+def list_webhook_events(
+    status: str | None = None,
+    source: str | None = None,
+    limit: int = 50,
+    user: User = Depends(get_current_user),
+    event_log: WebhookEventLog = Depends(get_webhook_log),
+):
+    """List webhook events — admin endpoint for observability."""
+    from redeemflow.billing.webhook_processor import WebhookEventStatus
+
+    status_filter = None
+    if status is not None:
+        try:
+            status_filter = WebhookEventStatus(status)
+        except ValueError:
+            return {"error": f"Invalid status: {status}"}
+
+    events = event_log.list_events(status=status_filter, source=source, limit=limit)
+    return {
+        "events": [
+            {
+                "event_id": e.event_id,
+                "event_type": e.event_type,
+                "source": e.source,
+                "status": e.status.value,
+                "received_at": e.received_at,
+                "processed_at": e.processed_at,
+                "error_message": e.error_message,
+            }
+            for e in events
+        ],
+        "total": event_log.total_count,
+        "processed": event_log.processed_count,
+    }
 
 
 @router.get("/api/billing/subscription")

@@ -190,6 +190,39 @@
         "title": "BookingAnalysisRequest",
         "type": "object"
       },
+      "BreakEvenRequest": {
+        "properties": {
+          "annual_fee": {
+            "title": "Annual Fee",
+            "type": "string"
+          },
+          "category": {
+            "default": "other",
+            "title": "Category",
+            "type": "string"
+          },
+          "cpp": {
+            "default": "1.5",
+            "title": "Cpp",
+            "type": "string"
+          },
+          "monthly_spend": {
+            "title": "Monthly Spend",
+            "type": "string"
+          },
+          "program_code": {
+            "title": "Program Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "program_code",
+          "annual_fee",
+          "monthly_spend"
+        ],
+        "title": "BreakEvenRequest",
+        "type": "object"
+      },
       "BudgetPlanRequest": {
         "properties": {
           "current_balances": {
@@ -640,6 +673,39 @@
           "charity_state"
         ],
         "title": "DonateRequest",
+        "type": "object"
+      },
+      "EarningsRequest": {
+        "properties": {
+          "category": {
+            "default": "other",
+            "title": "Category",
+            "type": "string"
+          },
+          "existing_points": {
+            "default": 0,
+            "title": "Existing Points",
+            "type": "integer"
+          },
+          "monthly_spend": {
+            "title": "Monthly Spend",
+            "type": "string"
+          },
+          "program_code": {
+            "title": "Program Code",
+            "type": "string"
+          },
+          "target_points": {
+            "default": 0,
+            "title": "Target Points",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "program_code",
+          "monthly_spend"
+        ],
+        "title": "EarningsRequest",
         "type": "object"
       },
       "FeeAnalysisRequest": {
@@ -2184,6 +2250,74 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CalculateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/calculator/break-even": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BreakEvenRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/calculator/earnings": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EarningsRequest"
               }
             }
           },

@@ -39,6 +39,7 @@ from redeemflow.optimization.routes import router as optimization_router
 from redeemflow.portfolio.fake_adapter import FakeBalanceFetcher
 from redeemflow.portfolio.routes import router as portfolio_router
 from redeemflow.ports import PortBundle
+from redeemflow.redemptions.routes import router as redemptions_router
 from redeemflow.search.routes import router as search_router
 from redeemflow.valuations.routes import router as valuations_router
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
@@ -209,7 +210,7 @@ def create_app(ports: PortBundle | None = None) -> FastAPI:
     app.add_middleware(SlowAPIMiddleware)
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-    # --- Routers (all 7 route groups) ---
+    # --- Routers (all 8 route groups) ---
     app.include_router(valuations_router)
     app.include_router(billing_router)
     app.include_router(charity_router)
@@ -217,6 +218,7 @@ def create_app(ports: PortBundle | None = None) -> FastAPI:
     app.include_router(search_router)
     app.include_router(community_router)
     app.include_router(portfolio_router)
+    app.include_router(redemptions_router)
 
     # --- Adapter factory ---
     # When ports is provided (testing), use its adapters directly.

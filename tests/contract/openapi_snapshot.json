@@ -1305,6 +1305,85 @@
         "title": "TravelerInput",
         "type": "object"
       },
+      "TripCompareOptionInput": {
+        "properties": {
+          "availability": {
+            "default": "available",
+            "title": "Availability",
+            "type": "string"
+          },
+          "cabin_class": {
+            "default": "economy",
+            "title": "Cabin Class",
+            "type": "string"
+          },
+          "cash_price": {
+            "title": "Cash Price",
+            "type": "string"
+          },
+          "cpp": {
+            "title": "Cpp",
+            "type": "string"
+          },
+          "points_required": {
+            "title": "Points Required",
+            "type": "integer"
+          },
+          "program_code": {
+            "title": "Program Code",
+            "type": "string"
+          },
+          "program_name": {
+            "title": "Program Name",
+            "type": "string"
+          },
+          "stops": {
+            "default": 0,
+            "title": "Stops",
+            "type": "integer"
+          },
+          "transfer_from": {
+            "default": "",
+            "title": "Transfer From",
+            "type": "string"
+          },
+          "transfer_required": {
+            "default": false,
+            "title": "Transfer Required",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "program_code",
+          "program_name",
+          "points_required",
+          "cash_price",
+          "cpp"
+        ],
+        "title": "TripCompareOptionInput",
+        "type": "object"
+      },
+      "TripCompareRequest": {
+        "properties": {
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/TripCompareOptionInput"
+            },
+            "title": "Options",
+            "type": "array"
+          },
+          "route": {
+            "title": "Route",
+            "type": "string"
+          }
+        },
+        "required": [
+          "route",
+          "options"
+        ],
+        "title": "TripCompareRequest",
+        "type": "object"
+      },
       "UpdateGoalPointsRequest": {
         "properties": {
           "current_points": {
@@ -4568,6 +4647,40 @@
             }
           }
         ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/trip-compare": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TripCompareRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "content": {

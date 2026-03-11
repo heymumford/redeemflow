@@ -172,19 +172,3 @@ class TestOpenApiSnapshot:
                 if method in ("get", "post", "put", "delete", "patch"):
                     endpoint_count += 1
         assert endpoint_count >= 25, f"Only {endpoint_count} endpoints — expected at least 25"
-
-
-def pytest_addoption(parser):
-    """Add --snapshot-update flag."""
-    parser.addoption("--snapshot-update", action="store_true", default=False, help="Update OpenAPI snapshot")
-
-
-@pytest.fixture(autouse=True)
-def _update_snapshot_if_requested(request):
-    """When --snapshot-update is passed, write the new snapshot."""
-    yield
-    if request.config.getoption("--snapshot-update", default=False):
-        app = create_app()
-        schema = app.openapi()
-        normalized = _normalize_schema(schema)
-        _save_snapshot(normalized)

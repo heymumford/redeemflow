@@ -1,7 +1,7 @@
 """Portfolio API — balance retrieval and sync endpoints.
 
 Beck: Thin routes that delegate to the PortfolioPort adapter.
-Fowler: Adapter injected via app.state, never hard-wired.
+Fowler: Adapter injected via app.state, resolved through Depends.
 """
 
 from __future__ import annotations
@@ -20,7 +20,7 @@ _rec_engine = RecommendationEngine()
 
 
 def _get_portfolio_port(request: Request) -> PortfolioPort:
-    """Get the portfolio adapter from app state."""
+    """Resolve the portfolio adapter from app state."""
     return request.app.state.portfolio_port
 
 
@@ -57,10 +57,9 @@ class RecommendationsResponse(BaseModel):
 
 @router.get("/api/portfolio")
 def portfolio(
-    request: Request,
     user: User = Depends(get_current_user),
+    port: PortfolioPort = Depends(_get_portfolio_port),
 ) -> PortfolioResponse:
-    port = _get_portfolio_port(request)
     balances = port.fetch_balances(user.id)
     return PortfolioResponse(
         balances=[
@@ -77,10 +76,9 @@ def portfolio(
 
 @router.get("/api/recommendations")
 def recommendations(
-    request: Request,
     user: User = Depends(get_current_user),
+    port: PortfolioPort = Depends(_get_portfolio_port),
 ) -> RecommendationsResponse:
-    port = _get_portfolio_port(request)
     balances = port.fetch_balances(user.id)
     recs = _rec_engine.recommend(balances)
     return RecommendationsResponse(
@@ -99,10 +97,9 @@ def recommendations(
 
 @router.post("/api/portfolio/sync")
 def sync_portfolio(
-    request: Request,
     user: User = Depends(get_current_user),
+    port: PortfolioPort = Depends(_get_portfolio_port),
 ) -> SyncResponse:
-    port = _get_portfolio_port(request)
     result = port.sync(user.id)
     return SyncResponse(
         user_id=result.user_id,

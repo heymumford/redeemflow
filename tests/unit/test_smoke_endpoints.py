@@ -9,13 +9,19 @@ from __future__ import annotations
 from fastapi.testclient import TestClient
 
 from redeemflow.app import create_app
+from redeemflow.ports import PortBundle
+
+
+def _make_client() -> TestClient:
+    """Create a deterministic test client using fake adapters."""
+    return TestClient(create_app(ports=PortBundle()))
 
 
 class TestHealthSmoke:
     """Health endpoint returns 200 with correct structure."""
 
     def setup_method(self):
-        self.client = TestClient(create_app())
+        self.client = _make_client()
 
     def test_health_returns_200(self):
         response = self.client.get("/health")
@@ -49,7 +55,7 @@ class TestDocsSmoke:
     """OpenAPI docs endpoint is available and renders."""
 
     def setup_method(self):
-        self.client = TestClient(create_app())
+        self.client = _make_client()
 
     def test_docs_returns_200(self):
         """Swagger UI renders at /docs."""
@@ -83,8 +89,6 @@ class TestPortBundleDI:
     """App factory accepts a PortBundle for DI — tests can inject fakes."""
 
     def test_create_app_accepts_port_bundle(self):
-        from redeemflow.ports import PortBundle
-
         ports = PortBundle()
         app = create_app(ports=ports)
         client = TestClient(app)
@@ -98,9 +102,15 @@ class TestPortBundleDI:
         assert response.status_code == 200
 
     def test_portfolio_uses_injected_port(self):
-        from redeemflow.ports import PortBundle
+        """Verify the injected adapter is actually used by checking its data."""
+        from redeemflow.portfolio.fake_adapter import FakePortfolioAdapter
 
-        ports = PortBundle()
+        # Create a custom adapter with known empty data
+        empty_adapter = FakePortfolioAdapter()
+        # Clear the test data to prove we're using THIS adapter
+        empty_adapter._data = {"auth0|eric": []}
+
+        ports = PortBundle(portfolio=empty_adapter)
         app = create_app(ports=ports)
         client = TestClient(app)
         response = client.get(
@@ -108,10 +118,12 @@ class TestPortBundleDI:
             headers={"Authorization": "Bearer test-token-eric"},
         )
         assert response.status_code == 200
+        body = response.json()
+        # Empty adapter returns empty balances — proves injection works
+        assert body["balances"] == []
+        assert body["total_value_dollars"] == "0"
 
     def test_portfolio_sync_endpoint_exists(self):
-        from redeemflow.ports import PortBundle
-
         ports = PortBundle()
         app = create_app(ports=ports)
         client = TestClient(app)
@@ -123,3 +135,16 @@ class TestPortBundleDI:
         body = response.json()
         assert body["status"] in ("success", "partial", "failed")
         assert "programs_synced" in body
+
+    def test_portfolio_default_returns_balances(self):
+        """Default PortBundle has test data — portfolios are non-empty."""
+        ports = PortBundle()
+        app = create_app(ports=ports)
+        client = TestClient(app)
+        response = client.get(
+            "/api/portfolio",
+            headers={"Authorization": "Bearer test-token-eric"},
+        )
+        assert response.status_code == 200
+        body = response.json()
+        assert len(body["balances"]) > 0

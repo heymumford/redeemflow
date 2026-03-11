@@ -222,7 +222,7 @@ def create_app(ports: PortBundle | None = None) -> FastAPI:
     if ports is not None:
         # DI path — tests inject all fakes via PortBundle
         app.state.payment_provider = ports.billing
-        donation_provider = FakeDonationProvider()
+        donation_provider = ports.donation
         app.state.award_search_provider = ports.award_search
         app.state.portfolio_port = ports.portfolio
     else:
@@ -231,6 +231,9 @@ def create_app(ports: PortBundle | None = None) -> FastAPI:
         app.state.payment_provider = adapters["payment"]
         donation_provider = adapters["donation_provider"]
         app.state.award_search_provider = adapters["award_search"]
+        # Portfolio port must satisfy full PortfolioPort (fetch_balances + sync + fetch_portfolio).
+        # AwardWalletAdapter only implements fetch_balances, so we use FakePortfolioAdapter
+        # as the default until the real adapter implements the full Protocol.
         app.state.portfolio_port = adapters["balance_fetcher"]
 
     app.state.donation_service = DonationService(

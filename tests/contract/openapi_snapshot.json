@@ -1,6 +1,32 @@
 {
   "components": {
     "schemas": {
+      "AlertPreferenceUpdate": {
+        "properties": {
+          "alert_type": {
+            "title": "Alert Type",
+            "type": "string"
+          },
+          "channels": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Channels",
+            "type": "array"
+          },
+          "muted": {
+            "default": false,
+            "title": "Muted",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "alert_type",
+          "channels"
+        ],
+        "title": "AlertPreferenceUpdate",
+        "type": "object"
+      },
       "AwardSearchRequest": {
         "properties": {
           "cabin": {
@@ -153,6 +179,29 @@
           "monthly_spend"
         ],
         "title": "CardRecommendRequest",
+        "type": "object"
+      },
+      "ChannelUpdate": {
+        "properties": {
+          "channel": {
+            "title": "Channel",
+            "type": "string"
+          },
+          "enabled": {
+            "title": "Enabled",
+            "type": "boolean"
+          },
+          "frequency": {
+            "default": "immediate",
+            "title": "Frequency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "channel",
+          "enabled"
+        ],
+        "title": "ChannelUpdate",
         "type": "object"
       },
       "CheckoutRequest": {
@@ -492,6 +541,73 @@
           "total_value_dollars"
         ],
         "title": "PortfolioResponse",
+        "type": "object"
+      },
+      "PreferencesUpdate": {
+        "properties": {
+          "alert_preferences": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/AlertPreferenceUpdate"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alert Preferences"
+          },
+          "channels": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ChannelUpdate"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Channels"
+          },
+          "quiet_hours_end": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet Hours End"
+          },
+          "quiet_hours_start": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quiet Hours Start"
+          },
+          "timezone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Timezone"
+          }
+        },
+        "title": "PreferencesUpdate",
         "type": "object"
       },
       "RecommendationItem": {
@@ -2193,6 +2309,96 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/MultiTravelerRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/notifications/check/{alert_type}/{channel}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "alert_type",
+            "required": true,
+            "schema": {
+              "title": "Alert Type",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "channel",
+            "required": true,
+            "schema": {
+              "title": "Channel",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/notifications/preferences": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        }
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreferencesUpdate"
               }
             }
           },

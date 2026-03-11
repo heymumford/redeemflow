@@ -35,6 +35,7 @@ from redeemflow.identity.auth import AuthError
 from redeemflow.middleware.logging import RequestLoggingMiddleware, configure_logging, get_logger
 from redeemflow.middleware.rate_limit import limiter
 from redeemflow.middleware.security_headers import SecurityHeadersMiddleware
+from redeemflow.notifications.routes import router as notifications_router
 from redeemflow.optimization.routes import router as optimization_router
 from redeemflow.portfolio.fake_adapter import FakeBalanceFetcher
 from redeemflow.portfolio.routes import router as portfolio_router
@@ -210,7 +211,7 @@ def create_app(ports: PortBundle | None = None) -> FastAPI:
     app.add_middleware(SlowAPIMiddleware)
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-    # --- Routers (all 8 route groups) ---
+    # --- Routers (all 9 route groups) ---
     app.include_router(valuations_router)
     app.include_router(billing_router)
     app.include_router(charity_router)
@@ -219,6 +220,7 @@ def create_app(ports: PortBundle | None = None) -> FastAPI:
     app.include_router(community_router)
     app.include_router(portfolio_router)
     app.include_router(redemptions_router)
+    app.include_router(notifications_router)
 
     # --- Adapter factory ---
     # When ports is provided (testing), use its adapters directly.

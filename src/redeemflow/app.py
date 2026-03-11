@@ -21,6 +21,7 @@ from slowapi.errors import RateLimitExceeded
 from slowapi.middleware import SlowAPIMiddleware
 
 from redeemflow import __version__
+from redeemflow.admin.routes import router as admin_router
 from redeemflow.billing.models import SubscriptionTier
 from redeemflow.billing.routes import router as billing_router
 from redeemflow.billing.stripe_adapter import FakePaymentProvider
@@ -221,6 +222,7 @@ def create_app(ports: PortBundle | None = None) -> FastAPI:
     app.include_router(portfolio_router)
     app.include_router(redemptions_router)
     app.include_router(notifications_router)
+    app.include_router(admin_router)
 
     # --- Adapter factory ---
     # When ports is provided (testing), use its adapters directly.

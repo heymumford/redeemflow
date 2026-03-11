@@ -12,6 +12,7 @@ from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel, Field
 
+from redeemflow.community.achievements import ACHIEVEMENTS, get_user_achievements
 from redeemflow.community.forum import ForumCategory, ForumPost, ForumReply, ForumService
 from redeemflow.community.founders_network import FounderDirectory, FounderProfile
 from redeemflow.community.models import CommunityPool, PoolService
@@ -385,3 +386,46 @@ def find_mentors(topic: str, request: Request):
     directory = _get_founder_directory(request)
     mentors = directory.find_mentors(topic)
     return {"mentors": [_serialize_founder(m) for m in mentors]}
+
+
+# ---------------------------------------------------------------------------
+# Achievement endpoints
+# ---------------------------------------------------------------------------
+
+
+@router.get("/api/achievements")
+def list_achievements():
+    """List all available achievements."""
+    return {
+        "achievements": [
+            {
+                "achievement_id": a.achievement_id,
+                "name": a.name,
+                "description": a.description,
+                "category": a.category.value,
+                "rarity": a.rarity.value,
+                "points_reward": a.points_reward,
+            }
+            for a in ACHIEVEMENTS.values()
+        ],
+    }
+
+
+@router.get("/api/achievements/me")
+def my_achievements(user: User = Depends(get_current_user)):
+    """Get user's earned achievements and progress."""
+    ua = get_user_achievements(user.id)
+    summary = ua.progress_summary()
+    return {
+        **summary,
+        "achievements": [
+            {
+                "achievement_id": e.achievement_id,
+                "name": ACHIEVEMENTS[e.achievement_id].name if e.achievement_id in ACHIEVEMENTS else e.achievement_id,
+                "earned_at": e.earned_at,
+                "detail": e.detail,
+                "rarity": ACHIEVEMENTS[e.achievement_id].rarity.value if e.achievement_id in ACHIEVEMENTS else "",
+            }
+            for e in ua.earned
+        ],
+    }

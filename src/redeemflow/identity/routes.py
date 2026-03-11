@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
+from redeemflow.identity.api_keys import get_api_key_store
 from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
 from redeemflow.identity.profile import (
@@ -138,3 +139,61 @@ def unlink_account(program_code: str, account_id: str, user: User = Depends(get_
     profile = get_or_create_profile(user.id)
     removed = profile.unlink_account(program_code, account_id)
     return {"status": "unlinked" if removed else "not_found"}
+
+
+# ---------------------------------------------------------------------------
+# API Key management
+# ---------------------------------------------------------------------------
+
+
+class CreateKeyRequest(BaseModel):
+    name: str
+    scopes: list[str] = ["read"]
+    expires_at: str = ""
+
+
+def _serialize_key(key) -> dict:
+    return {
+        "key_id": key.key_id,
+        "name": key.name,
+        "prefix": key.prefix,
+        "user_id": key.user_id,
+        "created_at": key.created_at,
+        "expires_at": key.expires_at,
+        "is_active": key.is_active,
+        "last_used_at": key.last_used_at,
+        "scopes": key.scopes,
+    }
+
+
+@router.post("/api/keys")
+def create_api_key(req: CreateKeyRequest, user: User = Depends(get_current_user)):
+    """Create a new API key. Returns the raw key only once."""
+    store = get_api_key_store()
+    raw_key, key = store.create_key(
+        user_id=user.id,
+        name=req.name,
+        scopes=req.scopes,
+        expires_at=req.expires_at,
+    )
+    return {"raw_key": raw_key, "key": _serialize_key(key)}
+
+
+@router.get("/api/keys")
+def list_api_keys(user: User = Depends(get_current_user)):
+    """List all API keys for the current user."""
+    store = get_api_key_store()
+    keys = store.list_keys(user.id)
+    return {"keys": [_serialize_key(k) for k in keys]}
+
+
+@router.delete("/api/keys/{key_id}")
+def revoke_api_key(key_id: str, user: User = Depends(get_current_user)):
+    """Revoke an API key."""
+    store = get_api_key_store()
+    revoked = store.revoke_key(key_id, user.id)
+    if revoked is None:
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(status_code=404, content={"detail": "Key not found"})
+    return {"key": _serialize_key(revoked)}

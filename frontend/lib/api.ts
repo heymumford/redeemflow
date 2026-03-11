@@ -150,6 +150,36 @@ export interface PathResult {
   efficiency_score: string;
 }
 
+export interface AlertItem {
+  id: string;
+  alert_type: string;
+  priority: string;
+  title: string;
+  message: string;
+  program_code: string;
+  created_at: string;
+}
+
+export interface AlertsResponse {
+  alerts: AlertItem[];
+}
+
+export interface SavingsResponse {
+  total_travel_value: string;
+  total_cash_back_value: string;
+  total_opportunity_cost: string;
+  total_points: number;
+  weighted_avg_cpp: string;
+  best_program: string | null;
+  worst_program: string | null;
+  programs: Array<{
+    program_code: string;
+    points: number;
+    travel_value: string;
+    optimization_hint: string;
+  }>;
+}
+
 // --- API methods ---
 
 export async function getPortfolio(): Promise<PortfolioResponse> {
@@ -219,5 +249,18 @@ export async function getTopPaths(
   return request<{ paths: PathResult[] }>("/api/paths/top", {
     method: "POST",
     body: JSON.stringify({ program, points }),
+  });
+}
+
+export async function getAlerts(): Promise<AlertsResponse> {
+  return request<AlertsResponse>("/api/alerts");
+}
+
+export async function getSavingsDashboard(
+  balances: Array<{ program_code: string; points: number }>,
+): Promise<SavingsResponse> {
+  return request<SavingsResponse>("/api/savings-dashboard", {
+    method: "POST",
+    body: JSON.stringify({ balances }),
   });
 }

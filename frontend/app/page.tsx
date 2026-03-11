@@ -2,17 +2,23 @@
 
 import { useEffect, useState } from "react";
 import type {
+  AlertsResponse,
   PortfolioResponse,
   RecommendationsResponse,
+  SavingsResponse,
   SubscriptionResponse,
 } from "@/lib/api";
 import {
+  getAlerts,
   getPortfolio,
   getRecommendations,
+  getSavingsDashboard,
   getSubscription,
 } from "@/lib/api";
+import AlertCard from "@/components/AlertCard";
 import PortfolioCard from "@/components/PortfolioCard";
 import RecommendationCard from "@/components/RecommendationCard";
+import SavingsSummary from "@/components/SavingsSummary";
 import SubscriptionBanner from "@/components/SubscriptionBanner";
 
 export default function Dashboard() {
@@ -21,21 +27,41 @@ export default function Dashboard() {
     useState<RecommendationsResponse | null>(null);
   const [subscription, setSubscription] =
     useState<SubscriptionResponse | null>(null);
+  const [alerts, setAlerts] = useState<AlertsResponse | null>(null);
+  const [savings, setSavings] = useState<SavingsResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function load() {
       try {
-        const [p, r, s] = await Promise.allSettled([
+        const [p, r, s, a] = await Promise.allSettled([
           getPortfolio(),
           getRecommendations(),
           getSubscription(),
+          getAlerts(),
         ]);
 
-        if (p.status === "fulfilled") setPortfolio(p.value);
+        if (p.status === "fulfilled") {
+          setPortfolio(p.value);
+          // Fetch savings if we have balances
+          if (p.value.balances.length > 0) {
+            try {
+              const savingsData = await getSavingsDashboard(
+                p.value.balances.map((b) => ({
+                  program_code: b.program_code,
+                  points: b.points,
+                })),
+              );
+              setSavings(savingsData);
+            } catch {
+              // Savings is optional
+            }
+          }
+        }
         if (r.status === "fulfilled") setRecommendations(r.value);
         if (s.status === "fulfilled") setSubscription(s.value);
+        if (a.status === "fulfilled") setAlerts(a.value);
 
         const allFailed =
           p.status === "rejected" &&
@@ -86,6 +112,23 @@ export default function Dashboard() {
         </div>
       )}
 
+      {/* Alerts */}
+      {alerts && alerts.alerts.length > 0 && (
+        <section>
+          <h2 className="mb-4 text-xl font-semibold text-gray-900">
+            Alerts ({alerts.alerts.length})
+          </h2>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {alerts.alerts.map((a) => (
+              <AlertCard key={a.id} alert={a} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Savings Analysis */}
+      {savings && <SavingsSummary savings={savings} />}
+
       {/* Portfolio */}
       {portfolio && portfolio.balances.length > 0 && (
         <section>
@@ -111,7 +154,10 @@ export default function Dashboard() {
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {recommendations.recommendations.map((r, i) => (
-              <RecommendationCard key={`${r.program_code}-${i}`} recommendation={r} />
+              <RecommendationCard
+                key={`${r.program_code}-${i}`}
+                recommendation={r}
+              />
             ))}
           </div>
         </section>
@@ -120,7 +166,8 @@ export default function Dashboard() {
       {/* Empty state */}
       {!error &&
         (!portfolio || portfolio.balances.length === 0) &&
-        (!recommendations || recommendations.recommendations.length === 0) && (
+        (!recommendations ||
+          recommendations.recommendations.length === 0) && (
           <div className="rounded-2xl border border-dashed border-rose-200 p-12 text-center">
             <p className="text-lg font-medium text-gray-400">
               No portfolio data yet.

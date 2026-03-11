@@ -155,7 +155,7 @@ class TestAPIEndpoints:
         assert data["should_notify"] is True
 
     def test_check_unknown_channel(self, client):
-        resp = client.get("/api/notifications/check/devaluation/sms", headers=self.AUTH_HEADERS)
+        resp = client.get("/api/notifications/check/devaluation/carrier_pigeon", headers=self.AUTH_HEADERS)
         assert resp.status_code == 200
         assert "error" in resp.json()
 

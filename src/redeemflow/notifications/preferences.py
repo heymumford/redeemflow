@@ -13,6 +13,7 @@ from enum import Enum
 class NotificationChannel(str, Enum):
     EMAIL = "email"
     PUSH = "push"
+    SMS = "sms"
     IN_APP = "in_app"
 
 
@@ -127,3 +128,55 @@ def should_notify(
         return False
 
     return channel in alert_pref.channels
+
+
+def update_alert_preference(
+    preferences: NotificationPreferences,
+    alert_type: str,
+    channels: list[NotificationChannel] | None = None,
+    muted: bool | None = None,
+) -> AlertTypePreference:
+    """Update preferences for a specific alert type."""
+    current = preferences.alert_preferences.get(
+        alert_type,
+        AlertTypePreference(alert_type=alert_type),
+    )
+    updated = AlertTypePreference(
+        alert_type=alert_type,
+        channels=channels if channels is not None else current.channels,
+        muted=muted if muted is not None else current.muted,
+    )
+    preferences.alert_preferences[alert_type] = updated
+    return updated
+
+
+def preferences_summary(preferences: NotificationPreferences) -> dict:
+    """Summarize notification preferences."""
+    enabled_channels = [name for name, cp in preferences.channels.items() if cp.enabled]
+    muted_alerts = [name for name, ap in preferences.alert_preferences.items() if ap.muted]
+    return {
+        "user_id": preferences.user_id,
+        "enabled_channels": enabled_channels,
+        "muted_alert_types": muted_alerts,
+        "total_alert_types": len(preferences.alert_preferences),
+        "quiet_hours": (
+            f"{preferences.quiet_hours_start}-{preferences.quiet_hours_end}" if preferences.quiet_hours_start else ""
+        ),
+        "timezone": preferences.timezone,
+    }
+
+
+# In-memory store
+_NOTIFICATION_PREFS: dict[str, NotificationPreferences] = {}
+
+
+def get_notification_prefs(user_id: str) -> NotificationPreferences:
+    """Get or create notification preferences for a user."""
+    if user_id not in _NOTIFICATION_PREFS:
+        _NOTIFICATION_PREFS[user_id] = default_preferences(user_id)
+    return _NOTIFICATION_PREFS[user_id]
+
+
+def reset_notification_prefs() -> None:
+    """Reset store — testing only."""
+    _NOTIFICATION_PREFS.clear()

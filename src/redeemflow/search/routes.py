@@ -16,6 +16,7 @@ from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
 from redeemflow.portfolio.awardwallet import FakeAwardWalletAdapter
 from redeemflow.search.award_search import AwardSearchProvider, FakeAwardSearchProvider
 from redeemflow.search.conference_planner import WOMEN_CONFERENCES, ConferencePlanner
+from redeemflow.search.filters import SearchFilters, SortDirection, SortField, apply_filters, search_summary
 from redeemflow.search.safety_scores import FakeSafetyDataProvider
 from redeemflow.search.sweet_spots import SweetSpotCategory, ValueRating, find_sweet_spots
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
@@ -53,6 +54,23 @@ class AwardSearchRequest(BaseModel):
     cabin: str
 
 
+class FilteredSearchRequest(BaseModel):
+    origin: str
+    destination: str
+    date: str
+    cabins: list[str] = []
+    programs: list[str] = []
+    max_points: int | None = None
+    min_points: int | None = None
+    direct_only: bool = False
+    min_seats: int | None = None
+    min_cpp: float | None = None
+    max_cpp: float | None = None
+    sort_by: str = "points"
+    sort_direction: str = "asc"
+    limit: int = 50
+
+
 class ConferencePlanRequest(BaseModel):
     conference_name: str
     origin_city: str
@@ -86,6 +104,70 @@ def award_search(
             }
             for r in results
         ]
+    }
+
+
+@router.post("/api/award-search/filtered")
+def filtered_award_search(
+    req: FilteredSearchRequest,
+    user: User = Depends(get_current_user),
+    provider: AwardSearchProvider = Depends(_get_search_provider),
+):
+    """Search with multi-dimension filtering, sorting, and value analysis."""
+    # Search across requested cabins (or all if none specified)
+    cabins_to_search = req.cabins if req.cabins else ["economy", "premium_economy", "business", "first"]
+    all_results = []
+    for cabin in cabins_to_search:
+        results = provider.search(
+            origin=req.origin,
+            destination=req.destination,
+            date=req.date,
+            cabin=cabin,
+        )
+        all_results.extend(results)
+
+    # Build filters
+    from decimal import Decimal
+
+    filters = SearchFilters(
+        cabins=req.cabins,
+        programs=req.programs,
+        max_points=req.max_points,
+        min_points=req.min_points,
+        direct_only=req.direct_only,
+        min_seats=req.min_seats,
+        min_cpp=Decimal(str(req.min_cpp)) if req.min_cpp is not None else None,
+        max_cpp=Decimal(str(req.max_cpp)) if req.max_cpp is not None else None,
+        sort_by=SortField(req.sort_by) if req.sort_by in [f.value for f in SortField] else SortField.POINTS,
+        sort_direction=(
+            SortDirection(req.sort_direction)
+            if req.sort_direction in [d.value for d in SortDirection]
+            else SortDirection.ASC
+        ),
+        limit=req.limit,
+    )
+
+    filtered = apply_filters(all_results, filters)
+    summary = search_summary(filtered)
+
+    return {
+        "results": [
+            {
+                "program": f.result.program,
+                "origin": f.result.origin,
+                "destination": f.result.destination,
+                "date": f.result.date,
+                "cabin": f.result.cabin,
+                "points_required": f.result.points_required,
+                "cash_value": str(f.result.cash_value),
+                "direct": f.result.direct,
+                "available_seats": f.result.available_seats,
+                "cpp": str(f.cpp),
+                "value_rating": f.value_rating,
+            }
+            for f in filtered
+        ],
+        "summary": summary,
     }
 
 

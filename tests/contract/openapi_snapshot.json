@@ -358,6 +358,120 @@
         "title": "FeeAnalysisRequest",
         "type": "object"
       },
+      "FilteredSearchRequest": {
+        "properties": {
+          "cabins": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Cabins",
+            "type": "array"
+          },
+          "date": {
+            "title": "Date",
+            "type": "string"
+          },
+          "destination": {
+            "title": "Destination",
+            "type": "string"
+          },
+          "direct_only": {
+            "default": false,
+            "title": "Direct Only",
+            "type": "boolean"
+          },
+          "limit": {
+            "default": 50,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "max_cpp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Cpp"
+          },
+          "max_points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Points"
+          },
+          "min_cpp": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Cpp"
+          },
+          "min_points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Points"
+          },
+          "min_seats": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Seats"
+          },
+          "origin": {
+            "title": "Origin",
+            "type": "string"
+          },
+          "programs": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Programs",
+            "type": "array"
+          },
+          "sort_by": {
+            "default": "points",
+            "title": "Sort By",
+            "type": "string"
+          },
+          "sort_direction": {
+            "default": "asc",
+            "title": "Sort Direction",
+            "type": "string"
+          }
+        },
+        "required": [
+          "origin",
+          "destination",
+          "date"
+        ],
+        "title": "FilteredSearchRequest",
+        "type": "object"
+      },
       "FounderApplyRequest": {
         "properties": {
           "bio": {
@@ -1029,6 +1143,40 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/AwardSearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/award-search/filtered": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FilteredSearchRequest"
               }
             }
           },

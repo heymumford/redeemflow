@@ -14,6 +14,11 @@ from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
 from redeemflow.notifications.alerts import AlertEngine
 from redeemflow.optimization.graph import TransferGraph
+from redeemflow.optimization.graph_analytics import (
+    find_transfer_bonuses,
+    graph_summary,
+    program_connectivity,
+)
 from redeemflow.optimization.multi_traveler import MultiTravelerOptimizer, Traveler
 from redeemflow.optimization.personal_optimizer import PersonalOptimizer
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
@@ -144,4 +149,55 @@ def multi_traveler(req: MultiTravelerRequest, user: User = Depends(get_current_u
         "total_points_used": plan.total_points_used,
         "total_estimated_value": str(plan.total_estimated_value),
         "total_estimated_savings": str(plan.total_estimated_savings),
+    }
+
+
+@router.get("/api/graph/summary")
+def get_graph_summary():
+    """Get high-level transfer graph statistics."""
+    summary = graph_summary(_GRAPH)
+    return {
+        "total_programs": summary.total_programs,
+        "total_partnerships": summary.total_partnerships,
+        "hub_programs": summary.hub_programs,
+        "isolated_programs": summary.isolated_programs,
+        "avg_connections": summary.avg_connections,
+        "densest_program": summary.densest_program,
+        "density": summary.density,
+    }
+
+
+@router.get("/api/graph/connectivity/{program}")
+def get_program_connectivity(program: str):
+    """Get connectivity details for a specific program."""
+    if program not in _GRAPH.programs:
+        return {"error": f"Unknown program: {program}"}
+    conn = program_connectivity(_GRAPH, program)
+    return {
+        "program": conn.program,
+        "outbound_partners": conn.outbound_partners,
+        "inbound_partners": conn.inbound_partners,
+        "total_connections": conn.total_connections,
+        "best_outbound_ratio": conn.best_outbound_ratio,
+        "reachable_programs": conn.reachable_programs,
+        "is_hub": conn.is_hub,
+    }
+
+
+@router.get("/api/graph/bonuses")
+def get_transfer_bonuses():
+    """Get all active transfer bonuses."""
+    bonuses = find_transfer_bonuses(_GRAPH)
+    return {
+        "count": len(bonuses),
+        "bonuses": [
+            {
+                "source_program": b.source_program,
+                "target_program": b.target_program,
+                "transfer_ratio": b.transfer_ratio,
+                "transfer_bonus": b.transfer_bonus,
+                "effective_ratio": b.effective_ratio,
+            }
+            for b in bonuses
+        ],
     }

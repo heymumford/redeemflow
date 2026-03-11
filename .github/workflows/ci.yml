@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
+      - uses: astral-sh/setup-uv@v7
       - run: uv sync --dev
       - run: uv run ruff check src/ tests/ landing/server.py
       - run: uv run ruff format --check src/ tests/ landing/server.py
@@ -21,7 +21,7 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
+      - uses: astral-sh/setup-uv@v7
       - run: uv sync --dev
       - name: Unit + fitness tests with coverage
         run: >
@@ -34,7 +34,7 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
+      - uses: astral-sh/setup-uv@v7
       - run: uv sync --dev
       - run: uv run pytest tests/contract/ tests/integration/ tests/infrastructure/ -v --cache-clear --tb=short
 
@@ -43,7 +43,7 @@ jobs:
     needs: [unit-and-fitness, contract-and-integration]
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
+      - uses: astral-sh/setup-uv@v7
       - run: uv sync --dev
       - run: uv run pytest tests/e2e/ -v --cache-clear --tb=short
 
@@ -52,7 +52,7 @@ jobs:
     needs: lint
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v4
+      - uses: astral-sh/setup-uv@v7
       - run: uv sync --dev
       - name: Dependency audit
         run: uv run pip-audit --strict --desc

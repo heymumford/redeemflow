@@ -165,6 +165,99 @@
         "title": "BookingAnalysisRequest",
         "type": "object"
       },
+      "BudgetPlanRequest": {
+        "properties": {
+          "current_balances": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "default": {},
+            "title": "Current Balances",
+            "type": "object"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/BudgetSourceInput"
+            },
+            "title": "Sources",
+            "type": "array"
+          },
+          "targets": {
+            "default": [],
+            "items": {
+              "$ref": "#/components/schemas/BudgetTargetInput"
+            },
+            "title": "Targets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sources"
+        ],
+        "title": "BudgetPlanRequest",
+        "type": "object"
+      },
+      "BudgetSourceInput": {
+        "properties": {
+          "category": {
+            "default": "card_spend",
+            "title": "Category",
+            "type": "string"
+          },
+          "monthly_points": {
+            "title": "Monthly Points",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "program_code": {
+            "title": "Program Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "program_code",
+          "monthly_points"
+        ],
+        "title": "BudgetSourceInput",
+        "type": "object"
+      },
+      "BudgetTargetInput": {
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "points_needed": {
+            "title": "Points Needed",
+            "type": "integer"
+          },
+          "priority": {
+            "default": 1,
+            "title": "Priority",
+            "type": "integer"
+          },
+          "program_code": {
+            "title": "Program Code",
+            "type": "string"
+          },
+          "target_date": {
+            "default": "",
+            "title": "Target Date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "program_code",
+          "points_needed"
+        ],
+        "title": "BudgetTargetInput",
+        "type": "object"
+      },
       "BuyAnalysisRequest": {
         "properties": {
           "points": {
@@ -1867,6 +1960,40 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/BookingAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/budget-plan": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BudgetPlanRequest"
               }
             }
           },

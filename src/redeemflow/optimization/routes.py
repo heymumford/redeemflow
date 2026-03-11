@@ -14,6 +14,11 @@ from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
 from redeemflow.notifications.alerts import AlertEngine
 from redeemflow.optimization.booking_optimizer import analyze_booking
+from redeemflow.optimization.budget_planner import (
+    AllocationTarget,
+    EarningSource,
+    compute_budget,
+)
 from redeemflow.optimization.graph import TransferGraph
 from redeemflow.optimization.graph_analytics import (
     find_transfer_bonuses,
@@ -268,6 +273,27 @@ def hotel_transfer_summary(program: str, points: int = 100000):
     }
 
 
+class BudgetSourceInput(BaseModel):
+    name: str
+    program_code: str
+    monthly_points: int
+    category: str = "card_spend"
+
+
+class BudgetTargetInput(BaseModel):
+    name: str
+    program_code: str
+    points_needed: int
+    target_date: str = ""
+    priority: int = 1
+
+
+class BudgetPlanRequest(BaseModel):
+    sources: list[BudgetSourceInput]
+    targets: list[BudgetTargetInput] = []
+    current_balances: dict[str, int] = {}
+
+
 class PathSearchRequest(BaseModel):
     program: str
     points: int
@@ -313,6 +339,49 @@ def efficient_paths(req: PathSearchRequest):
             }
             for p in paths
         ],
+    }
+
+
+@router.post("/api/budget-plan")
+def budget_plan(req: BudgetPlanRequest, user: User = Depends(get_current_user)):
+    """Compute annual points budget with earning projections and allocation feasibility."""
+    sources = [
+        EarningSource(
+            name=s.name,
+            program_code=s.program_code,
+            monthly_points=s.monthly_points,
+            category=s.category,
+        )
+        for s in req.sources
+    ]
+    targets = [
+        AllocationTarget(
+            name=t.name,
+            program_code=t.program_code,
+            points_needed=t.points_needed,
+            target_date=t.target_date,
+            priority=t.priority,
+        )
+        for t in req.targets
+    ]
+    result = compute_budget(sources, targets, req.current_balances or None)
+    return {
+        "total_annual_earnings": result.total_annual_earnings,
+        "total_allocation_needed": result.total_allocation_needed,
+        "surplus_or_deficit": result.surplus_or_deficit,
+        "months_to_goal": result.months_to_goal,
+        "forecasts": {
+            code: [
+                {
+                    "month": f.month,
+                    "projected_earnings": f.projected_earnings,
+                    "cumulative": f.cumulative,
+                }
+                for f in forecasts
+            ]
+            for code, forecasts in result.forecasts_by_program.items()
+        },
+        "allocation_feasibility": result.allocation_feasibility,
     }
 
 

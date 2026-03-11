@@ -18,6 +18,7 @@ from redeemflow.search.award_search import AwardSearchProvider, FakeAwardSearchP
 from redeemflow.search.conference_planner import WOMEN_CONFERENCES, ConferencePlanner
 from redeemflow.search.filters import SearchFilters, SortDirection, SortField, apply_filters, search_summary
 from redeemflow.search.safety_scores import FakeSafetyDataProvider
+from redeemflow.search.seasonal_pricing import seasonal_advisory
 from redeemflow.search.sweet_spots import SweetSpotCategory, ValueRating, find_sweet_spots
 from redeemflow.search.trip_comparison import RedemptionOption, compare_options, rank_options
 from redeemflow.search.trip_planner import build_trip_from_segments, get_trip, get_trips, next_trip_id, save_trip
@@ -417,6 +418,38 @@ def trip_compare(req: TripCompareRequest, user: User = Depends(get_current_user)
             for o in result.options
         ],
         "rankings": ranked,
+    }
+
+
+@router.get("/api/seasonal/{route}")
+def get_seasonal_pricing(route: str, month: int = 1, user: User = Depends(get_current_user)):
+    """Get seasonal pricing intelligence for a route."""
+    adv = seasonal_advisory(route, month)
+    return {
+        "route": adv.route,
+        "current_season": adv.current_season.value,
+        "current_month": adv.current_month,
+        "price_index": str(adv.price_index),
+        "best_value_months": adv.best_value_months,
+        "worst_value_months": adv.worst_value_months,
+        "booking_window": {
+            "ideal_book_months_ahead": adv.booking_window.ideal_book_months_ahead,
+            "urgency": adv.booking_window.urgency.value,
+            "reason": adv.booking_window.reason,
+            "savings_vs_last_minute_pct": adv.booking_window.savings_vs_last_minute_pct,
+        },
+        "patterns": [
+            {
+                "season": p.season.value,
+                "months": p.months,
+                "avg_points": p.avg_points,
+                "avg_cash": str(p.avg_cash),
+                "availability_rating": p.availability_rating,
+                "demand_level": p.demand_level,
+                "notes": p.notes,
+            }
+            for p in adv.patterns
+        ],
     }
 
 

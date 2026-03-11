@@ -34,6 +34,7 @@ from redeemflow.community.routes import router as community_router
 from redeemflow.identity.auth import AuthError
 from redeemflow.middleware.logging import RequestLoggingMiddleware, configure_logging, get_logger
 from redeemflow.middleware.rate_limit import limiter
+from redeemflow.middleware.security_headers import SecurityHeadersMiddleware
 from redeemflow.optimization.routes import router as optimization_router
 from redeemflow.portfolio.fake_adapter import FakeBalanceFetcher
 from redeemflow.portfolio.routes import router as portfolio_router
@@ -196,6 +197,9 @@ def create_app(ports: PortBundle | None = None) -> FastAPI:
         allow_headers=["*"],
         expose_headers=["X-Request-Id"],
     )
+
+    # Security headers — strip server ID, add OWASP headers
+    app.add_middleware(SecurityHeadersMiddleware)
 
     # Structured request logging
     app.add_middleware(RequestLoggingMiddleware)

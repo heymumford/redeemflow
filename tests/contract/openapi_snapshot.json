@@ -504,6 +504,44 @@
         "title": "SpendProfileRequest",
         "type": "object"
       },
+      "StrategyQuizRequest": {
+        "properties": {
+          "flexibility": {
+            "default": false,
+            "title": "Flexibility",
+            "type": "boolean"
+          },
+          "hotel_priority": {
+            "default": "midrange",
+            "title": "Hotel Priority",
+            "type": "string"
+          },
+          "monthly_spend": {
+            "default": "medium",
+            "title": "Monthly Spend",
+            "type": "string"
+          },
+          "preferred_cabin": {
+            "default": "economy",
+            "title": "Preferred Cabin",
+            "type": "string"
+          },
+          "redemption_preference": {
+            "default": "no_preference",
+            "title": "Redemption Preference",
+            "type": "string"
+          },
+          "travel_frequency": {
+            "title": "Travel Frequency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "travel_frequency"
+        ],
+        "title": "StrategyQuizRequest",
+        "type": "object"
+      },
       "SubscribeRequest": {
         "properties": {
           "tier": {
@@ -2172,6 +2210,40 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/SavingsRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/strategy-quiz": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StrategyQuizRequest"
               }
             }
           },

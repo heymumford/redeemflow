@@ -14,6 +14,13 @@ from pydantic import BaseModel, Field
 from redeemflow.optimization.graph import TransferGraph
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
 from redeemflow.recommendations.card_recommender import recommend_cards, recommend_combo
+from redeemflow.recommendations.strategy_quiz import (
+    QuizAnswers,
+    RedemptionPreference,
+    SpendLevel,
+    TravelFrequency,
+    classify,
+)
 from redeemflow.valuations.aggregator import AggregationStrategy, aggregate_cpp, batch_aggregate
 from redeemflow.valuations.savings import analyze_savings
 from redeemflow.valuations.seed_data import CREDIT_CARDS, PROGRAM_VALUATIONS
@@ -53,6 +60,15 @@ class BalanceItem(BaseModel):
 
 class SavingsRequest(BaseModel):
     balances: list[BalanceItem]
+
+
+class StrategyQuizRequest(BaseModel):
+    travel_frequency: str
+    preferred_cabin: str = "economy"
+    redemption_preference: str = "no_preference"
+    monthly_spend: str = "medium"
+    flexibility: bool = False
+    hotel_priority: str = "midrange"
 
 
 class FeeAnalysisRequest(BaseModel):
@@ -120,6 +136,33 @@ def list_programs():
             }
         )
     return {"programs": programs}
+
+
+@router.post("/api/strategy-quiz")
+def strategy_quiz(req: StrategyQuizRequest):
+    """Classify user's points strategy and recommend programs/cards."""
+    try:
+        answers = QuizAnswers(
+            travel_frequency=TravelFrequency(req.travel_frequency),
+            preferred_cabin=req.preferred_cabin,
+            redemption_preference=RedemptionPreference(req.redemption_preference),
+            monthly_spend=SpendLevel(req.monthly_spend),
+            flexibility=req.flexibility,
+            hotel_priority=req.hotel_priority,
+        )
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=str(err)) from err
+
+    result = classify(answers)
+    return {
+        "archetype": result.archetype.value,
+        "description": result.archetype_description,
+        "recommended_programs": result.recommended_programs,
+        "recommended_cards": result.recommended_cards,
+        "top_strategy": result.top_strategy,
+        "secondary_strategy": result.secondary_strategy,
+        "score_breakdown": result.score_breakdown,
+    }
 
 
 @router.post("/api/recommend-card")

@@ -71,6 +71,29 @@
         "title": "BalanceResponse",
         "type": "object"
       },
+      "BuyAnalysisRequest": {
+        "properties": {
+          "points": {
+            "default": 50000,
+            "title": "Points",
+            "type": "integer"
+          },
+          "program": {
+            "title": "Program",
+            "type": "string"
+          },
+          "target_redemption_cpp": {
+            "default": 1.5,
+            "title": "Target Redemption Cpp",
+            "type": "number"
+          }
+        },
+        "required": [
+          "program"
+        ],
+        "title": "BuyAnalysisRequest",
+        "type": "object"
+      },
       "CalculateRequest": {
         "properties": {
           "points": {
@@ -571,6 +594,24 @@
           "balances"
         ],
         "title": "SavingsRequest",
+        "type": "object"
+      },
+      "SellAnalysisRequest": {
+        "properties": {
+          "points": {
+            "default": 50000,
+            "title": "Points",
+            "type": "integer"
+          },
+          "program": {
+            "title": "Program",
+            "type": "string"
+          }
+        },
+        "required": [
+          "program"
+        ],
+        "title": "SellAnalysisRequest",
         "type": "object"
       },
       "SpendProfileRequest": {
@@ -1359,6 +1400,144 @@
               }
             },
             "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/exchange-rates/{program}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "program",
+            "required": true,
+            "schema": {
+              "title": "Program",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/exchange/buy-analysis": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BuyAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/exchange/sell-analysis": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SellAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/exchange/swaps/{program}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "program",
+            "required": true,
+            "schema": {
+              "title": "Program",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         }
       }

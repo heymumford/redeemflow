@@ -47,3 +47,23 @@ class TestProductionSmoke:
         assert "states" in body
         assert isinstance(body["states"], list)
         assert len(body["states"]) > 0
+
+    def test_openapi_schema_accessible(self, smoke_client):
+        resp = smoke_client.get("/openapi.json")
+        assert resp.status_code == 200
+        schema = resp.json()
+        assert "openapi" in schema
+        assert "paths" in schema
+
+    def test_docs_accessible(self, smoke_client):
+        resp = smoke_client.get("/docs")
+        assert resp.status_code == 200
+
+    def test_calculate_endpoint_rejects_invalid(self, smoke_client):
+        resp = smoke_client.post("/api/calculate", json={})
+        assert resp.status_code in (400, 422)
+
+    def test_response_headers_security(self, smoke_client):
+        resp = smoke_client.get("/health")
+        assert resp.status_code == 200
+        assert "server" not in {k.lower() for k in resp.headers}

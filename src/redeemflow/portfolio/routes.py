@@ -32,6 +32,7 @@ from redeemflow.portfolio.goals import (
 )
 from redeemflow.portfolio.household import HouseholdMember, get_or_create_household
 from redeemflow.portfolio.ports import PortfolioPort
+from redeemflow.portfolio.rebalance import analyze_portfolio
 from redeemflow.recommendations.engine import RecommendationEngine
 
 router = APIRouter()
@@ -356,4 +357,46 @@ def import_portfolio_data(req: ImportRequest, user: User = Depends(get_current_u
         "status": "imported",
         "balances_count": len(balances),
         "balances": balances,
+    }
+
+
+class RebalanceRequest(BaseModel):
+    balances: list[dict]
+
+
+@router.post("/api/portfolio/rebalance")
+def rebalance(req: RebalanceRequest, user: User = Depends(get_current_user)):
+    """Analyze portfolio concentration and suggest rebalancing actions."""
+    report = analyze_portfolio(req.balances)
+    return {
+        "concentration": {
+            "total_programs": report.concentration.total_programs,
+            "total_value": str(report.concentration.total_value),
+            "risk_level": report.concentration.risk_level.value,
+            "largest_pct": str(report.concentration.largest_pct),
+            "herfindahl_index": str(report.concentration.herfindahl_index),
+            "recommendation": report.concentration.recommendation,
+        },
+        "balances": [
+            {
+                "program_code": b.program_code,
+                "points": b.points,
+                "cpp": str(b.cpp),
+                "value": str(b.value),
+                "pct_of_total": str(b.pct_of_total),
+            }
+            for b in report.balances
+        ],
+        "actions": [
+            {
+                "action_type": a.action_type,
+                "from_program": a.from_program,
+                "to_program": a.to_program,
+                "points": a.points,
+                "rationale": a.rationale,
+                "impact": a.impact,
+            }
+            for a in report.actions
+        ],
+        "projected_improvement": report.projected_improvement,
     }

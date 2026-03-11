@@ -34,6 +34,7 @@ class Subscription:
     current_period_start: str
     current_period_end: str
     stripe_subscription_id: str | None = None
+    charity_flavor: str | None = None
 
 
 PREMIUM_PLAN = SubscriptionPlan(

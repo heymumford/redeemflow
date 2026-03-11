@@ -32,6 +32,7 @@ class ProgramValuation:
     program_name: str
     valuations: dict[ValuationSource, Decimal]
     cash_back_cpp: Decimal = Decimal("1.0")
+    timestamp: str | None = None
 
     def __post_init__(self) -> None:
         if not self.valuations:

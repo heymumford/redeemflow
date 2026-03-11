@@ -63,6 +63,9 @@ class CommunityPool:
         return self.total_pledged() >= self.goal_amount
 
     def add_pledge(self, pledge: Pledge) -> None:
+        existing_ids = {p.id for p in self.pledges}
+        if pledge.id in existing_ids:
+            raise ValueError(f"Duplicate pledge: {pledge.id}")
         self.pledges.append(pledge)
 
 

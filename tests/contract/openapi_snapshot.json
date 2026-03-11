@@ -3752,6 +3752,20 @@
         }
       }
     },
+    "/api/program-health": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
     "/api/programs": {
       "get": {
         "responses": {

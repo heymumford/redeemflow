@@ -22,6 +22,7 @@ from redeemflow.recommendations.strategy_quiz import (
     classify,
 )
 from redeemflow.valuations.aggregator import AggregationStrategy, aggregate_cpp, batch_aggregate
+from redeemflow.valuations.program_health import assess_all_programs
 from redeemflow.valuations.savings import analyze_savings
 from redeemflow.valuations.seed_data import CREDIT_CARDS, PROGRAM_VALUATIONS
 from redeemflow.valuations.trends import get_trend_tracker, seed_trends
@@ -462,3 +463,45 @@ def fee_analysis(req: FeeAnalysisRequest):
         )
 
     return {"cards": cards_result}
+
+
+@router.get("/api/program-health")
+def program_health():
+    """Health scores for all loyalty programs."""
+    from collections import Counter
+
+    from redeemflow.optimization.seed_data import ALL_PARTNERS
+    from redeemflow.search.sweet_spots import ALL_SWEET_SPOTS
+
+    transfer_counts: dict[str, int] = Counter()
+    for p in ALL_PARTNERS:
+        transfer_counts[p.source_program] += 1
+
+    sweet_spot_counts: dict[str, int] = Counter()
+    for s in ALL_SWEET_SPOTS:
+        sweet_spot_counts[s.program] += 1
+
+    scores = assess_all_programs(
+        programs=PROGRAM_VALUATIONS,
+        transfer_counts=dict(transfer_counts),
+        sweet_spot_counts=dict(sweet_spot_counts),
+    )
+
+    return {
+        "programs": [
+            {
+                "program_code": s.program_code,
+                "program_name": s.program_name,
+                "overall_score": s.overall_score,
+                "grade": s.grade.value,
+                "devaluation_risk": s.devaluation_risk.value,
+                "stability_score": s.stability_score,
+                "liquidity_score": s.liquidity_score,
+                "value_score": s.value_score,
+                "redemption_score": s.redemption_score,
+                "trend_direction": s.trend_direction,
+                "recommendation": s.recommendation,
+            }
+            for s in scores
+        ],
+    }

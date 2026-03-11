@@ -33,6 +33,7 @@ from redeemflow.community.founders_network import FounderDirectory
 from redeemflow.community.models import PoolService
 from redeemflow.community.routes import router as community_router
 from redeemflow.identity.auth import AuthError
+from redeemflow.identity.routes import router as identity_router
 from redeemflow.middleware.logging import RequestLoggingMiddleware, configure_logging, get_logger
 from redeemflow.middleware.rate_limit import limiter
 from redeemflow.middleware.security_headers import SecurityHeadersMiddleware
@@ -223,6 +224,7 @@ def create_app(ports: PortBundle | None = None) -> FastAPI:
     app.include_router(redemptions_router)
     app.include_router(notifications_router)
     app.include_router(admin_router)
+    app.include_router(identity_router)
 
     # --- Adapter factory ---
     # When ports is provided (testing), use its adapters directly.

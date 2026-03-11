@@ -1276,6 +1276,63 @@
         "title": "RetailAnalysisRequest",
         "type": "object"
       },
+      "SaveSearchRequest": {
+        "properties": {
+          "alert_on_change": {
+            "default": false,
+            "title": "Alert On Change",
+            "type": "boolean"
+          },
+          "cabin": {
+            "default": "economy",
+            "title": "Cabin",
+            "type": "string"
+          },
+          "destination": {
+            "title": "Destination",
+            "type": "string"
+          },
+          "direct_only": {
+            "default": false,
+            "title": "Direct Only",
+            "type": "boolean"
+          },
+          "max_points": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Points"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "origin": {
+            "title": "Origin",
+            "type": "string"
+          },
+          "programs": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Programs",
+            "type": "array"
+          }
+        },
+        "required": [
+          "name",
+          "origin",
+          "destination"
+        ],
+        "title": "SaveSearchRequest",
+        "type": "object"
+      },
       "SavingsRequest": {
         "properties": {
           "balances": {
@@ -4826,6 +4883,87 @@
             "required": true,
             "schema": {
               "title": "City",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/saved-searches": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        }
+      },
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveSearchRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/saved-searches/{search_id}": {
+      "delete": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "search_id",
+            "required": true,
+            "schema": {
+              "title": "Search Id",
               "type": "string"
             }
           }

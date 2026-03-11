@@ -4535,6 +4535,42 @@
         }
       }
     },
+    "/api/programs/compare": {
+      "get": {
+        "parameters": [
+          {
+            "in": "query",
+            "name": "programs",
+            "required": false,
+            "schema": {
+              "default": "",
+              "title": "Programs",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
     "/api/recommend-card": {
       "post": {
         "requestBody": {

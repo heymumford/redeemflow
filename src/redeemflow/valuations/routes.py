@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 
 from redeemflow.optimization.graph import TransferGraph
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
+from redeemflow.valuations.aggregator import AggregationStrategy, aggregate_cpp, batch_aggregate
 from redeemflow.valuations.seed_data import CREDIT_CARDS, PROGRAM_VALUATIONS
 
 router = APIRouter()
@@ -183,6 +184,58 @@ def savings_analysis(req: SavingsRequest):
         "total_cash_back_value": str(total_cash),
         "total_opportunity_cost": str(total_travel - total_cash),
         "programs": programs,
+    }
+
+
+@router.get("/api/valuations/{program}")
+def get_valuation(program: str, strategy: str = "median"):
+    """Get aggregated CPP valuation for a single program."""
+    val = PROGRAM_VALUATIONS.get(program)
+    if val is None:
+        raise HTTPException(status_code=404, detail=f"Unknown program: {program}")
+
+    try:
+        strat = AggregationStrategy(strategy)
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=f"Unknown strategy: {strategy}") from err
+
+    agg = aggregate_cpp(val, strat)
+    return {
+        "program_code": agg.program_code,
+        "program_name": agg.program_name,
+        "aggregated_cpp": str(agg.aggregated_cpp),
+        "strategy": agg.strategy.value,
+        "source_count": agg.source_count,
+        "min_cpp": str(agg.min_cpp),
+        "max_cpp": str(agg.max_cpp),
+        "spread": str(agg.spread),
+        "confidence": agg.confidence,
+        "sources": {k: str(v) for k, v in agg.sources.items()},
+    }
+
+
+@router.get("/api/valuations")
+def list_valuations(strategy: str = "median"):
+    """Get aggregated CPP valuations for all programs."""
+    try:
+        strat = AggregationStrategy(strategy)
+    except ValueError as err:
+        raise HTTPException(status_code=400, detail=f"Unknown strategy: {strategy}") from err
+
+    results = batch_aggregate(PROGRAM_VALUATIONS, strat)
+    return {
+        "strategy": strat.value,
+        "programs": [
+            {
+                "program_code": agg.program_code,
+                "program_name": agg.program_name,
+                "aggregated_cpp": str(agg.aggregated_cpp),
+                "source_count": agg.source_count,
+                "confidence": agg.confidence,
+                "spread": str(agg.spread),
+            }
+            for agg in sorted(results.values(), key=lambda a: a.aggregated_cpp, reverse=True)
+        ],
     }
 
 

@@ -1,7 +1,7 @@
-"""FastAPI application factory.
+"""FastAPI application factory with DI container.
 
 Beck: One place to configure everything — middleware, adapters, routes.
-Fowler: Adapter factory selects real vs fake per Protocol based on env vars.
+Fowler: PortBundle is the DI container — tests inject fakes, production injects real adapters.
 
 Database persistence is opt-in: set DATABASE_URL to enable Postgres.
 Without it, all state is in-memory (dev/test mode).
@@ -13,7 +13,7 @@ import logging
 import os
 import traceback
 
-from fastapi import Depends, FastAPI, Request
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from slowapi import _rate_limit_exceeded_handler
@@ -31,13 +31,13 @@ from redeemflow.community.forum import ForumService
 from redeemflow.community.founders_network import FounderDirectory
 from redeemflow.community.models import PoolService
 from redeemflow.community.routes import router as community_router
-from redeemflow.identity.auth import AuthError, get_current_user
-from redeemflow.identity.models import User
+from redeemflow.identity.auth import AuthError
 from redeemflow.middleware.logging import RequestLoggingMiddleware, configure_logging, get_logger
 from redeemflow.middleware.rate_limit import limiter
 from redeemflow.optimization.routes import router as optimization_router
 from redeemflow.portfolio.fake_adapter import FakeBalanceFetcher
-from redeemflow.recommendations.engine import RecommendationEngine
+from redeemflow.portfolio.routes import router as portfolio_router
+from redeemflow.ports import PortBundle
 from redeemflow.search.routes import router as search_router
 from redeemflow.valuations.routes import router as valuations_router
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
@@ -169,11 +169,21 @@ def _select_adapters() -> dict:
     return adapters
 
 
-def create_app() -> FastAPI:
-    """Application factory — configure middleware, adapters, routes."""
+def create_app(ports: PortBundle | None = None) -> FastAPI:
+    """Application factory — configure middleware, adapters, routes.
+
+    Args:
+        ports: Optional DI container. When None, adapters are selected
+               from environment variables (real if keys present, fakes otherwise).
+               Tests pass a PortBundle of fakes for zero-I/O verification.
+    """
     configure_logging()
 
-    app = FastAPI(title="RedeemFlow", version=__version__)
+    app = FastAPI(
+        title="RedeemFlow",
+        version=__version__,
+        description="Loyalty points optimization platform",
+    )
 
     # --- Middleware (order matters: outermost first) ---
 
@@ -195,21 +205,36 @@ def create_app() -> FastAPI:
     app.add_middleware(SlowAPIMiddleware)
     app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-    # --- Routers ---
+    # --- Routers (all 7 route groups) ---
     app.include_router(valuations_router)
     app.include_router(billing_router)
     app.include_router(charity_router)
     app.include_router(optimization_router)
     app.include_router(search_router)
     app.include_router(community_router)
+    app.include_router(portfolio_router)
 
     # --- Adapter factory ---
+    # When ports is provided (testing), use its adapters directly.
+    # Otherwise, select adapters from environment variables.
     repos = _init_db_repositories()
-    adapters = _select_adapters()
 
-    app.state.payment_provider = adapters["payment"]
+    if ports is not None:
+        # DI path — tests inject all fakes via PortBundle
+        app.state.payment_provider = ports.billing
+        donation_provider = FakeDonationProvider()
+        app.state.award_search_provider = ports.award_search
+        app.state.portfolio_port = ports.portfolio
+    else:
+        # Environment path — real adapters when API keys are present
+        adapters = _select_adapters()
+        app.state.payment_provider = adapters["payment"]
+        donation_provider = adapters["donation_provider"]
+        app.state.award_search_provider = adapters["award_search"]
+        app.state.portfolio_port = adapters["balance_fetcher"]
+
     app.state.donation_service = DonationService(
-        provider=adapters["donation_provider"],
+        provider=donation_provider,
         valuations=PROGRAM_VALUATIONS,
         charity_network=CHARITY_NETWORK,
         repository=repos["donation"] if repos else None,
@@ -220,10 +245,6 @@ def create_app() -> FastAPI:
     )
     app.state.forum_service = ForumService(repository=repos["forum"] if repos else None)
     app.state.founder_directory = FounderDirectory(repository=repos["founder"] if repos else None)
-    app.state.award_search_provider = adapters["award_search"]
-
-    fetcher = adapters["balance_fetcher"]
-    rec_engine = RecommendationEngine()
 
     # --- Inline routes ---
 
@@ -238,38 +259,6 @@ def create_app() -> FastAPI:
             "dependencies": {
                 "database": db_status,
             },
-        }
-
-    @app.get("/api/portfolio")
-    def portfolio(user: User = Depends(get_current_user)):
-        balances = fetcher.fetch_balances(user.id)
-        return {
-            "balances": [
-                {
-                    "program_code": b.program_code,
-                    "points": b.points,
-                    "estimated_value_dollars": str(b.estimated_value_dollars),
-                }
-                for b in balances
-            ],
-            "total_value_dollars": str(sum(b.estimated_value_dollars for b in balances)),
-        }
-
-    @app.get("/api/recommendations")
-    def recommendations(user: User = Depends(get_current_user)):
-        balances = fetcher.fetch_balances(user.id)
-        recs = rec_engine.recommend(balances)
-        return {
-            "recommendations": [
-                {
-                    "program_code": r.program_code,
-                    "action": r.action,
-                    "rationale": r.rationale,
-                    "cpp_gain": str(r.cpp_gain),
-                    "points_involved": r.points_involved,
-                }
-                for r in recs
-            ],
         }
 
     # --- Error handlers ---

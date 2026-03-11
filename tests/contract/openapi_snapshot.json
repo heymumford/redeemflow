@@ -90,6 +90,29 @@
         "title": "CalculateRequest",
         "type": "object"
       },
+      "CarRentalRequest": {
+        "properties": {
+          "alternative_cpp": {
+            "default": 1.5,
+            "title": "Alternative Cpp",
+            "type": "number"
+          },
+          "days": {
+            "default": 3,
+            "title": "Days",
+            "type": "integer"
+          },
+          "program": {
+            "title": "Program",
+            "type": "string"
+          }
+        },
+        "required": [
+          "program"
+        ],
+        "title": "CarRentalRequest",
+        "type": "object"
+      },
       "CardRecommendRequest": {
         "properties": {
           "category": {
@@ -509,6 +532,29 @@
           "content"
         ],
         "title": "ReplyRequest",
+        "type": "object"
+      },
+      "RetailAnalysisRequest": {
+        "properties": {
+          "best_travel_cpp": {
+            "default": 1.5,
+            "title": "Best Travel Cpp",
+            "type": "number"
+          },
+          "points": {
+            "default": 50000,
+            "title": "Points",
+            "type": "integer"
+          },
+          "program": {
+            "title": "Program",
+            "type": "string"
+          }
+        },
+        "required": [
+          "program"
+        ],
+        "title": "RetailAnalysisRequest",
         "type": "object"
       },
       "SavingsRequest": {
@@ -952,6 +998,75 @@
           },
           "required": true
         },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/car-rentals/analyze": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CarRentalRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/car-rentals/{program}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "program",
+            "required": true,
+            "schema": {
+              "title": "Program",
+              "type": "string"
+            }
+          }
+        ],
         "responses": {
           "200": {
             "content": {
@@ -2329,6 +2444,75 @@
               }
             },
             "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/retail-redemptions/analyze": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RetailAnalysisRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/retail-redemptions/{program}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "program",
+            "required": true,
+            "schema": {
+              "title": "Program",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         }
       }

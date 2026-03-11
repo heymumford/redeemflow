@@ -4213,6 +4213,55 @@
         }
       }
     },
+    "/api/trends": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/trends/{program}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "program",
+            "required": true,
+            "schema": {
+              "title": "Program",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
     "/api/trips": {
       "get": {
         "responses": {

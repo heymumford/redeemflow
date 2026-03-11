@@ -24,6 +24,7 @@ from redeemflow.recommendations.strategy_quiz import (
 from redeemflow.valuations.aggregator import AggregationStrategy, aggregate_cpp, batch_aggregate
 from redeemflow.valuations.savings import analyze_savings
 from redeemflow.valuations.seed_data import CREDIT_CARDS, PROGRAM_VALUATIONS
+from redeemflow.valuations.trends import get_trend_tracker, seed_trends
 
 router = APIRouter()
 
@@ -371,6 +372,65 @@ def list_valuations(strategy: str = "median"):
             }
             for agg in sorted(results.values(), key=lambda a: a.aggregated_cpp, reverse=True)
         ],
+    }
+
+
+@router.get("/api/trends")
+def market_trends():
+    """Market-wide valuation trends across all programs."""
+    tracker = get_trend_tracker()
+    if not tracker.tracked_programs:
+        seed_trends(PROGRAM_VALUATIONS)
+
+    names = {code: prog.program_name for code, prog in PROGRAM_VALUATIONS.items()}
+    summary = tracker.market_summary(names)
+
+    def _trend_dict(t):
+        return {
+            "program_code": t.program_code,
+            "program_name": t.program_name,
+            "current_cpp": str(t.current_cpp),
+            "previous_cpp": str(t.previous_cpp),
+            "change_pct": str(t.change_pct),
+            "direction": t.direction.value,
+            "period_days": t.period_days,
+            "alert": t.alert,
+        }
+
+    return {
+        "total_programs": summary.total_programs,
+        "programs_up": summary.programs_up,
+        "programs_down": summary.programs_down,
+        "programs_stable": summary.programs_stable,
+        "avg_change_pct": str(summary.avg_change_pct),
+        "biggest_gain": _trend_dict(summary.biggest_gain) if summary.biggest_gain else None,
+        "biggest_loss": _trend_dict(summary.biggest_loss) if summary.biggest_loss else None,
+        "trends": [_trend_dict(t) for t in summary.trends],
+    }
+
+
+@router.get("/api/trends/{program}")
+def program_trend(program: str):
+    """Valuation trend for a specific program."""
+    tracker = get_trend_tracker()
+    if not tracker.tracked_programs:
+        seed_trends(PROGRAM_VALUATIONS)
+
+    val = PROGRAM_VALUATIONS.get(program)
+    name = val.program_name if val else program
+    trend = tracker.analyze(program, name)
+
+    return {
+        "program_code": trend.program_code,
+        "program_name": trend.program_name,
+        "current_cpp": str(trend.current_cpp),
+        "previous_cpp": str(trend.previous_cpp),
+        "change_cpp": str(trend.change_cpp),
+        "change_pct": str(trend.change_pct),
+        "direction": trend.direction.value,
+        "period_days": trend.period_days,
+        "alert": trend.alert,
+        "snapshots": [{"date": s.date, "cpp": str(s.cpp), "source": s.source} for s in trend.snapshots],
     }
 
 

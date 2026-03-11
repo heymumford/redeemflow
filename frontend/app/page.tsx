@@ -44,7 +44,6 @@ export default function Dashboard() {
 
         if (p.status === "fulfilled") {
           setPortfolio(p.value);
-          // Fetch savings if we have balances
           if (p.value.balances.length > 0) {
             try {
               const savingsData = await getSavingsDashboard(
@@ -89,11 +88,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-6 sm:space-y-10">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Your Portfolio</h1>
-        <p className="mt-2 text-gray-500">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Your Portfolio</h1>
+        <p className="mt-1 sm:mt-2 text-sm sm:text-base text-gray-500">
           Track your points, discover transfer opportunities, and maximize
           redemption value.
         </p>
@@ -105,7 +104,7 @@ export default function Dashboard() {
       {/* Error */}
       {error && (
         <div
-          className="rounded-2xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800"
+          className="rounded-xl sm:rounded-2xl border border-amber-200 bg-amber-50 p-3 sm:p-4 text-sm text-amber-800"
           role="alert"
         >
           {error}
@@ -115,10 +114,10 @@ export default function Dashboard() {
       {/* Alerts */}
       {alerts && alerts.alerts.length > 0 && (
         <section>
-          <h2 className="mb-4 text-xl font-semibold text-gray-900">
+          <h2 className="mb-3 sm:mb-4 text-lg sm:text-xl font-semibold text-gray-900">
             Alerts ({alerts.alerts.length})
           </h2>
-          <div className="grid gap-3 sm:grid-cols-2">
+          <div className="grid gap-3 grid-cols-1 sm:grid-cols-2">
             {alerts.alerts.map((a) => (
               <AlertCard key={a.id} alert={a} />
             ))}
@@ -132,13 +131,13 @@ export default function Dashboard() {
       {/* Portfolio */}
       {portfolio && portfolio.balances.length > 0 && (
         <section>
-          <div className="mb-4 flex items-baseline justify-between">
-            <h2 className="text-xl font-semibold text-gray-900">Balances</h2>
-            <span className="text-sm font-medium text-rose-600">
+          <div className="mb-3 sm:mb-4 flex items-baseline justify-between">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Balances</h2>
+            <span className="text-xs sm:text-sm font-medium text-rose-600">
               Total: ${portfolio.total_value_dollars}
             </span>
           </div>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
             {portfolio.balances.map((b) => (
               <PortfolioCard key={b.program_code} balance={b} />
             ))}
@@ -149,10 +148,10 @@ export default function Dashboard() {
       {/* Recommendations */}
       {recommendations && recommendations.recommendations.length > 0 && (
         <section>
-          <h2 className="mb-4 text-xl font-semibold text-gray-900">
+          <h2 className="mb-3 sm:mb-4 text-lg sm:text-xl font-semibold text-gray-900">
             Recommendations
           </h2>
-          <div className="grid gap-4 sm:grid-cols-2">
+          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
             {recommendations.recommendations.map((r, i) => (
               <RecommendationCard
                 key={`${r.program_code}-${i}`}
@@ -168,11 +167,11 @@ export default function Dashboard() {
         (!portfolio || portfolio.balances.length === 0) &&
         (!recommendations ||
           recommendations.recommendations.length === 0) && (
-          <div className="rounded-2xl border border-dashed border-rose-200 p-12 text-center">
-            <p className="text-lg font-medium text-gray-400">
+          <div className="rounded-xl sm:rounded-2xl border border-dashed border-rose-200 p-8 sm:p-12 text-center">
+            <p className="text-base sm:text-lg font-medium text-gray-400">
               No portfolio data yet.
             </p>
-            <p className="mt-2 text-sm text-gray-400">
+            <p className="mt-2 text-xs sm:text-sm text-gray-400">
               Connect your loyalty programs to get started.
             </p>
           </div>

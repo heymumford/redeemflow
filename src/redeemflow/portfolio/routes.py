@@ -13,6 +13,14 @@ from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
 from redeemflow.portfolio.calendar import build_calendar
 from redeemflow.portfolio.expiration import EXPIRATION_POLICIES
+from redeemflow.portfolio.export import (
+    ExportFormat,
+    export_portfolio,
+    export_to_csv,
+    export_to_json,
+    import_from_csv,
+    import_from_json,
+)
 from redeemflow.portfolio.goals import (
     GoalCategory,
     SavingsGoal,
@@ -303,4 +311,49 @@ def update_points(goal_id: str, req: UpdateGoalPointsRequest, user: User = Depen
         "goal_id": goal_id,
         "current_points": updated.current_points,
         "goal_status": updated.status.value,
+    }
+
+
+class ImportRequest(BaseModel):
+    data: str
+    format: str = "json"
+
+
+@router.get("/api/portfolio/export")
+def export_portfolio_data(
+    format: str = "json",
+    user: User = Depends(get_current_user),
+    port: PortfolioPort = Depends(_get_portfolio_port),
+):
+    """Export portfolio to JSON or CSV."""
+    try:
+        fmt = ExportFormat(format)
+    except ValueError:
+        return {"error": f"Invalid format: {format}", "valid": ["json", "csv"]}
+
+    balances = port.fetch_balances(user.id)
+    export = export_portfolio(user.id, balances, fmt)
+
+    if fmt == ExportFormat.CSV:
+        return {"format": "csv", "data": export_to_csv(export), "program_count": export.program_count}
+    return {"format": "json", "data": export_to_json(export), "program_count": export.program_count}
+
+
+@router.post("/api/portfolio/import")
+def import_portfolio_data(req: ImportRequest, user: User = Depends(get_current_user)):
+    """Import portfolio data from JSON or CSV."""
+    try:
+        fmt = ExportFormat(req.format)
+    except ValueError:
+        return {"error": f"Invalid format: {req.format}"}
+
+    if fmt == ExportFormat.CSV:
+        balances = import_from_csv(req.data)
+    else:
+        balances = import_from_json(req.data)
+
+    return {
+        "status": "imported",
+        "balances_count": len(balances),
+        "balances": balances,
     }

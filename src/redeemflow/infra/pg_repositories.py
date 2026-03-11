@@ -1,11 +1,13 @@
 """Postgres repository implementations — sync, SQLAlchemy Core.
 
 Each repository maps between domain frozen dataclasses and SQL rows.
+Repository[T] protocol defines the generic CRUD contract.
 """
 
 from __future__ import annotations
 
 from decimal import Decimal
+from typing import Protocol, TypeVar, runtime_checkable
 
 from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session, sessionmaker
@@ -14,20 +16,305 @@ from redeemflow.billing.charity_alignment import CharityAlignment
 from redeemflow.billing.models import Subscription, SubscriptionTier
 from redeemflow.charity.auto_donate import AutoDonateRule
 from redeemflow.charity.donation_flow import Donation, DonationStatus
+from redeemflow.charity.models import CharityCategory, CharityOrganization
 from redeemflow.community.forum import ForumCategory, ForumPost, ForumReply
 from redeemflow.community.founders_network import FounderProfile, FounderStatus
 from redeemflow.community.models import CommunityPool, Pledge, PoolStatus
 from redeemflow.infra.db_models import (
     auto_donate_rules,
     charity_alignments,
+    charity_partners,
     community_pools,
     donations,
     forum_posts,
     forum_replies,
     founder_profiles,
+    loyalty_programs,
     pledges,
+    program_balances,
     subscriptions,
+    transfer_partners,
+    user_portfolios,
 )
+from redeemflow.optimization.models import TransferPartner
+from redeemflow.portfolio.models import LoyaltyProgram, PointBalance, ProgramCategory, UserPortfolio
+
+T = TypeVar("T")
+
+
+@runtime_checkable
+class Repository(Protocol[T]):
+    """Generic repository protocol — CRUD contract for any aggregate root.
+
+    Fowler: Repository mediates between domain and data mapping layers,
+    acting like an in-memory collection of domain objects.
+    """
+
+    def get(self, entity_id: str) -> T | None: ...
+    def list_all(self) -> list[T]: ...
+    def save(self, entity: T) -> None: ...
+    def delete(self, entity_id: str) -> bool: ...
+
+
+# --- Portfolio Repositories ---
+
+
+class PgLoyaltyProgramRepository:
+    """Repository for LoyaltyProgram — keyed by program code."""
+
+    def __init__(self, session_factory: sessionmaker[Session]) -> None:
+        self._sf = session_factory
+
+    def save(self, program: LoyaltyProgram) -> None:
+        with self._sf() as s:
+            existing = s.execute(select(loyalty_programs).where(loyalty_programs.c.code == program.code)).first()
+            if existing:
+                s.execute(
+                    update(loyalty_programs)
+                    .where(loyalty_programs.c.code == program.code)
+                    .values(
+                        name=program.name,
+                        category=program.category.value,
+                        cpp_min=program.cpp_min,
+                        cpp_max=program.cpp_max,
+                    )
+                )
+            else:
+                s.execute(
+                    loyalty_programs.insert().values(
+                        code=program.code,
+                        name=program.name,
+                        category=program.category.value,
+                        cpp_min=program.cpp_min,
+                        cpp_max=program.cpp_max,
+                    )
+                )
+            s.commit()
+
+    def get(self, code: str) -> LoyaltyProgram | None:
+        with self._sf() as s:
+            row = s.execute(select(loyalty_programs).where(loyalty_programs.c.code == code)).first()
+            return self._to_domain(row) if row else None
+
+    def list_all(self) -> list[LoyaltyProgram]:
+        with self._sf() as s:
+            rows = s.execute(select(loyalty_programs)).fetchall()
+            return [self._to_domain(r) for r in rows]
+
+    def delete(self, code: str) -> bool:
+        with self._sf() as s:
+            result = s.execute(delete(loyalty_programs).where(loyalty_programs.c.code == code))
+            s.commit()
+            return result.rowcount > 0
+
+    @staticmethod
+    def _to_domain(row) -> LoyaltyProgram:
+        return LoyaltyProgram(
+            code=row.code,
+            name=row.name,
+            category=ProgramCategory(row.category),
+            cpp_min=row.cpp_min,
+            cpp_max=row.cpp_max,
+        )
+
+
+class PgTransferPartnerRepository:
+    """Repository for TransferPartner — directed edges in the transfer graph."""
+
+    def __init__(self, session_factory: sessionmaker[Session]) -> None:
+        self._sf = session_factory
+
+    def save(self, partner: TransferPartner) -> None:
+        with self._sf() as s:
+            s.execute(
+                transfer_partners.insert().values(
+                    source_program=partner.source_program,
+                    target_program=partner.target_program,
+                    transfer_ratio=partner.transfer_ratio,
+                    transfer_bonus=partner.transfer_bonus,
+                    min_transfer=partner.min_transfer,
+                    is_instant=partner.is_instant,
+                )
+            )
+            s.commit()
+
+    def get_by_source(self, source_program: str) -> list[TransferPartner]:
+        with self._sf() as s:
+            rows = s.execute(
+                select(transfer_partners).where(transfer_partners.c.source_program == source_program)
+            ).fetchall()
+            return [self._to_domain(r) for r in rows]
+
+    def list_all(self) -> list[TransferPartner]:
+        with self._sf() as s:
+            rows = s.execute(select(transfer_partners)).fetchall()
+            return [self._to_domain(r) for r in rows]
+
+    def delete_by_source_target(self, source: str, target: str) -> bool:
+        with self._sf() as s:
+            result = s.execute(
+                delete(transfer_partners).where(
+                    (transfer_partners.c.source_program == source) & (transfer_partners.c.target_program == target)
+                )
+            )
+            s.commit()
+            return result.rowcount > 0
+
+    @staticmethod
+    def _to_domain(row) -> TransferPartner:
+        return TransferPartner(
+            source_program=row.source_program,
+            target_program=row.target_program,
+            transfer_ratio=row.transfer_ratio,
+            transfer_bonus=row.transfer_bonus,
+            min_transfer=row.min_transfer,
+            is_instant=row.is_instant,
+        )
+
+
+class PgUserPortfolioRepository:
+    """Repository for UserPortfolio aggregate — user + N program balances."""
+
+    def __init__(self, session_factory: sessionmaker[Session]) -> None:
+        self._sf = session_factory
+
+    def save(self, portfolio: UserPortfolio) -> None:
+        with self._sf() as s:
+            existing = s.execute(select(user_portfolios).where(user_portfolios.c.user_id == portfolio.user_id)).first()
+            if not existing:
+                s.execute(user_portfolios.insert().values(user_id=portfolio.user_id))
+
+            # Replace all balances for this user (delete + re-insert)
+            s.execute(delete(program_balances).where(program_balances.c.user_id == portfolio.user_id))
+            for b in portfolio.balances:
+                s.execute(
+                    program_balances.insert().values(
+                        user_id=portfolio.user_id,
+                        program_code=b.program_code,
+                        points=b.points,
+                        cpp_baseline=b.cpp_baseline,
+                    )
+                )
+            s.commit()
+
+    def get(self, user_id: str) -> UserPortfolio | None:
+        with self._sf() as s:
+            row = s.execute(select(user_portfolios).where(user_portfolios.c.user_id == user_id)).first()
+            if not row:
+                return None
+            balance_rows = s.execute(select(program_balances).where(program_balances.c.user_id == user_id)).fetchall()
+            balances = tuple(
+                PointBalance(
+                    program_code=b.program_code,
+                    points=b.points,
+                    cpp_baseline=Decimal(str(b.cpp_baseline)),
+                )
+                for b in balance_rows
+            )
+            return UserPortfolio(user_id=row.user_id, balances=balances)
+
+    def list_all(self) -> list[UserPortfolio]:
+        with self._sf() as s:
+            rows = s.execute(select(user_portfolios)).fetchall()
+            result = []
+            for row in rows:
+                balance_rows = s.execute(
+                    select(program_balances).where(program_balances.c.user_id == row.user_id)
+                ).fetchall()
+                balances = tuple(
+                    PointBalance(
+                        program_code=b.program_code,
+                        points=b.points,
+                        cpp_baseline=Decimal(str(b.cpp_baseline)),
+                    )
+                    for b in balance_rows
+                )
+                result.append(UserPortfolio(user_id=row.user_id, balances=balances))
+            return result
+
+    def delete(self, user_id: str) -> bool:
+        with self._sf() as s:
+            result = s.execute(delete(user_portfolios).where(user_portfolios.c.user_id == user_id))
+            s.commit()
+            return result.rowcount > 0
+
+
+# --- Charity Repositories ---
+
+
+class PgCharityPartnerRepository:
+    """Repository for CharityOrganization — the charity directory."""
+
+    def __init__(self, session_factory: sessionmaker[Session]) -> None:
+        self._sf = session_factory
+
+    def save(self, charity: CharityOrganization) -> None:
+        with self._sf() as s:
+            s.execute(
+                charity_partners.insert().values(
+                    name=charity.name,
+                    category=charity.category.value,
+                    state=charity.state,
+                    national_url=charity.national_url,
+                    is_501c3=charity.is_501c3,
+                    chapter_name=charity.chapter_name,
+                    chapter_url=charity.chapter_url,
+                    donation_url=charity.donation_url,
+                    accepts_points_donation=charity.accepts_points_donation,
+                    ein=charity.ein,
+                    description=charity.description,
+                )
+            )
+            s.commit()
+
+    def get_by_name_state(self, name: str, state: str) -> CharityOrganization | None:
+        with self._sf() as s:
+            row = s.execute(
+                select(charity_partners).where((charity_partners.c.name == name) & (charity_partners.c.state == state))
+            ).first()
+            return self._to_domain(row) if row else None
+
+    def list_all(self) -> list[CharityOrganization]:
+        with self._sf() as s:
+            rows = s.execute(select(charity_partners)).fetchall()
+            return [self._to_domain(r) for r in rows]
+
+    def by_state(self, state: str) -> list[CharityOrganization]:
+        with self._sf() as s:
+            rows = s.execute(select(charity_partners).where(charity_partners.c.state == state)).fetchall()
+            return [self._to_domain(r) for r in rows]
+
+    def by_category(self, category: CharityCategory) -> list[CharityOrganization]:
+        with self._sf() as s:
+            rows = s.execute(select(charity_partners).where(charity_partners.c.category == category.value)).fetchall()
+            return [self._to_domain(r) for r in rows]
+
+    def delete_by_name_state(self, name: str, state: str) -> bool:
+        with self._sf() as s:
+            result = s.execute(
+                delete(charity_partners).where((charity_partners.c.name == name) & (charity_partners.c.state == state))
+            )
+            s.commit()
+            return result.rowcount > 0
+
+    @staticmethod
+    def _to_domain(row) -> CharityOrganization:
+        return CharityOrganization(
+            name=row.name,
+            category=CharityCategory(row.category),
+            state=row.state,
+            national_url=row.national_url,
+            is_501c3=row.is_501c3,
+            chapter_name=row.chapter_name,
+            chapter_url=row.chapter_url,
+            donation_url=row.donation_url,
+            accepts_points_donation=row.accepts_points_donation,
+            ein=row.ein,
+            description=row.description,
+        )
+
+
+# --- Existing Repositories (unchanged interface, preserved from Sprint 3) ---
 
 
 class PgSubscriptionRepository:
@@ -63,6 +350,17 @@ class PgSubscriptionRepository:
         with self._sf() as s:
             s.execute(update(subscriptions).where(subscriptions.c.id == sub_id).values(status=status))
             s.commit()
+
+    def delete(self, sub_id: str) -> bool:
+        with self._sf() as s:
+            result = s.execute(delete(subscriptions).where(subscriptions.c.id == sub_id))
+            s.commit()
+            return result.rowcount > 0
+
+    def list_all(self) -> list[Subscription]:
+        with self._sf() as s:
+            rows = s.execute(select(subscriptions)).fetchall()
+            return [self._to_domain(r) for r in rows]
 
     @staticmethod
     def _to_domain(row) -> Subscription:
@@ -100,6 +398,11 @@ class PgDonationRepository:
             )
             s.commit()
 
+    def get(self, donation_id: str) -> Donation | None:
+        with self._sf() as s:
+            row = s.execute(select(donations).where(donations.c.id == donation_id)).first()
+            return self._to_domain(row) if row else None
+
     def get_by_user(self, user_id: str) -> list[Donation]:
         with self._sf() as s:
             rows = s.execute(select(donations).where(donations.c.user_id == user_id)).fetchall()
@@ -109,6 +412,15 @@ class PgDonationRepository:
         with self._sf() as s:
             rows = s.execute(select(donations)).fetchall()
             return [self._to_domain(r) for r in rows]
+
+    def list_all(self) -> list[Donation]:
+        return self.get_all()
+
+    def delete(self, donation_id: str) -> bool:
+        with self._sf() as s:
+            result = s.execute(delete(donations).where(donations.c.id == donation_id))
+            s.commit()
+            return result.rowcount > 0
 
     @staticmethod
     def _to_domain(row) -> Donation:
@@ -190,6 +502,12 @@ class PgPoolRepository:
                 pledge_rows = s.execute(select(pledges).where(pledges.c.pool_id == row.id)).fetchall()
                 result.append(self._to_domain(row, pledge_rows))
             return result
+
+    def delete(self, pool_id: str) -> bool:
+        with self._sf() as s:
+            result = s.execute(delete(community_pools).where(community_pools.c.id == pool_id))
+            s.commit()
+            return result.rowcount > 0
 
     @staticmethod
     def _to_domain(row, pledge_rows) -> CommunityPool:

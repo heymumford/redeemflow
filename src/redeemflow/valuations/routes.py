@@ -22,6 +22,7 @@ from redeemflow.recommendations.strategy_quiz import (
     classify,
 )
 from redeemflow.valuations.aggregator import AggregationStrategy, aggregate_cpp, batch_aggregate
+from redeemflow.valuations.program_comparison import compare_programs
 from redeemflow.valuations.program_health import assess_all_programs
 from redeemflow.valuations.savings import analyze_savings
 from redeemflow.valuations.seed_data import CREDIT_CARDS, PROGRAM_VALUATIONS
@@ -503,5 +504,33 @@ def program_health():
                 "recommendation": s.recommendation,
             }
             for s in scores
+        ],
+    }
+
+
+@router.get("/api/programs/compare")
+def program_comparison(programs: str = ""):
+    """Compare loyalty programs side-by-side across multiple dimensions."""
+    codes = [c.strip() for c in programs.split(",") if c.strip()] if programs else None
+    report = compare_programs(codes)
+    return {
+        "best_overall": report.best_overall,
+        "best_by_dimension": report.best_by_dimension,
+        "programs": [
+            {
+                "program_code": p.program_code,
+                "program_name": p.program_name,
+                "overall_score": str(p.overall_score),
+                "overall_rank": p.overall_rank,
+                "dimensions": [
+                    {
+                        "dimension": d.dimension.value,
+                        "score": str(d.score),
+                        "detail": d.detail,
+                    }
+                    for d in p.dimension_scores
+                ],
+            }
+            for p in report.programs
         ],
     }

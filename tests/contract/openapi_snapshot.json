@@ -1836,6 +1836,20 @@
         }
       }
     },
+    "/api/admin/dashboard": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
     "/api/admin/metrics": {
       "get": {
         "responses": {

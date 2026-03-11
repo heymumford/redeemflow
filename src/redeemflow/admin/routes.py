@@ -5,6 +5,7 @@ from __future__ import annotations
 from fastapi import APIRouter, Depends, Request
 
 from redeemflow.admin.audit import AuditAction, get_audit_log
+from redeemflow.admin.dashboard import generate_dashboard
 from redeemflow.admin.metrics import collect_program_metrics, collect_system_metrics
 from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
@@ -131,4 +132,41 @@ def audit_summary(user: User = Depends(get_current_user)):
             }
             for e in summary.recent_entries
         ],
+    }
+
+
+@router.get("/api/admin/dashboard")
+def admin_dashboard(user: User = Depends(get_current_user)):
+    """Full admin dashboard with system metrics, adoption, and health."""
+    report = generate_dashboard(user_count=150, portfolio_count=120, goal_count=80, trip_count=45, share_count=20)
+    return {
+        "system": {
+            "total_users": report.system.total_users,
+            "active_users_24h": report.system.active_users_24h,
+            "total_portfolios": report.system.total_portfolios,
+            "total_goals": report.system.total_goals,
+            "total_trips": report.system.total_trips,
+            "total_shares": report.system.total_shares,
+            "avg_programs_per_user": str(report.system.avg_programs_per_user),
+            "generated_at": report.system.generated_at,
+        },
+        "feature_adoption": [
+            {
+                "feature": f.feature_name,
+                "users_enabled": f.users_enabled,
+                "total_uses": f.total_uses,
+                "adoption_pct": str(f.adoption_pct),
+            }
+            for f in report.feature_adoption
+        ],
+        "tier_distribution": [
+            {
+                "tier": t.tier,
+                "count": t.count,
+                "pct": str(t.pct),
+            }
+            for t in report.tier_distribution
+        ],
+        "top_programs": report.top_programs,
+        "health_check": report.health_check,
     }

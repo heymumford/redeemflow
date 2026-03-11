@@ -17,6 +17,7 @@ from redeemflow.portfolio.awardwallet import FakeAwardWalletAdapter
 from redeemflow.search.award_search import AwardSearchProvider, FakeAwardSearchProvider
 from redeemflow.search.conference_planner import WOMEN_CONFERENCES, ConferencePlanner
 from redeemflow.search.safety_scores import FakeSafetyDataProvider
+from redeemflow.search.sweet_spots import SweetSpotCategory, ValueRating, find_sweet_spots
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
 
 router = APIRouter()
@@ -212,4 +213,48 @@ def conference_plan(req: ConferencePlanRequest, user: User = Depends(get_current
         }
         if plan.safety_info
         else None,
+    }
+
+
+@router.get("/api/sweet-spots")
+def list_sweet_spots(
+    category: str | None = None,
+    program: str | None = None,
+    min_rating: str = "fair",
+):
+    """Find high-value redemption sweet spots."""
+    cat = None
+    if category:
+        try:
+            cat = SweetSpotCategory(category)
+        except ValueError:
+            return {"error": f"Invalid category: {category}", "valid": [c.value for c in SweetSpotCategory]}
+
+    try:
+        rating = ValueRating(min_rating)
+    except ValueError:
+        return {"error": f"Invalid rating: {min_rating}", "valid": [r.value for r in ValueRating]}
+
+    spots = find_sweet_spots(category=cat, program=program, min_rating=rating)
+    return {
+        "count": len(spots),
+        "sweet_spots": [
+            {
+                "program": s.program,
+                "program_name": s.program_name,
+                "category": s.category.value,
+                "description": s.description,
+                "points_required": s.points_required,
+                "cash_equivalent": str(s.cash_equivalent),
+                "effective_cpp": str(s.effective_cpp),
+                "baseline_cpp": str(s.baseline_cpp),
+                "value_multiplier": str(s.value_multiplier),
+                "rating": s.rating.value,
+                "route": s.route,
+                "cabin": s.cabin,
+                "hotel_category": s.hotel_category,
+                "notes": s.notes,
+            }
+            for s in spots
+        ],
     }

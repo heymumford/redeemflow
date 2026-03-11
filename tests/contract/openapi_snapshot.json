@@ -340,6 +340,29 @@
         "title": "HTTPValidationError",
         "type": "object"
       },
+      "HotelTransferRequest": {
+        "properties": {
+          "airline_program": {
+            "title": "Airline Program",
+            "type": "string"
+          },
+          "hotel_program": {
+            "title": "Hotel Program",
+            "type": "string"
+          },
+          "points": {
+            "default": 100000,
+            "title": "Points",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "hotel_program",
+          "airline_program"
+        ],
+        "title": "HotelTransferRequest",
+        "type": "object"
+      },
       "MultiTravelerRequest": {
         "properties": {
           "destination": {
@@ -1758,6 +1781,85 @@
               }
             },
             "description": "Successful Response"
+          }
+        }
+      }
+    },
+    "/api/hotel-transfer/assess": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HotelTransferRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/hotel-transfer/summary/{program}": {
+      "get": {
+        "parameters": [
+          {
+            "in": "path",
+            "name": "program",
+            "required": true,
+            "schema": {
+              "title": "Program",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "points",
+            "required": false,
+            "schema": {
+              "default": 100000,
+              "title": "Points",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
           }
         }
       }

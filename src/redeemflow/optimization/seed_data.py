@@ -1,7 +1,8 @@
 """Seed data — real-world transfer partnerships and redemption sweet spots.
 
 All data is public knowledge from loyalty program websites and community forums.
-Expanded to include all Big 6 currencies (Chase UR, Amex MR, Citi TY, Capital One, Bilt, Wells Fargo).
+Expanded to include all Big 6 currencies (Chase UR, Amex MR, Citi TY, Capital One, Bilt, Wells Fargo)
+plus hotel program outbound transfers (Marriott Bonvoy, Hilton Honors, IHG One Rewards).
 """
 
 from __future__ import annotations
@@ -119,6 +120,70 @@ MARRIOTT_PARTNERS: list[TransferPartner] = [
     ),
 ]
 
+# Hilton Honors transfers at 10:1 to airlines (10,000 Hilton = 1,000 airline miles)
+HILTON_PARTNERS: list[TransferPartner] = [
+    TransferPartner(
+        source_program="hilton",
+        target_program="american",
+        transfer_ratio=0.1,
+        min_transfer=10000,
+        is_instant=False,
+    ),
+    TransferPartner(
+        source_program="hilton",
+        target_program="british-airways",
+        transfer_ratio=0.1,
+        min_transfer=10000,
+        is_instant=False,
+    ),
+    TransferPartner(
+        source_program="hilton",
+        target_program="delta",
+        transfer_ratio=0.1,
+        min_transfer=10000,
+        is_instant=False,
+    ),
+    TransferPartner(
+        source_program="hilton",
+        target_program="united",
+        transfer_ratio=0.1,
+        min_transfer=10000,
+        is_instant=False,
+    ),
+    TransferPartner(
+        source_program="hilton",
+        target_program="virgin-atlantic",
+        transfer_ratio=0.1,
+        min_transfer=10000,
+        is_instant=False,
+    ),
+]
+
+# IHG One Rewards transfers at ~5:1 to airlines
+IHG_PARTNERS: list[TransferPartner] = [
+    TransferPartner(
+        source_program="ihg",
+        target_program="united",
+        transfer_ratio=0.2,
+        min_transfer=10000,
+        is_instant=False,
+    ),
+    TransferPartner(
+        source_program="ihg",
+        target_program="american",
+        transfer_ratio=0.2,
+        min_transfer=10000,
+        is_instant=False,
+    ),
+    TransferPartner(
+        source_program="ihg",
+        target_program="turkish",
+        transfer_ratio=0.2,
+        min_transfer=10000,
+        is_instant=False,
+    ),
+]
+
 ALL_PARTNERS: list[TransferPartner] = (
     CHASE_UR_PARTNERS
     + AMEX_MR_PARTNERS
@@ -127,6 +192,8 @@ ALL_PARTNERS: list[TransferPartner] = (
     + BILT_PARTNERS
     + WELLS_FARGO_PARTNERS
     + MARRIOTT_PARTNERS
+    + HILTON_PARTNERS
+    + IHG_PARTNERS
 )
 
 # --- Redemption Sweet Spots ---
@@ -174,6 +241,41 @@ REDEMPTION_OPTIONS: list[RedemptionOption] = [
         points_required=120000,
         cash_value=600.0,
         availability="high",
+    ),
+    RedemptionOption(
+        program="ihg",
+        description="IHG PointBreaks (discounted hotels)",
+        points_required=10000,
+        cash_value=100.0,
+        availability="medium",
+    ),
+    RedemptionOption(
+        program="marriott",
+        description="Marriott off-peak Cat 1-3",
+        points_required=15000,
+        cash_value=150.0,
+        availability="high",
+    ),
+    RedemptionOption(
+        program="marriott",
+        description="Marriott 5th night free (Cat 5)",
+        points_required=140000,
+        cash_value=700.0,
+        availability="medium",
+    ),
+    RedemptionOption(
+        program="hilton",
+        description="Hilton standard night (Cat 1-4)",
+        points_required=30000,
+        cash_value=150.0,
+        availability="high",
+    ),
+    RedemptionOption(
+        program="hilton",
+        description="Hilton premium resort night",
+        points_required=95000,
+        cash_value=475.0,
+        availability="medium",
     ),
     # Airlines — premium cabin
     RedemptionOption(

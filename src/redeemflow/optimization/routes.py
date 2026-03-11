@@ -19,6 +19,7 @@ from redeemflow.optimization.graph_analytics import (
     graph_summary,
     program_connectivity,
 )
+from redeemflow.optimization.hotel_transfers import assess_hotel_transfer, summarize_hotel_program
 from redeemflow.optimization.multi_traveler import MultiTravelerOptimizer, Traveler
 from redeemflow.optimization.path_optimizer import find_efficient_paths, find_top_paths
 from redeemflow.optimization.personal_optimizer import PersonalOptimizer
@@ -200,6 +201,60 @@ def get_transfer_bonuses():
                 "effective_ratio": b.effective_ratio,
             }
             for b in bonuses
+        ],
+    }
+
+
+class HotelTransferRequest(BaseModel):
+    hotel_program: str
+    airline_program: str
+    points: int = 100000
+
+
+@router.post("/api/hotel-transfer/assess")
+def assess_transfer(req: HotelTransferRequest):
+    """Assess whether a hotel-to-airline transfer is worthwhile."""
+    assessment = assess_hotel_transfer(_GRAPH, req.hotel_program, req.airline_program, req.points)
+    if assessment is None:
+        return {"error": f"No transfer partnership between {req.hotel_program} and {req.airline_program}"}
+    return {
+        "hotel_program": assessment.hotel_program,
+        "airline_program": assessment.airline_program,
+        "transfer_ratio": assessment.transfer_ratio,
+        "hotel_points_needed": assessment.hotel_points_needed,
+        "airline_miles_received": assessment.airline_miles_received,
+        "hotel_cpp_if_redeemed": str(assessment.hotel_cpp_if_redeemed),
+        "airline_cpp_if_transferred": str(assessment.airline_cpp_if_transferred),
+        "value_ratio": str(assessment.value_ratio),
+        "recommendation": assessment.recommendation,
+        "rationale": assessment.rationale,
+    }
+
+
+@router.get("/api/hotel-transfer/summary/{program}")
+def hotel_transfer_summary(program: str, points: int = 100000):
+    """Get hotel program transfer economics summary."""
+    if program not in _GRAPH.programs:
+        return {"error": f"Unknown program: {program}"}
+    summary = summarize_hotel_program(_GRAPH, program, points)
+    return {
+        "program": summary.program,
+        "airline_partners": summary.airline_partners,
+        "transfer_ratio": summary.transfer_ratio,
+        "best_direct_cpp": str(summary.best_direct_cpp),
+        "best_transfer_cpp": str(summary.best_transfer_cpp),
+        "transfer_penalty": str(summary.transfer_penalty),
+        "assessments": [
+            {
+                "airline": a.airline_program,
+                "transfer_ratio": a.transfer_ratio,
+                "airline_miles_received": a.airline_miles_received,
+                "hotel_cpp": str(a.hotel_cpp_if_redeemed),
+                "airline_cpp": str(a.airline_cpp_if_transferred),
+                "value_ratio": str(a.value_ratio),
+                "recommendation": a.recommendation,
+            }
+            for a in summary.assessments
         ],
     }
 

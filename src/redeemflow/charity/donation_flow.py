@@ -48,6 +48,13 @@ class Donation:
     created_at: str
     completed_at: str | None = None
     change_api_reference: str | None = None
+    cpp_at_donation: Decimal | None = None
+
+    def __post_init__(self) -> None:
+        if self.points_donated <= 0:
+            raise ValueError(f"points_donated must be > 0, got {self.points_donated}")
+        if self.dollar_value <= 0:
+            raise ValueError(f"dollar_value must be > 0, got {self.dollar_value}")
 
 
 @runtime_checkable

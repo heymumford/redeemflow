@@ -3,6 +3,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from decimal import Decimal
+from enum import Enum
+
+
+class ActionType(str, Enum):
+    TRANSFER = "transfer"
+    BURN = "burn"
+    HOLD = "hold"
+    DONATE = "donate"
 
 
 @dataclass(frozen=True)
@@ -15,6 +24,12 @@ class TransferPartner:
     transfer_bonus: float = 0.0
     min_transfer: int = 1000
     is_instant: bool = True
+
+    def __post_init__(self) -> None:
+        if self.transfer_ratio <= 0:
+            raise ValueError(f"transfer_ratio must be > 0, got {self.transfer_ratio}")
+        if self.source_program == self.target_program:
+            raise ValueError(f"source_program and target_program must differ, got '{self.source_program}'")
 
     @property
     def effective_ratio(self) -> float:
@@ -49,3 +64,19 @@ class TransferPath:
     source_points_needed: int
     effective_cpp: float
     total_hops: int
+
+
+@dataclass(frozen=True)
+class OptimizationAction:
+    """A recommended action for a user's loyalty points."""
+
+    action_type: ActionType
+    program_code: str
+    points: int
+    expected_value: Decimal
+    description: str
+    target_program: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.expected_value <= 0:
+            raise ValueError(f"expected_value must be > 0, got {self.expected_value}")

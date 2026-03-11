@@ -6,8 +6,67 @@ Fowler: Value objects are immutable. State holders are mutable.
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field
 from enum import Enum
+
+VALID_US_STATES = frozenset(
+    {
+        "AL",
+        "AK",
+        "AZ",
+        "AR",
+        "CA",
+        "CO",
+        "CT",
+        "DE",
+        "FL",
+        "GA",
+        "HI",
+        "ID",
+        "IL",
+        "IN",
+        "IA",
+        "KS",
+        "KY",
+        "LA",
+        "ME",
+        "MD",
+        "MA",
+        "MI",
+        "MN",
+        "MS",
+        "MO",
+        "MT",
+        "NE",
+        "NV",
+        "NH",
+        "NJ",
+        "NM",
+        "NY",
+        "NC",
+        "ND",
+        "OH",
+        "OK",
+        "OR",
+        "PA",
+        "RI",
+        "SC",
+        "SD",
+        "TN",
+        "TX",
+        "UT",
+        "VT",
+        "VA",
+        "WA",
+        "WV",
+        "WI",
+        "WY",
+        "DC",
+    }
+)
+
+_EIN_PATTERN = re.compile(r"^\d{2}-\d{7}$")
 
 
 class CharityCategory(str, Enum):
@@ -38,6 +97,12 @@ class CharityOrganization:
     accepts_points_donation: bool = False
     ein: str | None = None
     description: str | None = None
+
+    def __post_init__(self) -> None:
+        if self.state not in VALID_US_STATES:
+            raise ValueError(f"Invalid US state code: '{self.state}'")
+        if self.ein is not None and not _EIN_PATTERN.match(self.ein):
+            raise ValueError(f"Invalid EIN format: '{self.ein}' (expected XX-XXXXXXX)")
 
 
 @dataclass

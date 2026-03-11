@@ -1173,6 +1173,23 @@
         "title": "PreferencesUpdate",
         "type": "object"
       },
+      "RebalanceRequest": {
+        "properties": {
+          "balances": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "title": "Balances",
+            "type": "array"
+          }
+        },
+        "required": [
+          "balances"
+        ],
+        "title": "RebalanceRequest",
+        "type": "object"
+      },
       "RecommendationItem": {
         "properties": {
           "action": {
@@ -4255,6 +4272,40 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ImportRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/portfolio/rebalance": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RebalanceRequest"
               }
             }
           },

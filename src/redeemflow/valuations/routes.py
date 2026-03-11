@@ -13,6 +13,7 @@ from pydantic import BaseModel, Field
 
 from redeemflow.optimization.graph import TransferGraph
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
+from redeemflow.recommendations.card_recommender import recommend_cards, recommend_combo
 from redeemflow.valuations.aggregator import AggregationStrategy, aggregate_cpp, batch_aggregate
 from redeemflow.valuations.savings import analyze_savings
 from redeemflow.valuations.seed_data import CREDIT_CARDS, PROGRAM_VALUATIONS
@@ -152,6 +153,59 @@ def recommend_card(req: CardRecommendRequest):
 
     recommendations.sort(key=lambda r: float(r["annual_value"]), reverse=True)
     return {"category": req.category, "monthly_spend": req.monthly_spend, "recommendations": recommendations}
+
+
+class SpendProfileRequest(BaseModel):
+    monthly_spend: dict[str, float]
+    max_results: int = Field(default=5, ge=1, le=20)
+
+
+@router.post("/api/recommend-cards")
+def recommend_cards_endpoint(req: SpendProfileRequest):
+    """Recommend cards based on full monthly spend profile across categories."""
+    spend = {k: Decimal(str(v)) for k, v in req.monthly_spend.items()}
+    scores = recommend_cards(spend, CREDIT_CARDS, PROGRAM_VALUATIONS, max_results=req.max_results)
+    return {
+        "recommendations": [
+            {
+                "card_id": s.card_id,
+                "card_name": s.card_name,
+                "issuer": s.issuer,
+                "currency": s.currency,
+                "annual_fee": str(s.annual_fee),
+                "net_annual_fee": str(s.net_annual_fee),
+                "total_points_earned": s.total_points_earned,
+                "points_value": str(s.points_value),
+                "net_value": str(s.net_value),
+                "category_breakdown": s.category_breakdown,
+            }
+            for s in scores
+        ],
+    }
+
+
+@router.post("/api/recommend-combo")
+def recommend_combo_endpoint(req: SpendProfileRequest):
+    """Recommend optimal primary + secondary card combination."""
+    spend = {k: Decimal(str(v)) for k, v in req.monthly_spend.items()}
+    combo = recommend_combo(spend, CREDIT_CARDS, PROGRAM_VALUATIONS)
+
+    def _card_to_dict(s):
+        return {
+            "card_id": s.card_id,
+            "card_name": s.card_name,
+            "issuer": s.issuer,
+            "net_value": str(s.net_value),
+            "total_points_earned": s.total_points_earned,
+        }
+
+    return {
+        "primary_card": _card_to_dict(combo.primary_card),
+        "secondary_card": _card_to_dict(combo.secondary_card) if combo.secondary_card else None,
+        "combined_net_value": str(combo.combined_net_value),
+        "combined_points": combo.combined_points,
+        "strategy_summary": combo.strategy_summary,
+    }
 
 
 @router.post("/api/savings")

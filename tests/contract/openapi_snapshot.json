@@ -481,6 +481,29 @@
         "title": "SavingsRequest",
         "type": "object"
       },
+      "SpendProfileRequest": {
+        "properties": {
+          "max_results": {
+            "default": 5,
+            "maximum": 20.0,
+            "minimum": 1.0,
+            "title": "Max Results",
+            "type": "integer"
+          },
+          "monthly_spend": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Monthly Spend",
+            "type": "object"
+          }
+        },
+        "required": [
+          "monthly_spend"
+        ],
+        "title": "SpendProfileRequest",
+        "type": "object"
+      },
       "SubscribeRequest": {
         "properties": {
           "tier": {
@@ -1905,6 +1928,74 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/CardRecommendRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/recommend-cards": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpendProfileRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/recommend-combo": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SpendProfileRequest"
               }
             }
           },

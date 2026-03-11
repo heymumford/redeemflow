@@ -20,6 +20,7 @@ from redeemflow.optimization.graph_analytics import (
     program_connectivity,
 )
 from redeemflow.optimization.multi_traveler import MultiTravelerOptimizer, Traveler
+from redeemflow.optimization.path_optimizer import find_efficient_paths, find_top_paths
 from redeemflow.optimization.personal_optimizer import PersonalOptimizer
 from redeemflow.optimization.seed_data import ALL_PARTNERS, REDEMPTION_OPTIONS
 from redeemflow.optimization.timing_advisor import TimingAdvisor
@@ -199,5 +200,53 @@ def get_transfer_bonuses():
                 "effective_ratio": b.effective_ratio,
             }
             for b in bonuses
+        ],
+    }
+
+
+class PathSearchRequest(BaseModel):
+    program: str
+    points: int
+    max_results: int = 5
+
+
+@router.post("/api/paths/top")
+def top_paths(req: PathSearchRequest):
+    """Find top transfer paths ranked by effective CPP."""
+    paths = find_top_paths(_GRAPH, req.program, req.points, req.max_results)
+    return {
+        "program": req.program,
+        "points": req.points,
+        "paths": [
+            {
+                "route": p.route,
+                "hops": p.hops,
+                "effective_cpp": str(p.effective_cpp),
+                "source_points_needed": p.source_points_needed,
+                "redemption": p.redemption,
+                "efficiency_score": str(p.efficiency_score),
+            }
+            for p in paths
+        ],
+    }
+
+
+@router.post("/api/paths/efficient")
+def efficient_paths(req: PathSearchRequest):
+    """Find paths ranked by efficiency (CPP per hop)."""
+    paths = find_efficient_paths(_GRAPH, req.program, req.points, req.max_results)
+    return {
+        "program": req.program,
+        "points": req.points,
+        "paths": [
+            {
+                "route": p.route,
+                "hops": p.hops,
+                "effective_cpp": str(p.effective_cpp),
+                "source_points_needed": p.source_points_needed,
+                "redemption": p.redemption,
+                "efficiency_score": str(p.efficiency_score),
+            }
+            for p in paths
         ],
     }

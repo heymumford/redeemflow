@@ -19,6 +19,7 @@ from redeemflow.search.conference_planner import WOMEN_CONFERENCES, ConferencePl
 from redeemflow.search.filters import SearchFilters, SortDirection, SortField, apply_filters, search_summary
 from redeemflow.search.safety_scores import FakeSafetyDataProvider
 from redeemflow.search.sweet_spots import SweetSpotCategory, ValueRating, find_sweet_spots
+from redeemflow.search.trip_planner import build_trip_from_segments, get_trip, get_trips, next_trip_id, save_trip
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
 
 router = APIRouter()
@@ -338,5 +339,83 @@ def list_sweet_spots(
                 "notes": s.notes,
             }
             for s in spots
+        ],
+    }
+
+
+class CreateTripRequest(BaseModel):
+    name: str
+    segments: list[dict] = []
+
+
+@router.get("/api/trips")
+def list_trips(user: User = Depends(get_current_user)):
+    """List all trips for the user."""
+    trips = get_trips(user.id)
+    return {
+        "trips": [
+            {
+                "trip_id": t.trip_id,
+                "name": t.name,
+                "segment_count": len(t.segments),
+                "total_points": sum(s.points_cost for s in t.segments),
+            }
+            for t in trips
+        ],
+    }
+
+
+@router.post("/api/trips")
+def create_trip(req: CreateTripRequest, user: User = Depends(get_current_user)):
+    """Create a new trip with segments."""
+    trip_id = next_trip_id(user.id)
+    trip = build_trip_from_segments(trip_id, req.name, req.segments)
+    save_trip(user.id, trip)
+    summary = trip.summarize()
+    return {
+        "trip_id": trip_id,
+        "name": trip.name,
+        "total_segments": summary.total_segments,
+        "total_points": summary.total_points,
+        "total_cash": str(summary.total_cash),
+        "avg_cpp": str(summary.avg_cpp),
+        "value_vs_cash": str(summary.value_vs_cash),
+        "programs_used": summary.programs_used,
+    }
+
+
+@router.get("/api/trips/{trip_id}")
+def get_trip_detail(trip_id: str, user: User = Depends(get_current_user)):
+    """Get detailed trip with all segments and metrics."""
+    trip = get_trip(user.id, trip_id)
+    if trip is None:
+        return {"error": "Trip not found"}
+
+    summary = trip.summarize()
+    return {
+        "trip_id": trip.trip_id,
+        "name": trip.name,
+        "total_segments": summary.total_segments,
+        "total_points": summary.total_points,
+        "total_cash": str(summary.total_cash),
+        "total_value": str(summary.total_value),
+        "avg_cpp": str(summary.avg_cpp),
+        "value_vs_cash": str(summary.value_vs_cash),
+        "programs_used": summary.programs_used,
+        "segments": [
+            {
+                "segment_id": s.segment_id,
+                "segment_type": s.segment_type.value,
+                "description": s.description,
+                "origin": s.origin,
+                "destination": s.destination,
+                "date": s.date,
+                "points_cost": s.points_cost,
+                "cash_cost": str(s.cash_cost),
+                "program_code": s.program_code,
+                "booking_method": s.booking_method.value,
+                "cpp": str(s.cpp),
+            }
+            for s in summary.segments
         ],
     }

@@ -1042,6 +1042,55 @@
         "title": "MultiTravelerRequest",
         "type": "object"
       },
+      "OnboardingRequest": {
+        "properties": {
+          "home_airport": {
+            "default": "",
+            "title": "Home Airport",
+            "type": "string"
+          },
+          "interested_in_flights": {
+            "default": true,
+            "title": "Interested In Flights",
+            "type": "boolean"
+          },
+          "interested_in_hotels": {
+            "default": true,
+            "title": "Interested In Hotels",
+            "type": "boolean"
+          },
+          "preferred_cabins": {
+            "default": [],
+            "items": {
+              "type": "string"
+            },
+            "title": "Preferred Cabins",
+            "type": "array"
+          },
+          "programs": {
+            "items": {
+              "$ref": "#/components/schemas/ProgramInput"
+            },
+            "title": "Programs",
+            "type": "array"
+          },
+          "travel_frequency": {
+            "default": 4,
+            "title": "Travel Frequency",
+            "type": "integer"
+          },
+          "travel_style": {
+            "default": "comfort",
+            "title": "Travel Style",
+            "type": "string"
+          }
+        },
+        "required": [
+          "programs"
+        ],
+        "title": "OnboardingRequest",
+        "type": "object"
+      },
       "PathSearchRequest": {
         "properties": {
           "max_results": {
@@ -1171,6 +1220,29 @@
           }
         },
         "title": "PreferencesUpdate",
+        "type": "object"
+      },
+      "ProgramInput": {
+        "properties": {
+          "estimated_balance": {
+            "default": 0,
+            "title": "Estimated Balance",
+            "type": "integer"
+          },
+          "is_primary": {
+            "default": false,
+            "title": "Is Primary",
+            "type": "boolean"
+          },
+          "program_code": {
+            "title": "Program Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "program_code"
+        ],
+        "title": "ProgramInput",
         "type": "object"
       },
       "RebalanceRequest": {
@@ -4014,6 +4086,40 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ChannelToggle"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        }
+      }
+    },
+    "/api/onboarding/complete": {
+      "post": {
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnboardingRequest"
               }
             }
           },

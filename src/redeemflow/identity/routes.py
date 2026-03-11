@@ -8,6 +8,12 @@ from pydantic import BaseModel
 from redeemflow.identity.api_keys import get_api_key_store
 from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
+from redeemflow.identity.onboarding import (
+    OnboardingProfile,
+    ProgramSelection,
+    TravelStyle,
+    complete_onboarding,
+)
 from redeemflow.identity.profile import (
     DisplayCurrency,
     DistanceUnit,
@@ -197,3 +203,79 @@ def revoke_api_key(key_id: str, user: User = Depends(get_current_user)):
 
         return JSONResponse(status_code=404, content={"detail": "Key not found"})
     return {"key": _serialize_key(revoked)}
+
+
+# ---------------------------------------------------------------------------
+# Onboarding
+# ---------------------------------------------------------------------------
+
+
+class ProgramInput(BaseModel):
+    program_code: str
+    estimated_balance: int = 0
+    is_primary: bool = False
+
+
+class OnboardingRequest(BaseModel):
+    programs: list[ProgramInput]
+    travel_style: str = "comfort"
+    home_airport: str = ""
+    preferred_cabins: list[str] = []
+    travel_frequency: int = 4
+    interested_in_hotels: bool = True
+    interested_in_flights: bool = True
+
+
+@router.post("/api/onboarding/complete")
+def onboarding_complete(req: OnboardingRequest, user: User = Depends(get_current_user)):
+    """Complete onboarding and get personalized setup recommendations."""
+    try:
+        style = TravelStyle(req.travel_style)
+    except ValueError:
+        style = TravelStyle.COMFORT
+
+    programs = [
+        ProgramSelection(
+            program_code=p.program_code,
+            estimated_balance=p.estimated_balance,
+            is_primary=p.is_primary,
+        )
+        for p in req.programs
+    ]
+
+    profile = OnboardingProfile(
+        travel_style=style,
+        home_airport=req.home_airport,
+        preferred_cabins=req.preferred_cabins,
+        travel_frequency=req.travel_frequency,
+        interested_in_hotels=req.interested_in_hotels,
+        interested_in_flights=req.interested_in_flights,
+    )
+
+    report = complete_onboarding(user.id, programs, profile)
+    return {
+        "current_step": report.current_step.value,
+        "programs": [
+            {
+                "program_code": p.program_code,
+                "estimated_balance": p.estimated_balance,
+                "is_primary": p.is_primary,
+            }
+            for p in report.programs
+        ],
+        "suggested_goals": [
+            {
+                "goal_name": g.goal_name,
+                "program_code": g.program_code,
+                "target_points": g.target_points,
+                "estimated_value": str(g.estimated_value),
+                "category": g.category,
+                "rationale": g.rationale,
+            }
+            for g in report.suggested_goals
+        ],
+        "quick_wins": report.quick_wins,
+        "next_actions": report.next_actions,
+        "estimated_portfolio_value": str(report.estimated_portfolio_value),
+        "completed_at": report.completed_at,
+    }

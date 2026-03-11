@@ -76,12 +76,13 @@ class TestNoProtocolCrossModuleImports:
         all_files = _get_python_files(SRC_ROOT)
 
         for filepath in all_files:
-            # Skip __pycache__, __init__.py, and the composition root
+            # Skip __pycache__, __init__.py, and composition roots
             if "__pycache__" in str(filepath):
                 continue
             if filepath.name == "__init__.py":
                 continue
-            if filepath.name == "app.py":
+            # app.py and ports.py are composition roots — they wire all ports
+            if filepath.name in ("app.py", "ports.py"):
                 continue
 
             file_module = _module_name(filepath)

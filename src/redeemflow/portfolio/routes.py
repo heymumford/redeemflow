@@ -11,6 +11,8 @@ from pydantic import BaseModel
 
 from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
+from redeemflow.portfolio.calendar import build_calendar
+from redeemflow.portfolio.expiration import EXPIRATION_POLICIES
 from redeemflow.portfolio.ports import PortfolioPort
 from redeemflow.recommendations.engine import RecommendationEngine
 
@@ -93,6 +95,50 @@ def recommendations(
             for r in recs
         ],
     )
+
+
+@router.get("/api/portfolio/calendar")
+def expiration_calendar(
+    user: User = Depends(get_current_user),
+    port: PortfolioPort = Depends(_get_portfolio_port),
+):
+    """Get expiration calendar for all portfolio balances."""
+    balances = port.fetch_balances(user.id)
+    summary = build_calendar(balances, EXPIRATION_POLICIES)
+
+    return {
+        "total_programs": summary.total_programs,
+        "programs_with_expiry": summary.programs_with_expiry,
+        "programs_safe": summary.programs_safe,
+        "critical_count": summary.critical_count,
+        "warning_count": summary.warning_count,
+        "total_points_at_risk": summary.total_points_at_risk,
+        "total_value_at_risk": str(summary.total_value_at_risk),
+        "events": [
+            {
+                "program_code": e.program_code,
+                "program_name": e.program_name,
+                "event_type": e.event_type,
+                "days_remaining": e.days_remaining,
+                "points_at_risk": e.points_at_risk,
+                "value_at_risk": str(e.value_at_risk),
+                "urgency": e.urgency.value,
+                "description": e.description,
+                "action": e.action,
+            }
+            for e in summary.events
+        ],
+        "next_event": (
+            {
+                "program_code": summary.next_event.program_code,
+                "days_remaining": summary.next_event.days_remaining,
+                "urgency": summary.next_event.urgency.value,
+                "description": summary.next_event.description,
+            }
+            if summary.next_event
+            else None
+        ),
+    }
 
 
 @router.post("/api/portfolio/sync")

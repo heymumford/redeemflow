@@ -2992,6 +2992,20 @@
         }
       }
     },
+    "/api/portfolio/calendar": {
+      "get": {
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        }
+      }
+    },
     "/api/portfolio/sync": {
       "post": {
         "responses": {

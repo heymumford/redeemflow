@@ -22,6 +22,7 @@ from redeemflow.search.seasonal_pricing import seasonal_advisory
 from redeemflow.search.sweet_spots import SweetSpotCategory, ValueRating, find_sweet_spots
 from redeemflow.search.trip_comparison import RedemptionOption, compare_options, rank_options
 from redeemflow.search.trip_planner import build_trip_from_segments, get_trip, get_trips, next_trip_id, save_trip
+from redeemflow.search.trip_sharing import SharePermission, get_trip_share_store
 from redeemflow.valuations.seed_data import PROGRAM_VALUATIONS
 
 router = APIRouter()
@@ -529,3 +530,77 @@ def get_trip_detail(trip_id: str, user: User = Depends(get_current_user)):
             for s in summary.segments
         ],
     }
+
+
+# ---------------------------------------------------------------------------
+# Trip sharing endpoints
+# ---------------------------------------------------------------------------
+
+
+class CreateShareRequest(BaseModel):
+    permission: str = "view"
+
+
+def _serialize_share(share) -> dict:
+    return {
+        "share_id": share.share_id,
+        "trip_id": share.trip_id,
+        "permission": share.permission.value,
+        "created_at": share.created_at,
+        "is_active": share.is_active,
+        "view_count": share.view_count,
+        "last_viewed_at": share.last_viewed_at,
+    }
+
+
+@router.post("/api/trips/{trip_id}/share")
+def share_trip(trip_id: str, req: CreateShareRequest, user: User = Depends(get_current_user)):
+    """Create a shareable link for a trip."""
+    store = get_trip_share_store()
+    try:
+        perm = SharePermission(req.permission)
+    except ValueError:
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(status_code=400, content={"detail": f"Invalid permission: {req.permission}"})
+
+    link = store.create_share(trip_id, user.id, perm)
+    return {"token": link.token, "share": _serialize_share(link)}
+
+
+@router.get("/api/shared/{token}")
+def view_shared_trip(token: str):
+    """View a shared trip (public — no auth required)."""
+    store = get_trip_share_store()
+    share = store.record_view(token)
+    if share is None:
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(status_code=404, content={"detail": "Share not found or expired"})
+
+    return {
+        "trip_id": share.trip_id,
+        "permission": share.permission.value,
+        "view_count": share.view_count,
+    }
+
+
+@router.get("/api/shares")
+def list_shares(user: User = Depends(get_current_user)):
+    """List all shares for the current user."""
+    store = get_trip_share_store()
+    shares = store.list_shares(user.id)
+    return {"shares": [_serialize_share(s) for s in shares]}
+
+
+@router.delete("/api/shares/{share_id}")
+def revoke_share(share_id: str, user: User = Depends(get_current_user)):
+    """Revoke a share link."""
+    store = get_trip_share_store()
+    revoked = store.revoke_share(share_id, user.id)
+    if revoked is None:
+        from fastapi.responses import JSONResponse
+
+        return JSONResponse(status_code=404, content={"detail": "Share not found"})
+
+    return {"share": _serialize_share(revoked)}

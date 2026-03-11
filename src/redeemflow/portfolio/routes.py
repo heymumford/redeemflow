@@ -13,6 +13,7 @@ from redeemflow.identity.auth import get_current_user
 from redeemflow.identity.models import User
 from redeemflow.portfolio.calendar import build_calendar
 from redeemflow.portfolio.expiration import EXPIRATION_POLICIES
+from redeemflow.portfolio.household import HouseholdMember, get_or_create_household
 from redeemflow.portfolio.ports import PortfolioPort
 from redeemflow.recommendations.engine import RecommendationEngine
 
@@ -154,3 +155,56 @@ def sync_portfolio(
         programs_failed=result.programs_failed,
         message=result.message,
     )
+
+
+class AddMemberRequest(BaseModel):
+    member_id: str
+    name: str
+    role: str = "other"
+    programs: dict[str, int] = {}
+
+
+@router.get("/api/household")
+def get_household_summary(user: User = Depends(get_current_user)):
+    """Get household summary with pooled balances and optimization opportunities."""
+    household = get_or_create_household(user.id)
+    summary = household.summarize()
+    return {
+        "household_id": summary.household_id,
+        "member_count": summary.member_count,
+        "total_programs": summary.total_programs,
+        "total_points": summary.total_points,
+        "unique_programs": summary.unique_programs,
+        "pooled_balances": [
+            {
+                "program_code": b.program_code,
+                "total_points": b.total_points,
+                "member_count": b.member_count,
+                "contributors": b.contributors,
+            }
+            for b in summary.pooled_balances
+        ],
+        "optimization_opportunities": summary.optimization_opportunities,
+    }
+
+
+@router.post("/api/household/member")
+def add_household_member(req: AddMemberRequest, user: User = Depends(get_current_user)):
+    """Add a member to the household."""
+    household = get_or_create_household(user.id)
+    member = HouseholdMember(
+        member_id=req.member_id,
+        name=req.name,
+        role=req.role,
+        programs=req.programs,
+    )
+    household.add_member(member)
+    return {"status": "added", "member_id": req.member_id, "household_members": len(household.members)}
+
+
+@router.delete("/api/household/member/{member_id}")
+def remove_household_member(member_id: str, user: User = Depends(get_current_user)):
+    """Remove a member from the household."""
+    household = get_or_create_household(user.id)
+    removed = household.remove_member(member_id)
+    return {"status": "removed" if removed else "not_found", "member_id": member_id}

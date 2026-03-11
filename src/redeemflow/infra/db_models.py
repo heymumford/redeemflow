@@ -2,13 +2,77 @@
 
 Uses SQLAlchemy Core (Table + MetaData), not ORM mapped classes.
 Keeps the DB layer separate from frozen dataclasses in domain models.
+
+Each table has companion to_domain() / from_domain() module-level functions
+in pg_repositories.py for bidirectional conversion with frozen dataclasses.
 """
 
 from __future__ import annotations
 
-from sqlalchemy import JSON, Boolean, Column, ForeignKey, Integer, MetaData, Numeric, Table, Text
+from sqlalchemy import JSON, Boolean, Column, Float, ForeignKey, Integer, MetaData, Numeric, Table, Text
 
 metadata = MetaData()
+
+# --- Portfolio tables ---
+
+loyalty_programs = Table(
+    "loyalty_programs",
+    metadata,
+    Column("code", Text, primary_key=True),
+    Column("name", Text, nullable=False),
+    Column("category", Text, nullable=False),
+    Column("cpp_min", Float, nullable=False),
+    Column("cpp_max", Float, nullable=False),
+)
+
+transfer_partners = Table(
+    "transfer_partners",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("source_program", Text, nullable=False, index=True),
+    Column("target_program", Text, nullable=False, index=True),
+    Column("transfer_ratio", Float, nullable=False),
+    Column("transfer_bonus", Float, nullable=False, default=0.0),
+    Column("min_transfer", Integer, nullable=False, default=1000),
+    Column("is_instant", Boolean, nullable=False, default=True),
+)
+
+user_portfolios = Table(
+    "user_portfolios",
+    metadata,
+    Column("user_id", Text, primary_key=True),
+)
+
+program_balances = Table(
+    "program_balances",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("user_id", Text, ForeignKey("user_portfolios.user_id", ondelete="CASCADE"), nullable=False, index=True),
+    Column("program_code", Text, nullable=False),
+    Column("points", Integer, nullable=False),
+    Column("cpp_baseline", Numeric(8, 4), nullable=False),
+)
+
+# --- Charity tables ---
+
+charity_partners = Table(
+    "charity_partners",
+    metadata,
+    Column("id", Integer, primary_key=True, autoincrement=True),
+    Column("name", Text, nullable=False),
+    Column("category", Text, nullable=False),
+    Column("state", Text, nullable=False),
+    Column("national_url", Text, nullable=False),
+    Column("is_501c3", Boolean, nullable=False),
+    Column("chapter_name", Text),
+    Column("chapter_url", Text),
+    Column("donation_url", Text),
+    Column("accepts_points_donation", Boolean, nullable=False, default=False),
+    Column("ein", Text),
+    Column("description", Text),
+)
+
+# --- Billing tables ---
 
 subscriptions = Table(
     "subscriptions",

@@ -23,6 +23,11 @@ EXPECTED_TABLES = frozenset(
         "founder_profiles",
         "auto_donate_rules",
         "charity_alignments",
+        "loyalty_programs",
+        "transfer_partners",
+        "user_portfolios",
+        "program_balances",
+        "charity_partners",
     }
 )
 

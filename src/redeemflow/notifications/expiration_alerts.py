@@ -148,8 +148,7 @@ def check_portfolio_expirations(
                 days_remaining=alert.days_until_expiry,
                 priority=priority,
                 title=(
-                    f"{alert.program_code}: {alert.points_at_risk:,} points "
-                    f"expiring in ~{alert.days_until_expiry} days"
+                    f"{alert.program_code}: {alert.points_at_risk:,} points expiring in ~{alert.days_until_expiry} days"
                 ),
                 message=(
                     f"Your {alert.points_at_risk:,} {alert.program_code} points "

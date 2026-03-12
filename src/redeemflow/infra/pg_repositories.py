@@ -20,6 +20,7 @@ from redeemflow.charity.models import CharityCategory, CharityOrganization
 from redeemflow.community.forum import ForumCategory, ForumPost, ForumReply
 from redeemflow.community.founders_network import FounderProfile, FounderStatus
 from redeemflow.community.models import CommunityPool, Pledge, PoolStatus
+from redeemflow.identity.tenant import get_current_tenant_id
 from redeemflow.infra.db_models import (
     auto_donate_rules,
     charity_alignments,
@@ -327,6 +328,7 @@ class PgSubscriptionRepository:
                 subscriptions.insert().values(
                     id=sub.id,
                     user_id=sub.user_id,
+                    tenant_id=get_current_tenant_id(),
                     tier=sub.tier.value,
                     status=sub.status,
                     current_period_start=sub.current_period_start,
@@ -338,28 +340,49 @@ class PgSubscriptionRepository:
 
     def get_by_user(self, user_id: str) -> Subscription | None:
         with self._sf() as s:
-            row = s.execute(select(subscriptions).where(subscriptions.c.user_id == user_id)).first()
+            row = s.execute(
+                select(subscriptions).where(
+                    subscriptions.c.user_id == user_id,
+                    subscriptions.c.tenant_id == get_current_tenant_id(),
+                )
+            ).first()
             return self._to_domain(row) if row else None
 
     def get(self, sub_id: str) -> Subscription | None:
         with self._sf() as s:
-            row = s.execute(select(subscriptions).where(subscriptions.c.id == sub_id)).first()
+            row = s.execute(
+                select(subscriptions).where(
+                    subscriptions.c.id == sub_id,
+                    subscriptions.c.tenant_id == get_current_tenant_id(),
+                )
+            ).first()
             return self._to_domain(row) if row else None
 
     def update_status(self, sub_id: str, status: str) -> None:
         with self._sf() as s:
-            s.execute(update(subscriptions).where(subscriptions.c.id == sub_id).values(status=status))
+            s.execute(
+                update(subscriptions)
+                .where(subscriptions.c.id == sub_id, subscriptions.c.tenant_id == get_current_tenant_id())
+                .values(status=status)
+            )
             s.commit()
 
     def delete(self, sub_id: str) -> bool:
         with self._sf() as s:
-            result = s.execute(delete(subscriptions).where(subscriptions.c.id == sub_id))
+            result = s.execute(
+                delete(subscriptions).where(
+                    subscriptions.c.id == sub_id,
+                    subscriptions.c.tenant_id == get_current_tenant_id(),
+                )
+            )
             s.commit()
             return result.rowcount > 0
 
     def list_all(self) -> list[Subscription]:
         with self._sf() as s:
-            rows = s.execute(select(subscriptions)).fetchall()
+            rows = s.execute(
+                select(subscriptions).where(subscriptions.c.tenant_id == get_current_tenant_id())
+            ).fetchall()
             return [self._to_domain(r) for r in rows]
 
     @staticmethod
@@ -385,6 +408,7 @@ class PgDonationRepository:
                 donations.insert().values(
                     id=donation.id,
                     user_id=donation.user_id,
+                    tenant_id=get_current_tenant_id(),
                     charity_name=donation.charity_name,
                     charity_state=donation.charity_state,
                     program_code=donation.program_code,
@@ -400,17 +424,27 @@ class PgDonationRepository:
 
     def get(self, donation_id: str) -> Donation | None:
         with self._sf() as s:
-            row = s.execute(select(donations).where(donations.c.id == donation_id)).first()
+            row = s.execute(
+                select(donations).where(
+                    donations.c.id == donation_id,
+                    donations.c.tenant_id == get_current_tenant_id(),
+                )
+            ).first()
             return self._to_domain(row) if row else None
 
     def get_by_user(self, user_id: str) -> list[Donation]:
         with self._sf() as s:
-            rows = s.execute(select(donations).where(donations.c.user_id == user_id)).fetchall()
+            rows = s.execute(
+                select(donations).where(
+                    donations.c.user_id == user_id,
+                    donations.c.tenant_id == get_current_tenant_id(),
+                )
+            ).fetchall()
             return [self._to_domain(r) for r in rows]
 
     def get_all(self) -> list[Donation]:
         with self._sf() as s:
-            rows = s.execute(select(donations)).fetchall()
+            rows = s.execute(select(donations).where(donations.c.tenant_id == get_current_tenant_id())).fetchall()
             return [self._to_domain(r) for r in rows]
 
     def list_all(self) -> list[Donation]:
@@ -418,7 +452,12 @@ class PgDonationRepository:
 
     def delete(self, donation_id: str) -> bool:
         with self._sf() as s:
-            result = s.execute(delete(donations).where(donations.c.id == donation_id))
+            result = s.execute(
+                delete(donations).where(
+                    donations.c.id == donation_id,
+                    donations.c.tenant_id == get_current_tenant_id(),
+                )
+            )
             s.commit()
             return result.rowcount > 0
 
@@ -461,6 +500,7 @@ class PgPoolRepository:
                         id=pool.id,
                         name=pool.name,
                         creator_id=pool.creator_id,
+                        tenant_id=get_current_tenant_id(),
                         target_charity_name=pool.target_charity_name,
                         target_charity_state=pool.target_charity_state,
                         goal_amount=pool.goal_amount,
@@ -488,7 +528,12 @@ class PgPoolRepository:
 
     def get(self, pool_id: str) -> CommunityPool | None:
         with self._sf() as s:
-            row = s.execute(select(community_pools).where(community_pools.c.id == pool_id)).first()
+            row = s.execute(
+                select(community_pools).where(
+                    community_pools.c.id == pool_id,
+                    community_pools.c.tenant_id == get_current_tenant_id(),
+                )
+            ).first()
             if not row:
                 return None
             pledge_rows = s.execute(select(pledges).where(pledges.c.pool_id == pool_id)).fetchall()
@@ -496,7 +541,9 @@ class PgPoolRepository:
 
     def list_all(self) -> list[CommunityPool]:
         with self._sf() as s:
-            rows = s.execute(select(community_pools)).fetchall()
+            rows = s.execute(
+                select(community_pools).where(community_pools.c.tenant_id == get_current_tenant_id())
+            ).fetchall()
             result = []
             for row in rows:
                 pledge_rows = s.execute(select(pledges).where(pledges.c.pool_id == row.id)).fetchall()
@@ -505,7 +552,12 @@ class PgPoolRepository:
 
     def delete(self, pool_id: str) -> bool:
         with self._sf() as s:
-            result = s.execute(delete(community_pools).where(community_pools.c.id == pool_id))
+            result = s.execute(
+                delete(community_pools).where(
+                    community_pools.c.id == pool_id,
+                    community_pools.c.tenant_id == get_current_tenant_id(),
+                )
+            )
             s.commit()
             return result.rowcount > 0
 
@@ -567,6 +619,7 @@ class PgForumRepository:
                         updated_at=post.updated_at,
                         upvotes=post.upvotes,
                         is_pinned=post.is_pinned,
+                        tenant_id=get_current_tenant_id(),
                     )
                 )
             s.commit()
@@ -588,7 +641,12 @@ class PgForumRepository:
 
     def get_post(self, post_id: str) -> ForumPost | None:
         with self._sf() as s:
-            row = s.execute(select(forum_posts).where(forum_posts.c.id == post_id)).first()
+            row = s.execute(
+                select(forum_posts).where(
+                    forum_posts.c.id == post_id,
+                    forum_posts.c.tenant_id == get_current_tenant_id(),
+                )
+            ).first()
             if not row:
                 return None
             reply_rows = s.execute(select(forum_replies).where(forum_replies.c.post_id == post_id)).fetchall()
@@ -596,7 +654,7 @@ class PgForumRepository:
 
     def list_posts(self, category: ForumCategory | None, page: int, per_page: int) -> list[ForumPost]:
         with self._sf() as s:
-            q = select(forum_posts)
+            q = select(forum_posts).where(forum_posts.c.tenant_id == get_current_tenant_id())
             if category is not None:
                 q = q.where(forum_posts.c.category == category.value)
             offset = (page - 1) * per_page
@@ -612,7 +670,10 @@ class PgForumRepository:
         with self._sf() as s:
             q_lower = f"%{query.lower()}%"
             rows = s.execute(
-                select(forum_posts).where(forum_posts.c.title.ilike(q_lower) | forum_posts.c.content.ilike(q_lower))
+                select(forum_posts).where(
+                    forum_posts.c.tenant_id == get_current_tenant_id(),
+                    forum_posts.c.title.ilike(q_lower) | forum_posts.c.content.ilike(q_lower),
+                )
             ).fetchall()
             result = []
             for row in rows:
@@ -622,7 +683,12 @@ class PgForumRepository:
 
     def delete_post(self, post_id: str) -> bool:
         with self._sf() as s:
-            result = s.execute(delete(forum_posts).where(forum_posts.c.id == post_id))
+            result = s.execute(
+                delete(forum_posts).where(
+                    forum_posts.c.id == post_id,
+                    forum_posts.c.tenant_id == get_current_tenant_id(),
+                )
+            )
             s.commit()
             return result.rowcount > 0
 
@@ -694,18 +760,24 @@ class PgFounderRepository:
                         travel_interests=profile.travel_interests,
                         is_mentor=profile.is_mentor,
                         mentor_topics=profile.mentor_topics,
+                        tenant_id=get_current_tenant_id(),
                     )
                 )
             s.commit()
 
     def get(self, user_id: str) -> FounderProfile | None:
         with self._sf() as s:
-            row = s.execute(select(founder_profiles).where(founder_profiles.c.user_id == user_id)).first()
+            row = s.execute(
+                select(founder_profiles).where(
+                    founder_profiles.c.user_id == user_id,
+                    founder_profiles.c.tenant_id == get_current_tenant_id(),
+                )
+            ).first()
             return self._to_domain(row) if row else None
 
     def list_members(self, status: FounderStatus | None) -> list[FounderProfile]:
         with self._sf() as s:
-            q = select(founder_profiles)
+            q = select(founder_profiles).where(founder_profiles.c.tenant_id == get_current_tenant_id())
             if status is not None:
                 q = q.where(founder_profiles.c.status == status.value)
             rows = s.execute(q).fetchall()
@@ -716,7 +788,8 @@ class PgFounderRepository:
             q_lower = f"%{query.lower()}%"
             rows = s.execute(
                 select(founder_profiles).where(
-                    founder_profiles.c.name.ilike(q_lower) | founder_profiles.c.company_name.ilike(q_lower)
+                    founder_profiles.c.tenant_id == get_current_tenant_id(),
+                    founder_profiles.c.name.ilike(q_lower) | founder_profiles.c.company_name.ilike(q_lower),
                 )
             ).fetchall()
             return [self._to_domain(r) for r in rows]
@@ -754,23 +827,39 @@ class PgAutoDonateRepository:
                     charity_state=rule.charity_state,
                     days_unused_threshold=rule.days_unused_threshold,
                     is_active=rule.is_active,
+                    tenant_id=get_current_tenant_id(),
                 )
             )
             s.commit()
 
     def get_by_user(self, user_id: str) -> list[AutoDonateRule]:
         with self._sf() as s:
-            rows = s.execute(select(auto_donate_rules).where(auto_donate_rules.c.user_id == user_id)).fetchall()
+            rows = s.execute(
+                select(auto_donate_rules).where(
+                    auto_donate_rules.c.user_id == user_id,
+                    auto_donate_rules.c.tenant_id == get_current_tenant_id(),
+                )
+            ).fetchall()
             return [self._to_domain(r) for r in rows]
 
     def delete(self, rule_id: str) -> None:
         with self._sf() as s:
-            s.execute(delete(auto_donate_rules).where(auto_donate_rules.c.id == rule_id))
+            s.execute(
+                delete(auto_donate_rules).where(
+                    auto_donate_rules.c.id == rule_id,
+                    auto_donate_rules.c.tenant_id == get_current_tenant_id(),
+                )
+            )
             s.commit()
 
     def get_all_active(self) -> list[AutoDonateRule]:
         with self._sf() as s:
-            rows = s.execute(select(auto_donate_rules).where(auto_donate_rules.c.is_active.is_(True))).fetchall()
+            rows = s.execute(
+                select(auto_donate_rules).where(
+                    auto_donate_rules.c.is_active.is_(True),
+                    auto_donate_rules.c.tenant_id == get_current_tenant_id(),
+                )
+            ).fetchall()
             return [self._to_domain(r) for r in rows]
 
     @staticmethod

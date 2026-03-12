@@ -89,10 +89,15 @@ class TestBranchProtectionConfig:
         assert os.access(self.CONFIG, os.X_OK), "setup-branch-protection.sh must be executable"
 
     def test_config_requires_ci_checks(self):
-        """Config must require exactly the 6 CI jobs as status checks."""
+        """Config must require exactly the 6 CI jobs in the contexts array."""
+        import re
+
         content = self.CONFIG.read_text()
+        match = re.search(r'"contexts"\s*:\s*\[(.*?)\]', content, re.DOTALL)
+        assert match, "Must contain contexts array in JSON payload"
+        contexts_block = match.group(1)
         for job in CI_JOBS:
-            assert job in content, f"Branch protection must require CI job '{job}'"
+            assert job in contexts_block, f"contexts array must include CI job '{job}'"
 
     def test_config_does_not_require_bots(self):
         """Required status checks must not include agentic bots."""

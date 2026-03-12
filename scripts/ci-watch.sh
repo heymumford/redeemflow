@@ -34,9 +34,14 @@ while (( elapsed < MAX_WAIT )); do
   any_failed=false
 
   checks_json=$(gh pr checks "$PR_NUMBER" --json name,state 2>/dev/null || echo "[]")
+  # Batch extract all states in one jq call (name=state pairs)
+  declare -A states=()
+  while IFS='=' read -r k v; do
+    [[ -n "$k" ]] && states["$k"]="$v"
+  done < <(echo "$checks_json" | jq -r '.[] | "\(.name)=\(.state)"' 2>/dev/null)
 
   for job in "${CI_JOBS[@]}"; do
-    state=$(echo "$checks_json" | jq -r --arg name "$job" '.[] | select(.name == $name) | .state' 2>/dev/null)
+    state="${states[$job]:-}"
 
     case "$state" in
       SUCCESS)

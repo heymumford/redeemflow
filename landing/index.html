@@ -758,12 +758,20 @@
         "price": "9.99",
         "priceCurrency": "USD",
         "description": "Premium — smart recommendations, deal alerts, and calendar sync",
-        "priceSpecification": {
-          "@type": "UnitPriceSpecification",
-          "price": "99.99",
-          "priceCurrency": "USD",
-          "billingDuration": "P1Y"
-        }
+        "priceSpecification": [
+          {
+            "@type": "UnitPriceSpecification",
+            "price": "9.99",
+            "priceCurrency": "USD",
+            "billingDuration": "P1M"
+          },
+          {
+            "@type": "UnitPriceSpecification",
+            "price": "99.99",
+            "priceCurrency": "USD",
+            "billingDuration": "P1Y"
+          }
+        ]
       }
     ],
     "creator": {

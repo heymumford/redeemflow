@@ -32,4 +32,18 @@ Thumbs.db
 .coverage
 htmlcov/
 .pytest_cache/
+.hypothesis/
 tests/landing/screenshots/
+
+# Playwright
+.playwright-mcp/
+
+# Ephemeral artifacts (bug bash, research, screenshots)
+*.png
+*.xlsx
+research/
+bug_bash_*.json
+test_coverage_gaps*.json
+consolidate_bugs*.py
+generate_research_excel.py
+*_api_research.json

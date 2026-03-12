@@ -156,8 +156,8 @@ class TestAPIEndpoints:
 
     def test_check_unknown_channel(self, client):
         resp = client.get("/api/notifications/check/devaluation/carrier_pigeon", headers=self.AUTH_HEADERS)
-        assert resp.status_code == 200
-        assert "error" in resp.json()
+        assert resp.status_code == 404
+        assert "detail" in resp.json()
 
     def test_unauthenticated_returns_401(self, client):
         resp = client.get("/api/notifications/preferences")

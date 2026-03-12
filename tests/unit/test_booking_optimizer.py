@@ -187,7 +187,8 @@ class TestBookingAPI:
             json={"cash_price": 100, "points_price": 5000, "program_code": "nonexistent"},
             headers=self.AUTH_HEADERS,
         )
-        assert "error" in resp.json()
+        assert resp.status_code == 404
+        assert "detail" in resp.json()
 
     def test_requires_auth(self, client):
         resp = client.post(

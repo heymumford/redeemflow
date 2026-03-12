@@ -193,7 +193,8 @@ class TestGoalsAPI:
             json={"current_points": 1000},
             headers=self.AUTH_HEADERS,
         )
-        assert "error" in resp.json()
+        assert resp.status_code == 404
+        assert "detail" in resp.json()
 
     def test_goals_require_auth(self, client):
         assert client.get("/api/goals").status_code == 401

@@ -9,6 +9,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from redeemflow.billing.models import SubscriptionTier
@@ -186,7 +187,7 @@ def list_webhook_events(
         try:
             status_filter = WebhookEventStatus(status)
         except ValueError:
-            return {"error": f"Invalid status: {status}"}
+            return JSONResponse(status_code=400, content={"detail": f"Invalid status: {status}"})
 
     events = event_log.list_events(status=status_filter, source=source, limit=limit)
     return {

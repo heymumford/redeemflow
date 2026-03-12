@@ -135,7 +135,8 @@ class TestProfileAPI:
             json={"display_currency": "btc"},
             headers=self.AUTH_HEADERS,
         )
-        assert "error" in resp.json()
+        assert resp.status_code == 400
+        assert "detail" in resp.json()
 
     def test_link_account(self, client):
         resp = client.post(

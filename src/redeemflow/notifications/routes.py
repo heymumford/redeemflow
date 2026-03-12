@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from redeemflow.identity.auth import get_current_user
@@ -108,8 +109,6 @@ def update_channel(channel_name: str, body: ChannelToggle, user: User = Depends(
     """Enable/disable a notification channel."""
     prefs = get_notification_prefs(user.id)
     if channel_name not in prefs.channels:
-        from fastapi.responses import JSONResponse
-
         return JSONResponse(status_code=400, content={"detail": f"Unknown channel: {channel_name}"})
     prefs.channels[channel_name].enabled = body.enabled
     cp = prefs.channels[channel_name]
@@ -184,7 +183,7 @@ def check_notification(alert_type: str, channel: str, user: User = Depends(get_c
     try:
         ch = NotificationChannel(channel)
     except ValueError:
-        return {"error": f"Unknown channel: {channel}"}
+        return JSONResponse(status_code=404, content={"detail": f"Unknown channel: {channel}"})
 
     result = should_notify(prefs, alert_type, ch)
     return {

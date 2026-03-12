@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 
 from redeemflow.admin.audit import AuditAction, get_audit_log
 from redeemflow.admin.dashboard import generate_dashboard
@@ -88,7 +89,10 @@ def audit_log_view(
         try:
             audit_action = AuditAction(action)
         except ValueError:
-            return {"error": f"Invalid action: {action}", "valid": [a.value for a in AuditAction]}
+            return JSONResponse(
+                status_code=400,
+                content={"detail": f"Invalid action: {action}", "valid": [a.value for a in AuditAction]},
+            )
 
     entries = log.query(
         user_id=user.id,

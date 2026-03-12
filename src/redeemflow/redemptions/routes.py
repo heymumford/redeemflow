@@ -5,6 +5,7 @@ from __future__ import annotations
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from redeemflow.identity.auth import get_current_user
@@ -60,7 +61,9 @@ def analyze_car(req: CarRentalRequest, user: User = Depends(get_current_user)):
     """Analyze car rental redemption value vs alternatives."""
     rental = best_car_rental(req.program)
     if rental is None:
-        return {"error": f"No car rental redemptions for program: {req.program}"}
+        return JSONResponse(
+            status_code=404, content={"detail": f"No car rental redemptions for program: {req.program}"}
+        )
     analysis = analyze_car_rental(rental, req.days, Decimal(str(req.alternative_cpp)))
     return {
         "provider": analysis.redemption.provider.value,
@@ -107,7 +110,7 @@ def analyze_retail(req: RetailAnalysisRequest, user: User = Depends(get_current_
     """Analyze retail redemption value destruction."""
     worst = worst_retail_redemption(req.program)
     if worst is None:
-        return {"error": f"No retail redemptions for program: {req.program}"}
+        return JSONResponse(status_code=404, content={"detail": f"No retail redemptions for program: {req.program}"})
     analysis = analyze_retail_redemption(worst, req.points, Decimal(str(req.best_travel_cpp)))
     return {
         "retail_type": analysis.redemption.retail_type.value,
@@ -158,7 +161,7 @@ def exchange_buy_analysis(req: BuyAnalysisRequest, user: User = Depends(get_curr
     """Analyze whether buying points is worthwhile."""
     analysis = analyze_buy(req.program, req.points, Decimal(str(req.target_redemption_cpp)))
     if analysis is None:
-        return {"error": f"No buy rates available for: {req.program}"}
+        return JSONResponse(status_code=404, content={"detail": f"No buy rates available for: {req.program}"})
     return {
         "program": analysis.program_code,
         "points": analysis.points,
@@ -180,7 +183,7 @@ def exchange_sell_analysis(req: SellAnalysisRequest, user: User = Depends(get_cu
     """Analyze the value of selling points for cash."""
     analysis = analyze_sell(req.program, req.points)
     if analysis is None:
-        return {"error": f"No sell rates available for: {req.program}"}
+        return JSONResponse(status_code=404, content={"detail": f"No sell rates available for: {req.program}"})
     return {
         "program": analysis.program_code,
         "points": analysis.points,

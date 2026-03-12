@@ -234,7 +234,8 @@ class TestTripAPI:
 
     def test_get_nonexistent_trip(self, client):
         resp = client.get("/api/trips/nope", headers=self.AUTH_HEADERS)
-        assert "error" in resp.json()
+        assert resp.status_code == 404
+        assert "detail" in resp.json()
 
     def test_trips_require_auth(self, client):
         assert client.get("/api/trips").status_code == 401

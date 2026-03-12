@@ -151,8 +151,8 @@ class TestAPIEndpoints:
             "/api/hotel-transfer/assess",
             json={"hotel_program": "hilton", "airline_program": "southwest", "points": 100000},
         )
-        assert resp.status_code == 200
-        assert "error" in resp.json()
+        assert resp.status_code == 404
+        assert "detail" in resp.json()
 
     def test_hotel_summary_endpoint(self, client):
         resp = client.get("/api/hotel-transfer/summary/marriott")
@@ -164,8 +164,8 @@ class TestAPIEndpoints:
 
     def test_hotel_summary_unknown_program(self, client):
         resp = client.get("/api/hotel-transfer/summary/nonexistent")
-        assert resp.status_code == 200
-        assert "error" in resp.json()
+        assert resp.status_code == 404
+        assert "detail" in resp.json()
 
     def test_graph_summary_reflects_new_partners(self, client):
         resp = client.get("/api/graph/summary")

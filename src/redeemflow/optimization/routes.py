@@ -8,6 +8,7 @@ from __future__ import annotations
 from decimal import Decimal
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from redeemflow.identity.auth import get_current_user
@@ -246,7 +247,7 @@ def get_graph_summary():
 def get_program_connectivity(program: str):
     """Get connectivity details for a specific program."""
     if program not in _GRAPH.programs:
-        return {"error": f"Unknown program: {program}"}
+        return JSONResponse(status_code=404, content={"detail": f"Unknown program: {program}"})
     conn = program_connectivity(_GRAPH, program)
     return {
         "program": conn.program,
@@ -289,7 +290,10 @@ def assess_transfer(req: HotelTransferRequest):
     """Assess whether a hotel-to-airline transfer is worthwhile."""
     assessment = assess_hotel_transfer(_GRAPH, req.hotel_program, req.airline_program, req.points)
     if assessment is None:
-        return {"error": f"No transfer partnership between {req.hotel_program} and {req.airline_program}"}
+        return JSONResponse(
+            status_code=404,
+            content={"detail": f"No transfer partnership between {req.hotel_program} and {req.airline_program}"},
+        )
     return {
         "hotel_program": assessment.hotel_program,
         "airline_program": assessment.airline_program,
@@ -308,7 +312,7 @@ def assess_transfer(req: HotelTransferRequest):
 def hotel_transfer_summary(program: str, points: int = 100000):
     """Get hotel program transfer economics summary."""
     if program not in _GRAPH.programs:
-        return {"error": f"Unknown program: {program}"}
+        return JSONResponse(status_code=404, content={"detail": f"Unknown program: {program}"})
     summary = summarize_hotel_program(_GRAPH, program, points)
     return {
         "program": summary.program,
@@ -449,7 +453,7 @@ def booking_analysis(req: BookingAnalysisRequest, user: User = Depends(get_curre
     """Analyze booking payment options: points vs cash vs mix."""
     val = PROGRAM_VALUATIONS.get(req.program_code)
     if val is None:
-        return {"error": f"Unknown program: {req.program_code}"}
+        return JSONResponse(status_code=404, content={"detail": f"Unknown program: {req.program_code}"})
 
     result = analyze_booking(
         cash_price=Decimal(str(req.cash_price)),

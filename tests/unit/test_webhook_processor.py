@@ -275,5 +275,5 @@ class TestWebhookAPIEndpoints:
             params={"status": "bogus"},
             headers=self.AUTH_HEADERS,
         )
-        assert resp.status_code == 200
-        assert "error" in resp.json()
+        assert resp.status_code == 400
+        assert "detail" in resp.json()

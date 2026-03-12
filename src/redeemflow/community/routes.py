@@ -133,7 +133,7 @@ def complete_pool(
 ):
     service = _get_pool_service(request)
     try:
-        pool = service.complete_pool(pool_id)
+        pool = service.complete_pool(pool_id, requesting_user_id=user.id)
     except ValueError as e:
         return JSONResponse(status_code=400, content={"detail": str(e)})
 

@@ -106,9 +106,15 @@ class PoolService:
         return pool
 
     def pledge(self, pool_id: str, user_id: str, program_code: str, points: int) -> Pledge:
+        if points <= 0:
+            raise ValueError("points must be greater than zero")
+
         pool = self._pools.get(pool_id)
         if pool is None:
             raise ValueError(f"Pool not found: {pool_id}")
+
+        if pool.status not in (PoolStatus.OPEN, PoolStatus.ACTIVE, PoolStatus.GOAL_REACHED):
+            raise ValueError(f"Cannot pledge to pool with status: {pool.status.value}")
 
         valuation = PROGRAM_VALUATIONS.get(program_code)
         if valuation is None:
@@ -135,10 +141,13 @@ class PoolService:
 
         return pledge
 
-    def complete_pool(self, pool_id: str) -> CommunityPool:
+    def complete_pool(self, pool_id: str, requesting_user_id: str | None = None) -> CommunityPool:
         pool = self._pools.get(pool_id)
         if pool is None:
             raise ValueError(f"Pool not found: {pool_id}")
+
+        if requesting_user_id is not None and requesting_user_id != pool.creator_id:
+            raise ValueError("Only the pool creator can complete the pool")
 
         if not pool.is_goal_reached():
             raise ValueError(f"Pool goal not reached: {pool.total_pledged()} of {pool.goal_amount}")
@@ -146,17 +155,19 @@ class PoolService:
         if not pool.pledges:
             raise ValueError("Cannot complete pool with no pledges")
 
-        # Execute aggregate donation via DonationService
-        total_points = sum(p.points_pledged for p in pool.pledges)
-        program_code = pool.pledges[0].program_code
+        # Group pledges by program_code and donate per-program
+        pledges_by_program: dict[str, int] = {}
+        for p in pool.pledges:
+            pledges_by_program[p.program_code] = pledges_by_program.get(p.program_code, 0) + p.points_pledged
 
-        self._donation_service.donate(
-            user_id=pool.creator_id,
-            charity_name=pool.target_charity_name,
-            charity_state=pool.target_charity_state,
-            program_code=program_code,
-            points=total_points,
-        )
+        for program_code, total_points in pledges_by_program.items():
+            self._donation_service.donate(
+                user_id=pool.creator_id,
+                charity_name=pool.target_charity_name,
+                charity_state=pool.target_charity_state,
+                program_code=program_code,
+                points=total_points,
+            )
 
         pool.status = PoolStatus.COMPLETED
         pool.completed_at = datetime.now(UTC).isoformat()

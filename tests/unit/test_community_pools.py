@@ -233,7 +233,7 @@ class TestPoolService:
             program_code="chase-ur",
             points=10000,
         )
-        completed = service.complete_pool(pool.id)
+        completed = service.complete_pool(pool.id, requesting_user_id="auth0|eric")
         assert completed.status == PoolStatus.COMPLETED
         assert completed.completed_at is not None
 
@@ -247,7 +247,46 @@ class TestPoolService:
             goal_amount=Decimal("999999.00"),
         )
         with pytest.raises(ValueError, match="goal"):
-            service.complete_pool(pool.id)
+            service.complete_pool(pool.id, requesting_user_id="auth0|eric")
+
+    def test_complete_pool_only_creator_allowed(self):
+        service = PoolService(donation_service=_make_donation_service())
+        pool = service.create_pool(
+            creator_id="auth0|eric",
+            name="Girl Scout Drive",
+            target_charity_name="Girl Scouts of the USA",
+            target_charity_state="TX",
+            goal_amount=Decimal("10.00"),
+        )
+        service.pledge(pool_id=pool.id, user_id="auth0|eric", program_code="chase-ur", points=10000)
+        with pytest.raises(ValueError, match="creator"):
+            service.complete_pool(pool.id, requesting_user_id="auth0|other")
+
+    def test_pledge_zero_points_raises(self):
+        service = PoolService(donation_service=_make_donation_service())
+        pool = service.create_pool(
+            creator_id="auth0|eric",
+            name="Girl Scout Drive",
+            target_charity_name="Girl Scouts of the USA",
+            target_charity_state="TX",
+            goal_amount=Decimal("500.00"),
+        )
+        with pytest.raises(ValueError, match="greater than zero"):
+            service.pledge(pool_id=pool.id, user_id="auth0|eric", program_code="chase-ur", points=0)
+
+    def test_pledge_to_completed_pool_raises(self):
+        service = PoolService(donation_service=_make_donation_service())
+        pool = service.create_pool(
+            creator_id="auth0|eric",
+            name="Girl Scout Drive",
+            target_charity_name="Girl Scouts of the USA",
+            target_charity_state="TX",
+            goal_amount=Decimal("10.00"),
+        )
+        service.pledge(pool_id=pool.id, user_id="auth0|eric", program_code="chase-ur", points=10000)
+        service.complete_pool(pool.id, requesting_user_id="auth0|eric")
+        with pytest.raises(ValueError, match="status"):
+            service.pledge(pool_id=pool.id, user_id="auth0|steve", program_code="chase-ur", points=5000)
 
     def test_list_pools(self):
         service = PoolService(donation_service=_make_donation_service())

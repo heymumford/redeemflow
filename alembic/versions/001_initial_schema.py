@@ -4,12 +4,15 @@ Revision ID: 001
 Revises: None
 Create Date: 2026-03-09
 """
+
 from __future__ import annotations
 
-from typing import Sequence, Union
+from collections.abc import Sequence
+from typing import Union
+
+import sqlalchemy as sa
 
 from alembic import op
-import sqlalchemy as sa
 
 revision: str = "001"
 down_revision: Union[str, None] = None
@@ -58,7 +61,9 @@ def upgrade() -> None:
         "pledges",
         sa.Column("id", sa.Text, primary_key=True),
         sa.Column("user_id", sa.Text, nullable=False),
-        sa.Column("pool_id", sa.Text, sa.ForeignKey("community_pools.id", ondelete="CASCADE"), nullable=False, index=True),
+        sa.Column(
+            "pool_id", sa.Text, sa.ForeignKey("community_pools.id", ondelete="CASCADE"), nullable=False, index=True
+        ),
         sa.Column("program_code", sa.Text, nullable=False),
         sa.Column("points_pledged", sa.Integer, nullable=False),
         sa.Column("dollar_value", sa.Numeric(12, 4), nullable=False),

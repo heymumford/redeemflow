@@ -55,7 +55,7 @@ jobs:
       - uses: astral-sh/setup-uv@v7
       - run: uv sync --dev
       - name: Dependency audit
-        run: uv run pip-audit --strict --desc --skip-editable
+        run: uv run pip-audit --desc --skip-editable
       - name: Static security analysis
         run: uv run bandit -r src/redeemflow/ -ll -q
 

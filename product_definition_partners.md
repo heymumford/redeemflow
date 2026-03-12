@@ -18,7 +18,12 @@ RedeemFlow is an **optimization advisor**, not a point broker. We never hold, tr
 | **T1: Search** | Award availability | Seats.aero | Live | Major airline alliances |
 | **T2: Commerce** | Buy/sell/transfer | Points.com, Currency Alliance | Not started | 60+ programs (Points.com) |
 | **T3: Donate** | Point-to-charity | Change API | Live | 1.5M+ nonprofits |
-| **Billing** | Subscription management | Stripe | Live | All tiers |
+
+**Platform services** (cross-cutting, not part of partner data tiers):
+
+| Service | Function | Platform | Status |
+|---------|----------|----------|--------|
+| Billing | Subscription management | Stripe | Live |
 
 ### Planned Evaluations
 
@@ -28,14 +33,14 @@ RedeemFlow is an **optimization advisor**, not a point broker. We never hold, tr
 
 ## Protocol Boundaries
 
-Every external integration implements a `Protocol` interface in `src/redeemflow/{domain}/ports.py`. Real adapters are env-var toggled. Tests use fakes with zero I/O.
+Every external integration implements a `Protocol` interface in `src/redeemflow/{domain}/ports.py`. Real adapters are env-var toggled. Tests use fakes with zero I/O. This table reflects current code — update if ports.py or auth schemes change.
 
 | Port | Protocol | Env Var Toggle | Auth Method |
 |------|----------|---------------|-------------|
 | Portfolio | `PortfolioPort` | `AWARDWALLET_API_KEY` | Bearer token |
 | Search | `AwardSearchPort` | `SEATS_AERO_API_KEY` | Partner-Authorization header |
 | Donation | `DonationPort` | `CHANGE_API_KEY` | Bearer token |
-| Billing | `BillingPort` | `STRIPE_SECRET_KEY` | Stripe SDK |
+| Billing | `BillingPort` | `STRIPE_SECRET_KEY` | API key (via SDK) |
 
 New integrations follow this pattern: define Protocol → implement fake → implement real adapter → toggle via env var.
 
@@ -79,7 +84,7 @@ New integrations follow this pattern: define Protocol → implement fake → imp
 | Data rights | Display balance/availability to authenticated user | No |
 | Revenue model | Revenue share, per-transaction, or flat fee | Yes |
 | SLA | 99.5% uptime, < 2s p95 latency | Preferred |
-| Data retention | We don't store raw partner data beyond cache TTL | Standard |
+| Data retention | We don't store raw partner data beyond cache TTL | No |
 
 ### What Partners Need From Us
 
@@ -88,10 +93,10 @@ New integrations follow this pattern: define Protocol → implement fake → imp
 | User consent | Explicit opt-in before accessing any program data |
 | Data handling | No resale, no scraping, encrypted at rest and in transit |
 | Attribution | Program name and branding per partner guidelines |
-| Compliance | SOC 2 Type II (planned), GDPR/CCPA data subject rights |
+| Compliance | SOC 2 Type II (planned, pending counsel), GDPR/CCPA data subject rights |
 | Volume reporting | Monthly transaction counts, error rates |
 
-## Legal Risk Matrix
+## Legal Risk Matrix (Provisional — Pending Counsel Review)
 
 | Risk Level | Programs | Constraint |
 |------------|----------|-----------|
@@ -113,7 +118,7 @@ New integrations follow this pattern: define Protocol → implement fake → imp
 |---|----------|-------|-----------|
 | 1 | Points.com partnership terms (revenue share, minimums, timeline) | BD outreach | Yes (T2) |
 | 2 | Currency Alliance startup pricing and sandbox access | BD outreach | Yes (T2) |
-| 3 | Yodlee reward container: which programs actually supported? | Sandbox test | No |
+| 3 | Yodlee reward container: which programs are actually supported? | Sandbox test | No |
 | 4 | Legal classification: optimization advisor vs. point broker | Attorney | Yes |
 | 5 | Money transmitter licensing for point-to-dollar donation flows | Attorney | Yes |
 | 6 | SOC 2 Type II timeline and cost | Compliance | No |

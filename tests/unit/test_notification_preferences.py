@@ -119,6 +119,15 @@ class TestEmailTemplates:
 class TestAPIEndpoints:
     AUTH_HEADERS = {"Authorization": "Bearer test-token-eric"}
 
+    @pytest.fixture(autouse=True)
+    def _reset_prefs(self):
+        """Reset global notification preferences between tests."""
+        from redeemflow.notifications.preferences import reset_notification_prefs
+
+        reset_notification_prefs()
+        yield
+        reset_notification_prefs()
+
     @pytest.fixture
     def client(self):
         from fastapi.testclient import TestClient

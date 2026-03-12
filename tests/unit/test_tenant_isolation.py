@@ -1,4 +1,4 @@
-"""Tests for multi-tenancy: tenant model, auth extraction, row-level isolation."""
+"""Tests for multi-tenancy: tenant model, tenant membership, and tenant context management."""
 
 from __future__ import annotations
 

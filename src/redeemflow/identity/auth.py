@@ -4,7 +4,7 @@ Beck: Test tokens are the simplest thing that works for dev/test.
 Fowler: Auth0 is the production boundary — JWKS cached, env-gated.
 
 Supports both test tokens (dev/test mode) and Auth0 RS256 JWTs (production).
-Test tokens are checked first; if no match, falls through to JWT verification.
+Test tokens are checked first (only in dev/test); falls through to JWT verification.
 """
 
 from __future__ import annotations
@@ -23,11 +23,17 @@ class AuthError(Exception):
     pass
 
 
-# Test tokens for walking skeleton — still work in dev/test mode.
+# Test tokens for walking skeleton — only active when REDEEMFLOW_ENV != "production".
 _TEST_USERS = {
-    "test-token-eric": User(id="auth0|eric", email="ericmumford@gmail.com", name="Eric"),
+    "test-token-eric": User(id="auth0|eric", email="ericmumford@gmail.com", name="Eric", tier="pro"),
     "test-token-steve": User(id="auth0|steve", email="steve@example.com", name="Steve"),
 }
+
+
+def _test_tokens_enabled() -> bool:
+    """Test tokens are disabled in production."""
+    return os.environ.get("REDEEMFLOW_ENV", "development") != "production"
+
 
 # Auth0 configuration — set via environment variables in production.
 _AUTH0_DOMAIN = os.environ.get("AUTH0_DOMAIN", "")
@@ -113,10 +119,11 @@ def verify_token(token: str | None) -> User:
     if not token:
         raise AuthError("Missing authentication token")
 
-    # Check test tokens first (always available for dev/test).
-    user = _TEST_USERS.get(token)
-    if user:
-        return user
+    # Check test tokens only in dev/test mode.
+    if _test_tokens_enabled():
+        user = _TEST_USERS.get(token)
+        if user:
+            return user
 
     # Fall through to JWT verification for anything else.
     return _verify_auth0_jwt(token)
@@ -129,3 +136,11 @@ def get_current_user(request: Request) -> User:
 
     token = auth_header[len("Bearer ") :]
     return verify_token(token)
+
+
+def require_admin(request: Request) -> User:
+    """Dependency that requires the user to have admin tier."""
+    user = get_current_user(request)
+    if user.tier not in ("admin", "pro"):
+        raise AuthError("Admin access required")
+    return user

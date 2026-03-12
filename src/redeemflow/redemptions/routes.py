@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from decimal import Decimal
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 
+from redeemflow.identity.auth import get_current_user
+from redeemflow.identity.models import User
 from redeemflow.redemptions.car_rental import (
     analyze_car_rental,
     best_car_rental,
@@ -34,7 +36,7 @@ class CarRentalRequest(BaseModel):
 
 
 @router.get("/api/car-rentals/{program}")
-def get_car_rentals(program: str):
+def get_car_rentals(program: str, user: User = Depends(get_current_user)):
     """List car rental redemptions for a program."""
     rentals = find_car_rentals(program)
     return {
@@ -54,7 +56,7 @@ def get_car_rentals(program: str):
 
 
 @router.post("/api/car-rentals/analyze")
-def analyze_car(req: CarRentalRequest):
+def analyze_car(req: CarRentalRequest, user: User = Depends(get_current_user)):
     """Analyze car rental redemption value vs alternatives."""
     rental = best_car_rental(req.program)
     if rental is None:
@@ -75,7 +77,7 @@ def analyze_car(req: CarRentalRequest):
 
 
 @router.get("/api/retail-redemptions/{program}")
-def get_retail_redemptions(program: str):
+def get_retail_redemptions(program: str, user: User = Depends(get_current_user)):
     """List retail redemption options for a program."""
     redemptions = find_retail_redemptions(program)
     return {
@@ -101,7 +103,7 @@ class RetailAnalysisRequest(BaseModel):
 
 
 @router.post("/api/retail-redemptions/analyze")
-def analyze_retail(req: RetailAnalysisRequest):
+def analyze_retail(req: RetailAnalysisRequest, user: User = Depends(get_current_user)):
     """Analyze retail redemption value destruction."""
     worst = worst_retail_redemption(req.program)
     if worst is None:
@@ -124,7 +126,7 @@ def analyze_retail(req: RetailAnalysisRequest):
 
 
 @router.get("/api/exchange-rates/{program}")
-def get_exchange_rates(program: str):
+def get_exchange_rates(program: str, user: User = Depends(get_current_user)):
     """List buy/sell exchange rates for a program."""
     rates = find_exchange_rates(program)
     return {
@@ -152,7 +154,7 @@ class BuyAnalysisRequest(BaseModel):
 
 
 @router.post("/api/exchange/buy-analysis")
-def exchange_buy_analysis(req: BuyAnalysisRequest):
+def exchange_buy_analysis(req: BuyAnalysisRequest, user: User = Depends(get_current_user)):
     """Analyze whether buying points is worthwhile."""
     analysis = analyze_buy(req.program, req.points, Decimal(str(req.target_redemption_cpp)))
     if analysis is None:
@@ -174,7 +176,7 @@ class SellAnalysisRequest(BaseModel):
 
 
 @router.post("/api/exchange/sell-analysis")
-def exchange_sell_analysis(req: SellAnalysisRequest):
+def exchange_sell_analysis(req: SellAnalysisRequest, user: User = Depends(get_current_user)):
     """Analyze the value of selling points for cash."""
     analysis = analyze_sell(req.program, req.points)
     if analysis is None:
@@ -190,7 +192,7 @@ def exchange_sell_analysis(req: SellAnalysisRequest):
 
 
 @router.get("/api/exchange/swaps/{program}")
-def get_swap_rates(program: str):
+def get_swap_rates(program: str, user: User = Depends(get_current_user)):
     """List available point swap rates from a program."""
     swaps = find_swap_rates(program)
     return {

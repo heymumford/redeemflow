@@ -92,7 +92,7 @@ class ChangeApiAdapter:
                     f"{self._base_url}/donations",
                     headers={"Authorization": f"Bearer {self._api_key}"},
                     json={
-                        "amount": int(dollar_amount * 100),  # cents
+                        "amount": int((dollar_amount * 100).quantize(Decimal("1"))),  # cents
                         "nonprofit_id": charity_name,
                         "funds_collected": True,
                         "metadata": {"user_id": user_id, "source": "redeemflow"},
@@ -107,14 +107,16 @@ class ChangeApiAdapter:
         except httpx.HTTPError as e:
             raise ChangeApiError(f"Change API connection error: {e}") from e
 
-        reference_id = data.get("id", f"change-{uuid.uuid4().hex[:12]}")
-        status = data.get("status", "completed")
+        reference_id = data.get("id")
+        if not reference_id:
+            raise ChangeApiError("Change API response missing donation ID")
+        status = data.get("status", "pending")
 
         logger.info(
             "donation_processed",
             reference_id=reference_id,
             charity=charity_name,
-            amount_cents=int(dollar_amount * 100),
+            amount_cents=int((dollar_amount * 100).quantize(Decimal("1"))),
         )
         return {"reference_id": reference_id, "status": status}
 
@@ -196,7 +198,37 @@ class DonationService:
         dollar_value = valuation.dollar_value(points)
         now = datetime.now(UTC).isoformat()
 
-        result = self._provider.process_donation(user_id, charity_name, dollar_value)
+        try:
+            result = self._provider.process_donation(user_id, charity_name, dollar_value)
+        except Exception as e:
+            # Provider failed — record as FAILED, not COMPLETED
+            failed_donation = Donation(
+                id=f"don-{uuid.uuid4().hex[:12]}",
+                user_id=user_id,
+                charity_name=charity_name,
+                charity_state=charity_state,
+                program_code=program_code,
+                points_donated=points,
+                dollar_value=dollar_value,
+                status=DonationStatus.FAILED,
+                created_at=now,
+                cpp_at_donation=valuation.median_cpp,
+            )
+            self._donations.append(failed_donation)
+            logger.error("donation_failed", user_id=user_id, charity=charity_name, error=str(e))
+            raise
+
+        # Map provider status to our status
+        provider_status = result.get("status", "unknown")
+        if provider_status == "completed":
+            status = DonationStatus.COMPLETED
+            completed_at = now
+        elif provider_status in ("pending", "processing"):
+            status = DonationStatus.PROCESSING
+            completed_at = None
+        else:
+            status = DonationStatus.PENDING
+            completed_at = None
 
         donation = Donation(
             id=f"don-{uuid.uuid4().hex[:12]}",
@@ -206,10 +238,11 @@ class DonationService:
             program_code=program_code,
             points_donated=points,
             dollar_value=dollar_value,
-            status=DonationStatus.COMPLETED,
+            status=status,
             created_at=now,
-            completed_at=now,
+            completed_at=completed_at,
             change_api_reference=result.get("reference_id"),
+            cpp_at_donation=valuation.median_cpp,
         )
         if self._repository:
             self._repository.save(donation)

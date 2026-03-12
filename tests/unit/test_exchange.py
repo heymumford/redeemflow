@@ -91,6 +91,8 @@ class TestAnalyzeSell:
 
 
 class TestAPIEndpoints:
+    AUTH = {"Authorization": "Bearer test-token-eric"}
+
     @pytest.fixture
     def client(self):
         from fastapi.testclient import TestClient
@@ -101,14 +103,14 @@ class TestAPIEndpoints:
         return TestClient(create_app(ports=PortBundle()))
 
     def test_get_exchange_rates(self, client):
-        resp = client.get("/api/exchange-rates/united")
+        resp = client.get("/api/exchange-rates/united", headers=self.AUTH)
         assert resp.status_code == 200
         data = resp.json()
         assert data["program"] == "united"
         assert data["count"] >= 2
 
     def test_get_exchange_rates_unknown(self, client):
-        resp = client.get("/api/exchange-rates/nonexistent")
+        resp = client.get("/api/exchange-rates/nonexistent", headers=self.AUTH)
         assert resp.status_code == 200
         assert resp.json()["count"] == 0
 
@@ -116,6 +118,7 @@ class TestAPIEndpoints:
         resp = client.post(
             "/api/exchange/buy-analysis",
             json={"program": "united", "points": 50000},
+            headers=self.AUTH,
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -126,19 +129,24 @@ class TestAPIEndpoints:
         resp = client.post(
             "/api/exchange/sell-analysis",
             json={"program": "united", "points": 50000},
+            headers=self.AUTH,
         )
         assert resp.status_code == 200
         data = resp.json()
         assert "recommendation" in data
 
     def test_swap_rates_endpoint(self, client):
-        resp = client.get("/api/exchange/swaps/marriott")
+        resp = client.get("/api/exchange/swaps/marriott", headers=self.AUTH)
         assert resp.status_code == 200
         data = resp.json()
         assert data["source_program"] == "marriott"
         assert data["count"] >= 1
 
     def test_swap_rates_unknown(self, client):
-        resp = client.get("/api/exchange/swaps/nonexistent")
+        resp = client.get("/api/exchange/swaps/nonexistent", headers=self.AUTH)
         assert resp.status_code == 200
         assert resp.json()["count"] == 0
+
+    def test_requires_auth(self, client):
+        resp = client.get("/api/exchange-rates/united")
+        assert resp.status_code == 401

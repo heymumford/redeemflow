@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from redeemflow.identity.api_keys import get_api_key_store
@@ -95,12 +96,12 @@ def update_preferences(req: UpdatePreferencesRequest, user: User = Depends(get_c
         try:
             updates["display_currency"] = DisplayCurrency(req.display_currency)
         except ValueError:
-            return {"error": f"Invalid currency: {req.display_currency}"}
+            return JSONResponse(status_code=400, content={"detail": f"Invalid currency: {req.display_currency}"})
     if req.distance_unit is not None:
         try:
             updates["distance_unit"] = DistanceUnit(req.distance_unit)
         except ValueError:
-            return {"error": f"Invalid unit: {req.distance_unit}"}
+            return JSONResponse(status_code=400, content={"detail": f"Invalid unit: {req.distance_unit}"})
     if req.show_cash_prices is not None:
         updates["show_cash_prices"] = req.show_cash_prices
     if req.default_cabin is not None:
@@ -199,8 +200,6 @@ def revoke_api_key(key_id: str, user: User = Depends(get_current_user)):
     store = get_api_key_store()
     revoked = store.revoke_key(key_id, user.id)
     if revoked is None:
-        from fastapi.responses import JSONResponse
-
         return JSONResponse(status_code=404, content={"detail": "Key not found"})
     return {"key": _serialize_key(revoked)}
 

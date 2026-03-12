@@ -118,5 +118,5 @@ class TestAPIEndpoint:
 
     def test_invalid_category(self, client):
         resp = client.get("/api/sweet-spots?category=invalid")
-        assert resp.status_code == 200
-        assert "error" in resp.json()
+        assert resp.status_code == 400
+        assert "detail" in resp.json()

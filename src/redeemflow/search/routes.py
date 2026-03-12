@@ -7,6 +7,7 @@ Safety endpoints are public (no auth required).
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from redeemflow.identity.auth import get_current_user
@@ -225,7 +226,7 @@ def hotel_safety(hotel_name: str, city: str = ""):
     """Get safety score for a specific hotel."""
     score = _SAFETY_PROVIDER.get_hotel_safety(hotel_name, city)
     if score is None:
-        return {"error": "Hotel not found", "hotel_name": hotel_name}
+        return JSONResponse(status_code=404, content={"detail": "Hotel not found", "hotel_name": hotel_name})
     return {
         "hotel_name": score.hotel_name,
         "city": score.city,
@@ -272,7 +273,7 @@ def conference_plan(req: ConferencePlanRequest, user: User = Depends(get_current
             break
 
     if conference is None:
-        return {"error": f"Conference not found: {req.conference_name}"}
+        return JSONResponse(status_code=404, content={"detail": f"Conference not found: {req.conference_name}"})
 
     balances = _FETCHER.fetch_balances(user.id)
     planner = ConferencePlanner(
@@ -315,12 +316,18 @@ def list_sweet_spots(
         try:
             cat = SweetSpotCategory(category)
         except ValueError:
-            return {"error": f"Invalid category: {category}", "valid": [c.value for c in SweetSpotCategory]}
+            return JSONResponse(
+                status_code=400,
+                content={"detail": f"Invalid category: {category}", "valid": [c.value for c in SweetSpotCategory]},
+            )
 
     try:
         rating = ValueRating(min_rating)
     except ValueError:
-        return {"error": f"Invalid rating: {min_rating}", "valid": [r.value for r in ValueRating]}
+        return JSONResponse(
+            status_code=400,
+            content={"detail": f"Invalid rating: {min_rating}", "valid": [r.value for r in ValueRating]},
+        )
 
     spots = find_sweet_spots(category=cat, program=program, min_rating=rating)
     return {
@@ -371,8 +378,6 @@ def trip_compare(req: TripCompareRequest, user: User = Depends(get_current_user)
     from decimal import Decimal
 
     if not req.options:
-        from fastapi.responses import JSONResponse
-
         return JSONResponse(status_code=400, content={"detail": "At least one option is required"})
 
     options = [
@@ -501,7 +506,7 @@ def get_trip_detail(trip_id: str, user: User = Depends(get_current_user)):
     """Get detailed trip with all segments and metrics."""
     trip = get_trip(user.id, trip_id)
     if trip is None:
-        return {"error": "Trip not found"}
+        return JSONResponse(status_code=404, content={"detail": "Trip not found"})
 
     summary = trip.summarize()
     return {
@@ -607,8 +612,6 @@ def delete_saved_search(search_id: str, user: User = Depends(get_current_user)):
     store = get_saved_search_store()
     deleted = store.delete(search_id, user.id)
     if deleted is None:
-        from fastapi.responses import JSONResponse
-
         return JSONResponse(status_code=404, content={"detail": "Search not found"})
     return {
         "search": {
@@ -647,8 +650,6 @@ def share_trip(trip_id: str, req: CreateShareRequest, user: User = Depends(get_c
     try:
         perm = SharePermission(req.permission)
     except ValueError:
-        from fastapi.responses import JSONResponse
-
         return JSONResponse(status_code=400, content={"detail": f"Invalid permission: {req.permission}"})
 
     link = store.create_share(trip_id, user.id, perm)
@@ -661,8 +662,6 @@ def view_shared_trip(token: str):
     store = get_trip_share_store()
     share = store.record_view(token)
     if share is None:
-        from fastapi.responses import JSONResponse
-
         return JSONResponse(status_code=404, content={"detail": "Share not found or expired"})
 
     return {
@@ -686,8 +685,6 @@ def revoke_share(share_id: str, user: User = Depends(get_current_user)):
     store = get_trip_share_store()
     revoked = store.revoke_share(share_id, user.id)
     if revoked is None:
-        from fastapi.responses import JSONResponse
-
         return JSONResponse(status_code=404, content={"detail": "Share not found"})
 
     return {"share": _serialize_share(revoked)}

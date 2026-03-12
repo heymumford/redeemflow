@@ -7,6 +7,7 @@ Fowler: Adapter injected via app.state, resolved through Depends.
 from __future__ import annotations
 
 from fastapi import APIRouter, Depends, Request
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from redeemflow.identity.auth import get_current_user
@@ -306,7 +307,7 @@ def update_points(goal_id: str, req: UpdateGoalPointsRequest, user: User = Depen
     """Update progress on a goal."""
     updated = update_goal_points(user.id, goal_id, req.current_points)
     if updated is None:
-        return {"error": "Goal not found"}
+        return JSONResponse(status_code=404, content={"detail": "Goal not found"})
     return {
         "status": "updated",
         "goal_id": goal_id,
@@ -330,7 +331,7 @@ def export_portfolio_data(
     try:
         fmt = ExportFormat(format)
     except ValueError:
-        return {"error": f"Invalid format: {format}", "valid": ["json", "csv"]}
+        return JSONResponse(status_code=400, content={"detail": f"Invalid format: {format}", "valid": ["json", "csv"]})
 
     balances = port.fetch_balances(user.id)
     export = export_portfolio(user.id, balances, fmt)
@@ -346,7 +347,7 @@ def import_portfolio_data(req: ImportRequest, user: User = Depends(get_current_u
     try:
         fmt = ExportFormat(req.format)
     except ValueError:
-        return {"error": f"Invalid format: {req.format}"}
+        return JSONResponse(status_code=400, content={"detail": f"Invalid format: {req.format}"})
 
     if fmt == ExportFormat.CSV:
         balances = import_from_csv(req.data)

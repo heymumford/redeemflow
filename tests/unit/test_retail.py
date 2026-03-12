@@ -110,8 +110,8 @@ class TestAPIEndpoints:
             json={"program": "nonexistent", "points": 50000},
             headers=self.AUTH,
         )
-        assert resp.status_code == 200
-        assert "error" in resp.json()
+        assert resp.status_code == 404
+        assert "detail" in resp.json()
 
     def test_requires_auth(self, client):
         resp = client.get("/api/retail-redemptions/chase-ur")

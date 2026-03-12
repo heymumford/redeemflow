@@ -109,8 +109,8 @@ class TestAPIEndpoints:
 
     def test_connectivity_unknown_program(self, client):
         resp = client.get("/api/graph/connectivity/nonexistent")
-        assert resp.status_code == 200
-        assert "error" in resp.json()
+        assert resp.status_code == 404
+        assert "detail" in resp.json()
 
     def test_bonuses_endpoint(self, client):
         resp = client.get("/api/graph/bonuses")

@@ -119,7 +119,8 @@ class TestExportAPI:
 
     def test_export_invalid_format(self, client):
         resp = client.get("/api/portfolio/export?format=xml", headers=self.AUTH_HEADERS)
-        assert "error" in resp.json()
+        assert resp.status_code == 400
+        assert "detail" in resp.json()
 
     def test_import_json(self, client):
         # First export, then import

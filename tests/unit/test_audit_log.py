@@ -173,7 +173,8 @@ class TestAuditAPI:
 
     def test_audit_invalid_action_filter(self, client):
         resp = client.get("/api/admin/audit?action=bogus", headers=self.AUTH_HEADERS)
-        assert "error" in resp.json()
+        assert resp.status_code == 400
+        assert "detail" in resp.json()
 
     def test_audit_requires_auth(self, client):
         assert client.get("/api/admin/audit").status_code == 401

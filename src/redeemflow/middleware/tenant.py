@@ -38,9 +38,12 @@ class TenantMiddleware(BaseHTTPMiddleware):
         try:
             user = get_current_user(request)
             tenant_id = user.tenant_id
-        except (AuthError, Exception):
+        except AuthError:
             # No valid auth — default tenant (routes will still enforce auth)
             tenant_id = DEFAULT_TENANT_ID
+        except Exception:
+            logger.exception("unexpected_error_determining_tenant")
+            raise
 
         set_current_tenant_id(tenant_id)
         structlog.contextvars.bind_contextvars(tenant_id=tenant_id)
@@ -48,5 +51,5 @@ class TenantMiddleware(BaseHTTPMiddleware):
         try:
             return await call_next(request)
         finally:
-            # Reset to default after request
             set_current_tenant_id(DEFAULT_TENANT_ID)
+            structlog.contextvars.unbind_contextvars("tenant_id")

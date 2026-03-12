@@ -246,7 +246,7 @@ class TestPriceAnchoring:
         assert "$200" in html or "200+" in html, "Must reference $200+ concierge pricing for anchoring"
 
     async def test_redeemflow_price_present(self, html):
-        assert "$149" in html, "Must reference $149/year RedeemFlow pricing"
+        assert "$9.99" in html, "Must reference $9.99/month RedeemFlow pricing"
 
 
 # ─── VS-11: Touch-Friendly FAQ ──────────────────────────────────────────

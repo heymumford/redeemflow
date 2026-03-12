@@ -8,7 +8,7 @@
 
 ### T0 (Balance Reads): Keep AwardWallet + Evaluate MX for credit card rewards
 
-**AwardWallet** remains the only viable aggregator for standalone airline/hotel loyalty balances (700+ programs). Neither Yodlee nor MX connect to airline or hotel websites — they aggregate financial institution data only.
+**AwardWallet** remains the only viable aggregator for standalone airline/hotel loyalty balances (700+ programs). Neither Yodlee nor MX connects to airline or hotel websites — they aggregate financial institution data only.
 
 **MX Technologies** is selected over Yodlee for credit card reward balances (Chase UR, Amex MR, Capital One, Citi TY) based on:
 - Lower cost (~$15K/yr vs $5-15K/mo for Yodlee)

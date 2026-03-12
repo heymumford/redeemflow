@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 from openpyxl import load_workbook
 from openpyxl.styles import Alignment, Font, PatternFill
 
@@ -303,7 +306,11 @@ def add_key_findings_sheet(wb):
 
 
 def main():
-    wb = load_workbook(EXCEL_PATH)
+    path = sys.argv[1] if len(sys.argv) > 1 else EXCEL_PATH
+    if not Path(path).exists():
+        print(f"Error: {path} not found. Run update_partner_excel.py first to create it.")
+        sys.exit(1)
+    wb = load_workbook(path)
 
     for name in ["Platform Evaluation", "R2 Key Findings"]:
         if name in wb.sheetnames:
@@ -312,8 +319,8 @@ def main():
     add_platform_evaluation_sheet(wb)
     add_key_findings_sheet(wb)
 
-    wb.save(EXCEL_PATH)
-    print(f"Updated {EXCEL_PATH} with Platform Evaluation and R2 Key Findings sheets")
+    wb.save(path)
+    print(f"Updated {path} with Platform Evaluation and R2 Key Findings sheets")
     print(f"Total sheets: {len(wb.sheetnames)}")
     for name in wb.sheetnames:
         print(f"  - {name}")

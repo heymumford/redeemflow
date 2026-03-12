@@ -141,8 +141,7 @@ def analyze_car_rental(
     elif value_ratio >= Decimal("0.6"):
         recommendation = "acceptable"
         rationale = (
-            f"Car rental at {car_cpp} CPP is acceptable if you need a car, "
-            f"but alternatives yield {alternative_cpp} CPP"
+            f"Car rental at {car_cpp} CPP is acceptable if you need a car, but alternatives yield {alternative_cpp} CPP"
         )
     else:
         recommendation = "use_elsewhere"

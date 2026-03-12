@@ -31,12 +31,14 @@
     function closeNav() {
       navToggle.setAttribute('aria-expanded', 'false');
       navDrawer.classList.remove('nav__drawer--open');
+      navDrawer.setAttribute('aria-hidden', 'true');
       if (navBackdrop) navBackdrop.classList.remove('nav__drawer-backdrop--visible');
     }
 
     function openNav() {
       navToggle.setAttribute('aria-expanded', 'true');
       navDrawer.classList.add('nav__drawer--open');
+      navDrawer.setAttribute('aria-hidden', 'false');
       if (navBackdrop) navBackdrop.classList.add('nav__drawer-backdrop--visible');
       // Focus first link for keyboard users
       var firstLink = navDrawer.querySelector('a');
@@ -211,13 +213,11 @@
     }, { threshold: 0.1, rootMargin: '0px 0px -20px 0px' });
     fadeEls.forEach(function(el) { fadeObserver.observe(el); });
 
-    // Safety net: reveal remaining elements after load if observer hasn't engaged
+    // Safety net: reveal any elements still hidden after load + scroll settle
     window.addEventListener('load', function() {
       setTimeout(function() {
-        if (!observerFired) {
-          fadeEls.forEach(revealElement);
-        }
-      }, 1000);
+        fadeEls.forEach(revealElement);
+      }, 1200);
     });
   } else {
     fadeEls.forEach(revealElement);

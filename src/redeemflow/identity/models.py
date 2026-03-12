@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from redeemflow.identity.tenant import DEFAULT_TENANT_ID
+
 
 @dataclass(frozen=True, eq=False)
 class User:
@@ -11,6 +13,7 @@ class User:
     email: str
     name: str | None = None
     tier: str = "free"  # free, premium, pro — looked up from billing on auth
+    tenant_id: str = DEFAULT_TENANT_ID
 
     def __eq__(self, other: object) -> bool:
         if not isinstance(other, User):

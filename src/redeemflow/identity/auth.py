@@ -17,6 +17,7 @@ from functools import lru_cache
 from fastapi import Request
 
 from redeemflow.identity.models import User
+from redeemflow.identity.tenant import DEFAULT_TENANT_ID
 
 
 class AuthError(Exception):
@@ -27,6 +28,13 @@ class AuthError(Exception):
 _TEST_USERS = {
     "test-token-eric": User(id="auth0|eric", email="ericmumford@gmail.com", name="Eric", tier="pro"),
     "test-token-steve": User(id="auth0|steve", email="steve@example.com", name="Steve"),
+    "test-token-acme-admin": User(
+        id="auth0|acme-admin",
+        email="admin@acme.com",
+        name="Acme Admin",
+        tier="pro",
+        tenant_id="tenant-acme",
+    ),
 }
 
 
@@ -100,11 +108,13 @@ def _verify_auth0_jwt(token: str) -> User:
             user_id = payload.get("sub", "")
             email = payload.get("email", payload.get(f"https://{_AUTH0_DOMAIN}/email", ""))
             name = payload.get("name", payload.get(f"https://{_AUTH0_DOMAIN}/name"))
+            # Auth0 Organizations: org_id claim identifies the tenant
+            tenant_id = payload.get("org_id", DEFAULT_TENANT_ID)
 
             if not user_id:
                 raise AuthError("Token missing subject claim")
 
-            return User(id=user_id, email=email, name=name)
+            return User(id=user_id, email=email, name=name, tenant_id=tenant_id)
 
         except AuthError:
             raise

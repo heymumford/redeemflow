@@ -13,6 +13,26 @@ from sqlalchemy import JSON, Boolean, Column, Float, ForeignKey, Integer, MetaDa
 
 metadata = MetaData()
 
+# --- Tenancy tables ---
+
+tenants = Table(
+    "tenants",
+    metadata,
+    Column("id", Text, primary_key=True),
+    Column("name", Text, nullable=False),
+    Column("type", Text, nullable=False),  # individual | commercial
+    Column("created_at", Text, nullable=False),
+)
+
+tenant_memberships = Table(
+    "tenant_memberships",
+    metadata,
+    Column("user_id", Text, primary_key=True),
+    Column("tenant_id", Text, ForeignKey("tenants.id", ondelete="CASCADE"), primary_key=True, index=True),
+    Column("role", Text, nullable=False, server_default="member"),  # owner | admin | member
+    Column("joined_at", Text, nullable=False),
+)
+
 # --- Portfolio tables ---
 
 loyalty_programs = Table(
@@ -79,6 +99,7 @@ subscriptions = Table(
     metadata,
     Column("id", Text, primary_key=True),
     Column("user_id", Text, nullable=False, index=True),
+    Column("tenant_id", Text, ForeignKey("tenants.id"), nullable=False, index=True),
     Column("tier", Text, nullable=False),
     Column("status", Text, nullable=False),
     Column("current_period_start", Text, nullable=False),
@@ -91,6 +112,7 @@ donations = Table(
     metadata,
     Column("id", Text, primary_key=True),
     Column("user_id", Text, nullable=False, index=True),
+    Column("tenant_id", Text, ForeignKey("tenants.id"), nullable=False, index=True),
     Column("charity_name", Text, nullable=False),
     Column("charity_state", Text, nullable=False),
     Column("program_code", Text, nullable=False),
@@ -108,6 +130,7 @@ community_pools = Table(
     Column("id", Text, primary_key=True),
     Column("name", Text, nullable=False),
     Column("creator_id", Text, nullable=False),
+    Column("tenant_id", Text, ForeignKey("tenants.id"), nullable=False, index=True),
     Column("target_charity_name", Text, nullable=False),
     Column("target_charity_state", Text, nullable=False),
     Column("goal_amount", Numeric(12, 4), nullable=False),
@@ -133,6 +156,7 @@ forum_posts = Table(
     metadata,
     Column("id", Text, primary_key=True),
     Column("author_id", Text, nullable=False, index=True),
+    Column("tenant_id", Text, ForeignKey("tenants.id"), nullable=False, index=True),
     Column("author_name", Text, nullable=False),
     Column("category", Text, nullable=False),
     Column("title", Text, nullable=False),
@@ -159,6 +183,7 @@ founder_profiles = Table(
     "founder_profiles",
     metadata,
     Column("user_id", Text, primary_key=True),
+    Column("tenant_id", Text, ForeignKey("tenants.id"), nullable=False, index=True),
     Column("name", Text, nullable=False),
     Column("email", Text, nullable=False),
     Column("status", Text, nullable=False),
@@ -177,6 +202,7 @@ auto_donate_rules = Table(
     metadata,
     Column("id", Text, primary_key=True),
     Column("user_id", Text, nullable=False, index=True),
+    Column("tenant_id", Text, ForeignKey("tenants.id"), nullable=False, index=True),
     Column("program_code", Text, nullable=False),
     Column("charity_name", Text, nullable=False),
     Column("charity_state", Text, nullable=False),

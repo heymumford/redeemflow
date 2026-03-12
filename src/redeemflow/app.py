@@ -37,6 +37,7 @@ from redeemflow.identity.routes import router as identity_router
 from redeemflow.middleware.logging import RequestLoggingMiddleware, configure_logging, get_logger
 from redeemflow.middleware.rate_limit import limiter
 from redeemflow.middleware.security_headers import SecurityHeadersMiddleware
+from redeemflow.middleware.tenant import TenantMiddleware
 from redeemflow.notifications.routes import router as notifications_router
 from redeemflow.optimization.routes import router as optimization_router
 from redeemflow.portfolio.fake_adapter import FakeBalanceFetcher
@@ -207,6 +208,9 @@ def create_app(ports: PortBundle | None = None) -> FastAPI:
 
     # Structured request logging
     app.add_middleware(RequestLoggingMiddleware)
+
+    # Tenant context — extract tenant_id from JWT, bind to contextvar
+    app.add_middleware(TenantMiddleware)
 
     # Rate limiting — SlowAPIMiddleware enforces default_limits globally
     app.state.limiter = limiter

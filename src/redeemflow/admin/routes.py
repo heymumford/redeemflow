@@ -7,7 +7,7 @@ from fastapi import APIRouter, Depends, Request
 from redeemflow.admin.audit import AuditAction, get_audit_log
 from redeemflow.admin.dashboard import generate_dashboard
 from redeemflow.admin.metrics import collect_program_metrics, collect_system_metrics
-from redeemflow.identity.auth import get_current_user
+from redeemflow.identity.auth import require_admin
 from redeemflow.identity.models import User
 from redeemflow.optimization.seed_data import ALL_PARTNERS
 from redeemflow.search.sweet_spots import ALL_SWEET_SPOTS
@@ -17,7 +17,7 @@ router = APIRouter()
 
 
 @router.get("/api/admin/metrics")
-def system_metrics(request: Request, user: User = Depends(get_current_user)):
+def system_metrics(request: Request, user: User = Depends(require_admin)):
     """System-wide metrics dashboard."""
     webhook_log = getattr(request.app.state, "webhook_event_log", None)
 
@@ -50,7 +50,7 @@ def system_metrics(request: Request, user: User = Depends(get_current_user)):
 
 
 @router.get("/api/admin/programs")
-def program_metrics(user: User = Depends(get_current_user)):
+def program_metrics(user: User = Depends(require_admin)):
     """Per-program metrics breakdown."""
     metrics = collect_program_metrics(
         programs=list(PROGRAM_VALUATIONS.values()),
@@ -75,7 +75,7 @@ def program_metrics(user: User = Depends(get_current_user)):
 
 @router.get("/api/admin/audit")
 def audit_log_view(
-    user: User = Depends(get_current_user),
+    user: User = Depends(require_admin),
     action: str | None = None,
     resource_type: str | None = None,
     limit: int = 50,
@@ -113,7 +113,7 @@ def audit_log_view(
 
 
 @router.get("/api/admin/audit/summary")
-def audit_summary(user: User = Depends(get_current_user)):
+def audit_summary(user: User = Depends(require_admin)):
     """Audit log summary with action counts."""
     log = get_audit_log()
     summary = log.summarize()
@@ -136,7 +136,7 @@ def audit_summary(user: User = Depends(get_current_user)):
 
 
 @router.get("/api/admin/dashboard")
-def admin_dashboard(user: User = Depends(get_current_user)):
+def admin_dashboard(user: User = Depends(require_admin)):
     """Full admin dashboard with system metrics, adoption, and health."""
     report = generate_dashboard(user_count=150, portfolio_count=120, goal_count=80, trip_count=45, share_count=20)
     return {

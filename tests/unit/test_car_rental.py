@@ -68,6 +68,8 @@ class TestAnalyzeCarRental:
 
 
 class TestAPIEndpoints:
+    AUTH = {"Authorization": "Bearer test-token-eric"}
+
     @pytest.fixture
     def client(self):
         from fastapi.testclient import TestClient
@@ -78,14 +80,14 @@ class TestAPIEndpoints:
         return TestClient(create_app(ports=PortBundle()))
 
     def test_list_car_rentals(self, client):
-        resp = client.get("/api/car-rentals/chase-ur")
+        resp = client.get("/api/car-rentals/chase-ur", headers=self.AUTH)
         assert resp.status_code == 200
         data = resp.json()
         assert data["program"] == "chase-ur"
         assert data["count"] >= 3
 
     def test_list_unknown_program(self, client):
-        resp = client.get("/api/car-rentals/nonexistent")
+        resp = client.get("/api/car-rentals/nonexistent", headers=self.AUTH)
         assert resp.status_code == 200
         assert resp.json()["count"] == 0
 
@@ -93,6 +95,7 @@ class TestAPIEndpoints:
         resp = client.post(
             "/api/car-rentals/analyze",
             json={"program": "chase-ur", "days": 5},
+            headers=self.AUTH,
         )
         assert resp.status_code == 200
         data = resp.json()
@@ -103,6 +106,11 @@ class TestAPIEndpoints:
         resp = client.post(
             "/api/car-rentals/analyze",
             json={"program": "nonexistent", "days": 3},
+            headers=self.AUTH,
         )
         assert resp.status_code == 200
         assert "error" in resp.json()
+
+    def test_requires_auth(self, client):
+        resp = client.get("/api/car-rentals/chase-ur")
+        assert resp.status_code == 401

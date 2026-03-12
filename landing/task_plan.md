@@ -217,10 +217,10 @@
 - [x] VS-09b: Test: fade-in CSS uses refined values
 
 ### VS-10: Price Anchoring ⬡ [P1, S8-07]
-> "$200+ concierge vs $149/year RedeemFlow" — Ogilvy
+> "$200+ concierge vs $9.99/month RedeemFlow" — Ogilvy
 
-**RED:** Test that Features section contains text mentioning both "$200+" and "$149".
-**GREEN:** Add a comparison line in the pricing-visible area: "Full concierge services charge $200+/year. RedeemFlow: $149/year — or free to start."
+**RED:** Test that Features section contains text mentioning both "$200+" and "$9.99".
+**GREEN:** Add a comparison line in the pricing-visible area: "Full concierge services charge $200+/year. RedeemFlow: $9.99/month — or free to start."
 **REFACTOR:** Ensure structured data pricing stays consistent.
 
 - [x] VS-10a: Add price comparison copy to Features section

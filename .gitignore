@@ -42,8 +42,11 @@ tests/landing/screenshots/
 *.png
 *.xlsx
 research/
+screenshots/
+playwright-research/
 bug_bash_*.json
 test_coverage_gaps*.json
 consolidate_bugs*.py
 generate_research_excel.py
 *_api_research.json
+worktrees/
